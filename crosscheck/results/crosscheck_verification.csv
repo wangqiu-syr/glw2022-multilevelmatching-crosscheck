@@ -1,0 +1,2 @@
+"sim","n_reps","reps_diagnostics_within_1e8","max_diag_diff","max_diff_mean_DIF","max_diff_mean_CM","max_diff_mean_GPS","ours_gps_converged","reps_with_ties_cm","reps_with_ties_gps","rows_nudged_mean","max_nudge","package_errors","package_warnings"
+1,500,500,2.88253946796949e-09,9.6408991900887e-14,1.04805053524615e-13,2.05942901621015e-13,500,0,0,75.194,2.22044604925031e-16,0,0

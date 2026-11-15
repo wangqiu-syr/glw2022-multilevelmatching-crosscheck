@@ -1,6 +1,8 @@
-# Generalized propensity score and covariate matching for multilevel treatments in hierarchical data: Rebuilding Guo, Liu, and Wang (2022) in R
+# Cross-checking a rebuild of Guo, Liu, and Wang (2022) with Yang et al.'s (2016) multilevelMatching package
 
 Qiu Wang, Syracuse University · v1.0 · November 2026
+
+This repository continues [glw2022-matching-replication](https://github.com/wangqiu-syr/glw2022-matching-replication), an R rebuild of the two simulation studies in Guo, Liu and Wang (2022). It keeps that rebuild unchanged and adds a cross-check: every replication of both simulations is re-estimated with `multilevelMatching`, the R package that implements the matching estimators of Yang et al. (2016), to which the paper's methods reduce without the school-level covariates. The cross-check is summarized under [Cross-check with multilevelMatching](#cross-check-with-multilevelmatching) and reported in full in [docs/crosscheck.md](docs/crosscheck.md); [BRIDGE.md](BRIDGE.md) records how this repository was set up.
 
 ## Key findings
 
@@ -177,8 +179,12 @@ From the repository root (R 4.5; packages MASS and nnet):
 | 2. Rebuild summaries only | `Rscript R/summarize.R` | seconds |
 | 3. Figures and comparisons | `Rscript R/plots.R` | seconds |
 | 4. D13 sensitivity (Simulation 1) | `Rscript R/run_gps_literal.R`, then `Rscript R/run_gps_literal2.R` (`check` runs the self-tests) | |
+| 5. Cross-check with multilevelMatching | `R_LIBS=<lib> Rscript crosscheck/R/04_crosscheck_all.R sim=1`, then `sim=2` (options: `workers=4`) | On 4 workers: Simulation 1 about 1 min, Simulation 2 about 20 min |
+| 6. Cross-check summaries | `Rscript crosscheck/R/05_summarize_crosscheck.R` | seconds |
 
 Each replication is saved to `results/reps/simK/rep_###.rds` when it finishes. Re-running `run_all.R` skips replications that are already done, so an interrupted run resumes where it stopped. It refuses to mix checkpoints made with different settings (R, B, seed, optimizer tolerance). Progress goes to standard output; redirect it to `results/run_log.txt` for a background run.
+
+Steps 5 and 6 need `multilevelMatching` 1.0.0 and `Matching`; on R 4.3 or later the package needs an input workaround that the scripts apply (see [BRIDGE.md](BRIDGE.md) for installation and details). The cross-check ran on R 4.3.3; its replications regenerate the main run's samples from the same seeds.
 
 Each replication uses its own pre-generated L'Ecuyer-CMRG random-number stream, so results do not depend on the number of workers or the order in which replications run. The scripts use only base R, `parallel` and `nnet`, plus `MASS` for data generation. The R version and session details of the full run are in `results/run_session_info.txt`; the `nnet` and `MASS` versions used (7.3.20 and 7.3.65) are on the second line of `results/run_log.txt`. No `renv` lockfile is included.
 
@@ -224,6 +230,16 @@ R scripts in the R/ folder, run from the repository root; the order is under Rep
 
 Per-replication checkpoints (results/reps/, results/reps_gps_literal/, results/reps_gps_literal2/) are local only, not in the repo.
 
+### Cross-check with multilevelMatching
+
+[docs/crosscheck.md](docs/crosscheck.md) reports the cross-check; [BRIDGE.md](BRIDGE.md) records the setup, the package facts and the workarounds. Code and results are in [crosscheck/](crosscheck/):
+
+- **Scripts:** [crosscheck/R/04_crosscheck_all.R](crosscheck/R/04_crosscheck_all.R) (all replications, both simulations) and [crosscheck/R/05_summarize_crosscheck.R](crosscheck/R/05_summarize_crosscheck.R) (summaries); [crosscheck/R/01_export_rep001.R](crosscheck/R/01_export_rep001.R), [crosscheck/R/02_pkg_fits.R](crosscheck/R/02_pkg_fits.R) and [crosscheck/R/03_check_pasted.R](crosscheck/R/03_check_pasted.R) (the first check, replication 1 of Simulation 1).
+- **Results:** `crosscheck/results/sim1_crosscheck_reps.csv` and `sim2_crosscheck_reps.csv` (every estimate, ours and the package's, with the package's variances); `sim*_crosscheck_info.csv` (per-replication checks); `sim*_crosscheck_summary.csv` (bias, MSE and coverage by pair); `crosscheck_agreement.csv`, `crosscheck_verification.csv` and `crosscheck_overview.csv` (the tables in docs/crosscheck.md); `sim*_crosscheck_multinom_minus_ours.csv` (paired differences).
+- **Logs:** [crosscheck/logs/](crosscheck/logs/).
+
+Per-replication checkpoints (crosscheck/reps/) are local only, not in the repo.
+
 ### Published values
 
 [results/paper_table1.csv](results/paper_table1.csv), [results/paper_table3.csv](results/paper_table3.csv) and [results/paper_table5.csv](results/paper_table5.csv) hold values transcribed from the paper's published tables, for comparison only. The paper's PDF is not included.
@@ -254,13 +270,15 @@ The code was written with assistance from Claude Code (Anthropic).
 
 - Crump, R. K., Hotz, V. J., Imbens, G. W., & Mitnik, O. A. (2009). Dealing with limited overlap in estimation of average treatment effects. *Biometrika, 96*(1), 187–199. https://doi.org/10.1093/biomet/asn055
 - Guo, S., Liu, J., & Wang, Q. (2022). Effective learning during COVID-19: Multilevel covariates matching and propensity score matching. *Annals of Data Science, 9*(5), 967–982. https://doi.org/10.1007/s40745-022-00392-x
-- Yang, S., Imbens, G., Cui, Z., Faries, D., & Kadziola, Z. (2016). Propensity score matching and subclassification in observational studies with multi-level treatments. *Biometrics, 72*, 1055–1065.
+- Wang, Q. (2026). *Generalized propensity score and covariate matching for multilevel treatments in hierarchical data: Rebuilding Guo, Liu, and Wang (2022) in R* (Version 1.0) [Computer software]. https://github.com/wangqiu-syr/glw2022-matching-replication
+- Yang, S., & Barkley, B. G. (2019). *multilevelMatching: Propensity score matching and subclassification in observational studies with multi-level treatments* (R package version 1.0.0). https://CRAN.R-project.org/package=multilevelMatching
+- Yang, S., Imbens, G., Cui, Z., Faries, D., & Kadziola, Z. (2016). Propensity score matching and subclassification in observational studies with multi-level treatments. *Biometrics, 72*, 1055–1065. https://doi.org/10.1111/biom.12505
 
 ## How to cite
 
-Wang, Q. (2026). *Generalized propensity score and covariate matching for multilevel treatments in hierarchical data: Rebuilding Guo, Liu, and Wang (2022) in R* (Version 1.0) [Computer software]. https://github.com/wangqiu-syr/glw2022-matching-replication
+Wang, Q. (2026). *Cross-checking a rebuild of Guo, Liu, and Wang (2022) with Yang et al.'s (2016) multilevelMatching package* (Version 1.0) [Computer software]. https://github.com/wangqiu-syr/glw2022-multilevelmatching-crosscheck
 
-DOI: to be added after the Zenodo release. Citation metadata are in [`CITATION.cff`](CITATION.cff); please also cite the original paper.
+DOI: to be added after the Zenodo release. Citation metadata are in [`CITATION.cff`](CITATION.cff); please also cite the original paper, Yang et al. (2016) and the rebuild it builds on.
 
 ## License
 

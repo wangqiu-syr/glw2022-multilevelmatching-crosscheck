@@ -1,0 +1,4 @@
+"sim","fit","compared_with","n_reps","reps_identical_imputations","reps_same_estimates","max_abs_diff","median_rep_max_abs_diff","mean_cells_differing","max_cells_differing","max_abs_dP","median_abs_dP","pkg_multinom_not_converged"
+1,"covariates","our CM",500,500,500,0,0,0,0,NA,NA,NA
+1,"multinom","our GPS",500,405,408,0.247261119101,0,0.422,20,0.000170280452989391,1.19067946542651e-06,0
+1,"existing","our GPS",500,499,499,0.01382717961,0,0.002,1,NA,NA,NA

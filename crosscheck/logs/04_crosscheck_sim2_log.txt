@@ -1,0 +1,8 @@
+[2026-11-15 23:38:53] Cross-check, Simulation 2: 500 replications requested, 500 to run, 4 workers
+[2026-11-15 23:38:53] R version 4.3.3 (2024-02-29); multilevelMatching 1.0.0; Matching 4.10.14; nnet 7.3.19; MASS 7.3.60.0.1
+[2026-11-15 23:39:39] Simulation 2: 20/500 done (0 errors), elapsed 45s, ETA 1090s
+[2026-11-15 23:40:23] Simulation 2: 40/500 done (0 errors), elapsed 89s, ETA 1028s
+[2026-11-15 23:41:08] Simulation 2: 60/500 done (0 errors), elapsed 135s, ETA 988s
+[2026-11-15 23:41:53] Simulation 2: 80/500 done (0 errors), elapsed 179s, ETA 940s
+[2026-11-15 23:42:38] Simulation 2: 100/500 done (0 errors), elapsed 224s, ETA 897s
+[2026-11-15 23:43:22] Simulation 2: 120/500 done (0 errors), elapsed 269s, ETA 850s
