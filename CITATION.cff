@@ -1,0 +1,30 @@
+cff-version: 1.2.0
+message: "If you use this code, please cite it as below, and also cite the original paper listed under references."
+type: software
+title: "Generalized propensity score and covariate matching for multilevel treatments in hierarchical data: Rebuilding Guo, Liu, and Wang (2022) in R"
+authors:
+  - family-names: Wang
+    given-names: Qiu
+    affiliation: "Syracuse University"
+version: 1.0.0
+# date-released: TODO (YYYY-MM-DD of the release)
+# doi: TODO (the Zenodo DOI minted for the release)
+repository-code: "https://github.com/wangqiu-syr/glw2022-matching-replication"
+license: MIT
+references:
+  - type: article
+    authors:
+      - family-names: Guo
+        given-names: Siying
+      - family-names: Liu
+        given-names: Jianxuan
+      - family-names: Wang
+        given-names: Qiu
+    title: "Effective Learning During COVID-19: Multilevel Covariates Matching and Propensity Score Matching"
+    journal: "Annals of Data Science"
+    year: 2022
+    volume: 9
+    issue: 5
+    start: 967
+    end: 982
+    doi: 10.1007/s40745-022-00392-x

@@ -1,0 +1,40 @@
+"section","simulation","comparison","statistic","value"
+"labels as printed",2,"paper CM vs rebuild CM","bias correlation",0.764314873950879
+"labels as printed",2,"paper CM vs rebuild CM","bias mean absolute difference",0.202068301756044
+"labels exchanged",2,"paper CM vs rebuild GPS","bias correlation",0.615600380743509
+"labels exchanged",2,"paper CM vs rebuild GPS","bias mean absolute difference",0.118962848716234
+"labels exchanged",2,"paper GPS vs rebuild CM","bias correlation",0.9462774708732
+"labels exchanged",2,"paper GPS vs rebuild CM","bias mean absolute difference",0.0967756340529164
+"labels as printed",2,"paper GPS vs rebuild GPS","bias correlation",0.873914483666772
+"labels as printed",2,"paper GPS vs rebuild GPS","bias mean absolute difference",0.232326675444243
+"mean absolute bias",2,"paper CM","mean absolute bias",0.139377777777778
+"mean absolute bias",2,"rebuild CM","mean absolute bias",0.295275419673852
+"mean absolute bias",2,"paper GPS","mean absolute bias",0.307475
+"mean absolute bias",2,"rebuild GPS","mean absolute bias",0.0990625010808253
+"ordering",2,"paper, labels as printed","pairs with GPS more biased",32
+"ordering",2,"rebuild","pairs with GPS more biased",5
+"ordering",2,"paper, labels exchanged","pairs with GPS more biased",4
+"ordering",2,"paper exchanged vs rebuild","pairs with the same ordering",33
+"ordering",2,"all","pairs",36
+"MSE",2,"paper CM vs rebuild CM","MSE correlation",0.517676581198392
+"MSE",2,"paper CM vs rebuild GPS","MSE correlation",0.870210513879308
+"MSE",2,"paper GPS vs rebuild CM","MSE correlation",0.587287005664576
+"MSE",2,"paper GPS vs rebuild GPS","MSE correlation",0.963060489627017
+"MSE",2,"paper","pairs with GPS larger MSE",36
+"MSE",2,"rebuild","pairs with GPS larger MSE",33
+"MSE",2,"paper CM MSE minus paper GPS bias squared","pairs with negative implied variance",3
+"MSE",2,"paper GPS MSE minus paper CM bias squared","pairs with negative implied variance",0
+"MSE",2,"paper, labels as printed","pairs with negative implied variance",0
+"MSE scale",2,"DIF paper / rebuild","median MSE ratio",100.666515623821
+"MSE scale",2,"CM paper / rebuild","median MSE ratio",1.44716304785143
+"MSE scale",2,"GPS paper / rebuild","median MSE ratio",3.07328002889691
+"labels as printed",1,"paper CM vs rebuild CM","absolute bias correlation",0.245364013977301
+"labels exchanged",1,"paper CM vs rebuild GPS","absolute bias correlation",0.600811862744067
+"labels exchanged",1,"paper GPS vs rebuild CM","absolute bias correlation",0.354764377937697
+"labels as printed",1,"paper GPS vs rebuild GPS","absolute bias correlation",0.61957492703152
+"mean absolute bias",1,"paper CM","mean absolute bias",0.1432
+"mean absolute bias",1,"rebuild CM","mean absolute bias",0.187335469005259
+"mean absolute bias",1,"paper GPS","mean absolute bias",0.292966666666667
+"mean absolute bias",1,"rebuild GPS","mean absolute bias",0.0262636842078562
+"Eq. (4) literal reading",1,"GPS_lit2","mean absolute bias",0.158950918997001
+"Eq. (4) literal reading",1,"GPS_lit2","share of GPS gap to paper closed",0.497509377532503

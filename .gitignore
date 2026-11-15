@@ -1,0 +1,12 @@
+.Rproj.user/
+.Rhistory
+.RData
+.Ruserdata
+*.pdf
+*.docx
+results/**/*.rds
+results/run_pid.txt
+results/run_log_stderr.txt
+README.html
+docs/published_figures/
+docs/two_way_local.md
