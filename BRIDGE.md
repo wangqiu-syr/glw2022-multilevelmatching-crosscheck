@@ -14,7 +14,7 @@ This repo adds a cross-check: the rebuild's covariate matching (CM) and generali
 |---|---|
 | Cross-check, replication 1 of Simulation 1 | Done: exact agreement (below) |
 | Cross-check, all 500 replications of Simulation 1 | **On hold.** Not run; wait for the go-ahead |
-| D7 and D13 wording in `docs/spec.md` and related docs | Drafted in `crosscheck/drafts/d7_d13_wording.md`; **not applied** |
+| D7 and D13 wording in `docs/spec.md` and related docs | Applied (branch `claude/apply-d7-d13-wording`); drafts kept in `crosscheck/drafts/d7_d13_wording.md` |
 | Repo-specific text inherited from the import (README, CITATION.cff) | Still describes the original repo; not yet updated |
 
 ## Result: replication 1 of Simulation 1
@@ -75,7 +75,7 @@ crosscheck/results/sim1_rep001_gps.csv        our fitted GPS matrix, 400 x 4
 crosscheck/results/sim1_rep001_crosscheck.csv the comparison table above, full precision
 crosscheck/results/pkg_session_info.txt       sessionInfo() of the package run (written by 02)
 crosscheck/logs/                   console logs of 01-03
-crosscheck/drafts/d7_d13_wording.md  draft wording for D7, D13 and related sentences (not applied)
+crosscheck/drafts/d7_d13_wording.md  draft wording for D7, D13 and related sentences (applied; kept for the record)
 ```
 
 The script suggested by another assistant fails as written: a plain matrix `X` errors on R >= 4.3, `fit$estimate` partially matches `estimate_args`, `summary()` returns `NULL`, it does not flip signs, and it omits `existing`. `03_check_pasted.R` records this.
@@ -106,7 +106,7 @@ On a laptop: `install.packages("Matching")`, then install `multilevelMatching` f
 
 ## Next steps
 
-1. Decide on the D7 and D13 wording in `crosscheck/drafts/d7_d13_wording.md`, including the sentences elsewhere that say the reading of Eq. (4) "accounts for about half of the GPS gap".
+1. Done: the D7 and D13 wording is applied in `docs/spec.md`, `docs/replication_verdict.md`, `docs/sensitivity.md`, `docs/table3_checks.md` and `README.md`.
 2. Update the inherited README and `CITATION.cff` (title, description, repository URL) for this repo.
 3. When approved, extend the cross-check to all 500 replications of Simulation 1. Expect `existing` to match exactly (up to ties). Any `multinom` differences should be traced to the fitted probabilities (D5), not to D7.
 4. Optional: add a note to D5 that `multilevelMatching` fits `nnet::multinom` at its default tolerance.
