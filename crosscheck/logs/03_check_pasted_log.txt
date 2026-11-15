@@ -1,0 +1,26 @@
+== A. Pasted script as written (plain matrix X):
+no unit IDs supplied; unit_ids will be assigned generically
+[1] "ERROR: 'length = 2' in coercion to 'logical(1)'"
+
+== B. Pasted extraction lines (with the class workaround so the fit runs):
+fit_cm$estimate partially matches: estimate_args (a list of inputs) 
+as.data.frame(fit_cm$estimate): ERROR: arguments imply differing number of rows: 400, 1, 4, 600 
+summary(fit_cm) returns: NULL (prints only) -> $estimates is NULL 
+Correct field: fit_cm$results
+        Param      Estimate
+1 EY(2)-EY(1)  2.0175037141
+2 EY(3)-EY(1)  1.3745415559
+3 EY(4)-EY(1)  2.1462652626
+4 EY(3)-EY(2) -0.6429621582
+5 EY(4)-EY(2)  0.1287615485
+6 EY(4)-EY(3)  0.7717237067
+
+== C. Treatment coding 0..3 instead of 1..4:
+        Param      Estimate
+1 EY(1)-EY(0)  2.0175037141
+2 EY(2)-EY(0)  1.3745415559
+3 EY(3)-EY(0)  2.1462652626
+4 EY(2)-EY(1) -0.6429621582
+5 EY(3)-EY(1)  0.1287615485
+6 EY(3)-EY(2)  0.7717237067
+Same estimates as 1..4 coding: TRUE 
