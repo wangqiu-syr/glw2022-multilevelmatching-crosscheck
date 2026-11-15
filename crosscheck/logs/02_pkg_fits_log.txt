@@ -1,0 +1,68 @@
+GPS rows summing to exactly 1: before 325/400, after 400/400; max |change| = 2.22e-16
+no unit IDs supplied; unit_ids will be assigned generically
+existing with unadjusted P: All rows of X must sum to 1. The following rows do not (output limited to 5 row numbers): c(1,6,7,10,21) 
+no unit IDs supplied; unit_ids will be assigned generically
+covariates with a plain matrix X: 'length = 2' in coercion to 'logical(1)' 
+no unit IDs supplied; unit_ids will be assigned generically
+no unit IDs supplied; unit_ids will be assigned generically
+no unit IDs supplied; unit_ids will be assigned generically
+
+Output fields of a multiMatch object:
+[1] "results"           "analysis_idx"      "mu"               
+[4] "impute_mat"        "estimate_args"     "model"            
+[7] "propensity_scores" "impute_match_data" "impute_mat_sorted"
+Columns of $results:
+[1] "Param"          "Trt1"           "Trt2"           "Estimate"      
+[5] "Variance"       "VarianceAI2016"
+
+$results (covariates):
+        Param Trt1 Trt2      Estimate     Variance VarianceAI2016
+1 EY(2)-EY(1)    1    2  2.0175037141 0.1967665284             NA
+2 EY(3)-EY(1)    1    3  1.3745415559 0.1769617828             NA
+3 EY(4)-EY(1)    1    4  2.1462652626 0.4975493426             NA
+4 EY(3)-EY(2)    2    3 -0.6429621582 0.2658690555             NA
+5 EY(4)-EY(2)    2    4  0.1287615485 0.5252712655             NA
+6 EY(4)-EY(3)    3    4  0.7717237067 0.5131755840             NA
+
+$mu (covariates):
+  Param Trt    Estimate
+1 EY(1)   1 1.045787623
+2 EY(2)   2 3.063291337
+3 EY(3)   3 2.420329179
+4 EY(4)   4 3.192052886
+
+analysis_idx (NULL = no trimming): TRUE TRUE TRUE 
+Checked: Estimate == EY(Trt2) - EY(Trt1) in all three fits
+
+Comparison, our sign convention tau(t,t') = E[Y(t) - Y(t')]:
+   pair       ours_CM        pkg_CM      ours_GPS pkg_GPS_multinom
+1 (1,2) -2.0175037141 -2.0175037141 -1.2263678512    -1.2263678512
+2 (1,3) -1.3745415559 -1.3745415559 -0.9613678799    -0.9613678799
+3 (1,4) -2.1462652626 -2.1462652626 -1.3601521932    -1.3601521932
+4 (2,3)  0.6429621582  0.6429621582  0.2649999713     0.2649999713
+5 (2,4) -0.1287615485 -0.1287615485 -0.1337843420    -0.1337843420
+6 (3,4) -0.7717237067 -0.7717237067 -0.3987843133    -0.3987843133
+  pkg_GPS_existing d_CM d_GPS_multinom d_GPS_existing
+1    -1.2263678512    0              0              0
+2    -0.9613678799    0              0              0
+3    -1.3601521932    0              0              0
+4     0.2649999713    0              0              0
+5    -0.1337843420    0              0              0
+6    -0.3987843133    0              0              0
+
+Units whose imputed Y(s) differs from ours, by level s = 1..4:
+  covariates : 0 0 0 0 
+  multinom   : 0 0 0 0 
+  existing   : 0 0 0 0 
+
+multinom: package fit convergence code 0 (0 = converged), iterations cap maxit = 100 (nnet default)
+  max |p_hat_pkg - p_hat_ours| = 8.215e-07; median = 1.310e-07
+  deviance: package 1081.2798446815
+  deviance: ours (reltol 1e-14) 1081.2798446812; nnet defaults 1081.2798446815 (convergence 0)
+  package P == nnet-defaults P: max diff 0.000e+00
+  our refit P == exported P: max diff 0.000e+00
+  our NN rule on package P vs package multinom GPS: max |diff| = 0.000e+00
+  our NN rule on P_ex vs our GPS: max |diff| = 0.000e+00
+  GPS matching, min gap between best and second-best |dp|: 1.404e-07 (median 7.577e-04)
+
+multilevelMatching 1.0.0 | Matching 4.10.14 | nnet 7.3.19 | R version 4.3.3 (2024-02-29) 
