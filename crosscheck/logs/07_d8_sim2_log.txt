@@ -1,0 +1,2 @@
+[02:40:37] Check (Simulation 2, replication 1): internal steps with the package's own fit reproduce multiMatch's AI 2006 and AI 2016 variances exactly: TRUE
+[02:40:37] Simulation 2: 500 replications to run on 4 workers
