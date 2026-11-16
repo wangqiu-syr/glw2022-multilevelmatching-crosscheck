@@ -1,0 +1,5 @@
+[20:42:49] Simulation 2: 500 replications in 356s (Matching 4.10.14)
+[20:42:49] Check: Match() without bias adjustment vs the rebuild's CM: max |difference| = 4.22e-15; cells differing by > 1e-10: 0 of 18000
+[20:42:49] Check: the same with ties = TRUE (the adjusted call's own unadjusted estimate): max |difference| = 4.44e-16; cells differing by > 1e-10: 0 of 18000
+[20:42:49] Bias adjustment: mean |adjusted - unadjusted| over all cells = 0.3708
+[20:42:49] Wrote crosscheck/results/sim2_cm_biasadjust_reps.csv (18000 rows)

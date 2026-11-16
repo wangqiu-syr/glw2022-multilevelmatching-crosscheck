@@ -20,7 +20,8 @@ This repo adds a cross-check: the rebuild's covariate matching (CM) and generali
 | D8 in `docs/spec.md` and `docs/replication_verdict.md` | Updated: both mention the analytic-interval sensitivity analysis (in the spec, section "Inference and coverage" and the D8 row of the decisions table; in the verdict, the D8 row) |
 | Repo-specific text inherited from the import (README, CITATION.cff) | Updated, merged into `main` (PR #3): new title, cross-check section, reproduce steps, files, references, citation |
 | Intervals and coverage: sources, math, why CM coverage is low | Done, merged into `main` (PR #8): `crosscheck/intervals/README.md`, scripts 09–11 |
-| Math appendix to the intervals note; paper's interval facts from the PDF | Done on branch `claude/intervals-math-appendix` |
+| Math appendix to the intervals note; paper's interval facts from the PDF | Done, merged into `main` (PR #9) |
+| Rebuild-2 comparison; bias-adjusted CM test | Done on branch `claude/rebuild2-comparison`: `crosscheck/rebuild2/README.md`, scripts 12–13 |
 
 ## Result: replication 1 of Simulation 1
 
@@ -115,6 +116,10 @@ crosscheck/R/10_cm_bootstrap_centring.R  CM-only rerun of the percentile bootstr
 crosscheck/R/11_intervals_summary.R     tables and figure for crosscheck/intervals/
 crosscheck/results/sim{1,2}_cm_{gap,terms,bc,boot}_reps.csv  per-replication results of 09 and 10
 crosscheck/intervals/             README.md (interval methods: sources, math, coverage; why CM coverage is low), tables/, figures/
+crosscheck/R/12_cm_biasadjust.R   CM through Matching::Match, without and with BiasAdjust = TRUE, on the rebuild's samples
+crosscheck/R/13_rebuild2_comparison.R  tables and figure for crosscheck/rebuild2/
+crosscheck/results/sim{1,2}_cm_biasadjust_reps.csv  per-replication results of 12
+crosscheck/rebuild2/              README.md (rebuild-2 vs this rebuild vs the paper; bias-adjustment test), data/ (rebuild-2's summaries, copied), tables/, figures/
 ```
 
 The script suggested by another assistant fails as written: a plain matrix `X` errors on R >= 4.3, `fit$estimate` partially matches `estimate_args`, `summary()` returns `NULL`, it does not flip signs, and it omits `existing`. `03_check_pasted.R` records this.
@@ -169,13 +174,18 @@ On a laptop: `install.packages("Matching")`, then install `multilevelMatching` f
    - **AI 2006 noise estimate:** σ̂² is inflated about 16-fold by within-group covariate gaps.
 
    Rebuild-2 (an independent rebuild from the paper alone, in the separate repo `glw2022-rebuild2`) was started the same day. Its decisions and code are to be compared with this rebuild after its stage 2, before its stage 3 runs, without passing anything back to it.
-10. Done (2026-11-16, branch `claude/intervals-math-appendix`): Appendix A of `crosscheck/intervals/README.md` covers four derivations.
+10. Done and merged into `main` (PR #9, 2026-11-16): Appendix A of `crosscheck/intervals/README.md` covers four derivations.
     - **A.1:** the exact CM split.
     - **A.2:** why the regression adjustment removes the gap, so that its expected value is τ_bal.
     - **A.3:** why AI 2006 coverage matches the normal-theory prediction while the percentile bootstrap's falls short, with the check: centring on the bootstrap mean cuts the prediction error from 4.0 to 1.8 points in Simulation 2.
     - **A.4:** why the adjusted estimates still miss τ_pop by τ_bal − τ_pop (D9).
 
     Section 1 of the note now rests on the paper's PDF: no bootstrap, and Table 5 uses estimate ± 1.96 sd.
+11. Done (2026-11-16, branch `claude/rebuild2-comparison`): rebuild-2 finished all four stages before it was read here. Its decisions log already quoted stage-3 numbers, so no blind prediction was made. `crosscheck/rebuild2/README.md` compares it with this rebuild and the paper.
+    - **Agreement:** the two rebuilds agree pair by pair to within Monte Carlo error.
+    - **Decisions:** most were the same, reached independently. They differ on the CM distance and the interval method; rebuild-2 used an analytic variance of the AI 2006 kind.
+    - **Bias-adjustment test:** `Matching::Match(BiasAdjust = TRUE)` on this rebuild's samples removes all of CM's matching gap. Its bias (0.04, 0.08) and MSE (0.046 against 0.368) are smaller than the paper's CM column, so that column is not bias-adjusted matching. What it is remains open.
+    - **A trap for later:** `Match()` adjusts only with `ties = TRUE`, and silently ignores `BiasAdjust` otherwise.
 
 ## References
 

@@ -296,6 +296,14 @@ Mean coverage of τ\_pop (%):
 
 The word is used in two senses. In Yang et al. (2016), "multi-level treatments" are treatments with more than two levels, such as several programmes; the package name follows that usage, and for independent units a one-level multinomial model for the generalized propensity score (Imbens, 2000) is the appropriate model. In Guo, Liu and Wang (2022), "multilevel" refers to nested data (students in schools) and to covariates and treatments at two levels, but estimation is single-level: X and Z enter as ordinary covariates, with no school identifiers, school effects or within-school matching. That is why the paper's methods reduce to Yang et al.'s, and why neither is multilevel matching in the hierarchical sense. Methods that use the clustering include propensity score models with school effects (Arpino and Mealli, 2011) and propensity score weighting with multilevel data (Li, Zaslavsky and Landrum, 2013); see also the paper's references [43] and [45] (Wang, 2015; Yang, 2018).
 
+## An independent rebuild (rebuild-2)
+
+A second rebuild was written in a separate session and repository, from the paper alone. It never saw this rebuild or its results. [crosscheck/rebuild2/README.md](crosscheck/rebuild2/README.md) compares the two with each other and with the paper.
+- **The two rebuilds agree pair by pair.** In Simulation 2 their biases correlate at 0.996 for CM and 0.93 for GPS, and differ by about their Monte Carlo error. Their MSEs agree to within 3%, and the same CM pairs cover least.
+- **They made the same choices on most of the open points,** independently. They differ on the CM distance and the interval method, which change little.
+- **Both differ from the paper in the same way.** GPS is less biased than CM, and the paper's GPS bias and MSE are larger.
+- **The paper's CM column is not bias-adjusted matching.** `Matching::Match(BiasAdjust = TRUE)` removes all of CM's matching gap, but its MSE is a sixth of the paper's.
+
 ## Reproduce
 
 From the repository root (R 4.5; packages MASS and nnet):
@@ -315,10 +323,12 @@ From the repository root (R 4.5; packages MASS and nnet):
 | 9. CM bias decomposition and AI 2006 variance parts | `Rscript crosscheck/R/09_cm_bias_decomposition.R sim=1`, then `sim=2` | On 4 workers: seconds; about 1 min |
 | 10. CM-only bootstrap rerun (interval centring) | `Rscript crosscheck/R/10_cm_bootstrap_centring.R sim=2 R=120`, then `sim=1 R=500` | On 4 workers: about 36 min; about 7 min |
 | 11. Intervals tables and figure | `Rscript crosscheck/R/11_intervals_summary.R` | seconds |
+| 12. Bias-adjusted CM (`Matching::Match(BiasAdjust = TRUE)`) | `Rscript crosscheck/R/12_cm_biasadjust.R sim=1`, then `sim=2` | On 4 workers: about 15 s; about 6 min |
+| 13. Rebuild-2 comparison tables and figure | `Rscript crosscheck/R/13_rebuild2_comparison.R` | seconds |
 
 Each replication is saved to `results/reps/simK/rep_###.rds` when it finishes. Re-running `run_all.R` skips replications that are already done, so an interrupted run resumes where it stopped. It refuses to mix checkpoints made with different settings (R, B, seed, optimizer tolerance). Progress goes to standard output; redirect it to `results/run_log.txt` for a background run.
 
-Steps 9–11 need only R with MASS and nnet. Steps 5–7 need `multilevelMatching` 1.0.0 and `Matching`; on R 4.3 or later the package needs an input workaround that the scripts apply (see [BRIDGE.md](BRIDGE.md) for installation and details). The cross-check ran on R 4.3.3; its replications regenerate the main run's samples from the same seeds.
+Steps 9–11 need only R with MASS and nnet; step 12 also needs `Matching`. Steps 5–7 need `multilevelMatching` 1.0.0 and `Matching`; on R 4.3 or later the package needs an input workaround that the scripts apply (see [BRIDGE.md](BRIDGE.md) for installation and details). The cross-check ran on R 4.3.3; its replications regenerate the main run's samples from the same seeds.
 
 Each replication uses its own pre-generated L'Ecuyer-CMRG random-number stream, so results do not depend on the number of workers or the order in which replications run. The scripts use only base R, `parallel` and `nnet`, plus `MASS` for data generation. The R version and session details of the full run are in `results/run_session_info.txt`; the `nnet` and `MASS` versions used (7.3.20 and 7.3.65) are on the second line of `results/run_log.txt`. No `renv` lockfile is included.
 
@@ -381,6 +391,10 @@ Per-replication checkpoints (crosscheck/reps/) are local only, not in the repo.
 ### Intervals and coverage
 
 [crosscheck/intervals/README.md](crosscheck/intervals/README.md) covers four things: where each interval method comes from, the math of the bootstrap, AI 2006 and AI 2016 intervals, why coverage is not a measure of accuracy, and why CM coverage is low. Its tables are in [crosscheck/intervals/tables/](crosscheck/intervals/tables/) and its figure in [crosscheck/intervals/figures/](crosscheck/intervals/figures/). The scripts are [crosscheck/R/09_cm_bias_decomposition.R](crosscheck/R/09_cm_bias_decomposition.R) (CM bias decomposition, regression-adjusted check, AI 2006 variance parts), [crosscheck/R/10_cm_bootstrap_centring.R](crosscheck/R/10_cm_bootstrap_centring.R) (CM-only bootstrap rerun) and [crosscheck/R/11_intervals_summary.R](crosscheck/R/11_intervals_summary.R) (tables and figure). The per-replication results are `crosscheck/results/sim{1,2}_cm_{gap,terms,bc,boot}_reps.csv`.
+
+### Rebuild-2 comparison
+
+[crosscheck/rebuild2/README.md](crosscheck/rebuild2/README.md) compares this rebuild, the independent rebuild-2 and the paper, and tests bias-adjusted CM. Its tables are in [crosscheck/rebuild2/tables/](crosscheck/rebuild2/tables/), its figure in [crosscheck/rebuild2/figures/](crosscheck/rebuild2/figures/), and rebuild-2's copied summaries in [crosscheck/rebuild2/data/](crosscheck/rebuild2/data/). The scripts are [crosscheck/R/12_cm_biasadjust.R](crosscheck/R/12_cm_biasadjust.R) and [crosscheck/R/13_rebuild2_comparison.R](crosscheck/R/13_rebuild2_comparison.R); per-replication results are in `crosscheck/results/sim{1,2}_cm_biasadjust_reps.csv`.
 
 ### Published values
 
