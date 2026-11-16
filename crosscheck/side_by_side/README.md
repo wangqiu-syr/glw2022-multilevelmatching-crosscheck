@@ -1,6 +1,6 @@
 # Side by side: the paper, the rebuild and Yang et al.'s package
 
-This folder compares, for both simulations, three sets of results: the paper's published tables, the rebuild's main run, and Yang et al.'s package (`multilevelMatching`) run on the rebuild's samples. As in the paper and the rebuild, the main criteria are **bias and mean squared error (MSE)**; interval coverage, and the D8 sensitivity analysis of how intervals are computed, come last. It is a working collection; the tables and figures can later be moved into the README and other documents.
+This folder compares, for both simulations, three sets of results: the paper's published tables, the rebuild's main run, and Yang et al.'s package (`multilevelMatching`) run on the rebuild's samples. As in the paper and the rebuild, the main criteria are **bias and mean squared error (MSE)**. Then come the decisions D1–D13 (what this repository tests and which decisions matter), interval coverage with the D8 sensitivity analysis, and what "multilevel" means in Yang et al. and in the paper. It is a working collection; the tables and figures can later be moved into the README and other documents.
 
 - **Tables:** [tables/](tables/), each as CSV and as Markdown (the Markdown versions are inserted below unchanged).
 - **Figures:** [figures/](figures/).
@@ -100,7 +100,15 @@ D7 is the reading of the paper's Eq. (4): the printed formula uses the score for
 
 **Conclusion: keep D7.** Yang et al.'s package imputes Y(s) by matching on the score for s, so the t′ term uses the score for t′, and with our fitted scores it reproduces the rebuild's GPS exactly (up to 30 near-ties in 1,000 replications; [docs/crosscheck_math.md](../../docs/crosscheck_math.md)). The literal reading compares one unit's probability of t′ with another unit's probability of t, which is a different estimator from the one the method's authors implement. What the paper's own code did cannot be established ("Code Availability N/A"), so D13 stays as a sensitivity analysis of how much a literal implementation would change the results.
 
-## 4. The other twelve decisions
+## 4. The thirteen decisions
+
+### 4.1 What this repository tests, and why only some decisions
+
+The rebuild did not test D1–D13 one at a time, and this repository does not either. Its goal is one question: **does the rebuild compute the estimators the way Yang et al.'s own software computes them?** The package makes its own choices about the GPS model, the matching distance and the estimator formula, so comparing it with the rebuild bears automatically on the decisions about estimation (D5, D6, D7, and D13, the check of D7). D7 also came up because the first cross-check asked what its result implied for D7, and D8 because the package reports analytic variances, which made an analytic-interval sensitivity analysis possible. These results are by-products of the cross-check, not a planned sensitivity analysis of all thirteen decisions; such an analysis, varying each decision in turn and recording bias and MSE, would be a separate study.
+
+Some decisions had already been examined in the rebuild: D4 and D9 by reporting every result against both targets, τ\_pop and τ\_bal; D5's fitting tolerance by a test of start-independence; and D7 by the D13 sensitivity runs.
+
+### 4.2 What the cross-check says about each decision
 
 The package checks how estimates are computed from a given sample. It cannot check how the samples or the true effects were made.
 
@@ -121,6 +129,27 @@ The package checks how estimates are computed from a given sample. It cannot che
 | D13 | Literal Eq. (4) sensitivity check | Yes | Neither literal variant is what the package computes |
 
 So the cross-check closes the questions about how the estimates are computed (D5, D6, D7, D13). The remaining differences from the paper most likely lie in data generation and the target (D1–D4, D9, D10).
+
+### 4.3 Which decisions matter beyond this replication
+
+Each decision matters in one or more of three ways: for reproducing the paper's numbers, for applying the methods to real data, and for matching with clustered (multilevel) data. The table gives an assessment; only D4/D9, D5, D7 (through D13) and D8 have been examined quantitatively.
+
+| Decision | What it is | Changes the replication's numbers? | Matters in real applications? | Matters for clustered (multilevel) matching? |
+|---|---|---|---|---|
+| D1 | Treatment-probability formula | Yes: it sets how strongly treatment depends on the covariates | No: in real data the assignment mechanism is unknown, and any fitted multinomial model gives probabilities that sum to 1 | No |
+| D2 | Distribution of Z1 | Somewhat | No | No |
+| D3 | Fixed group sizes | Yes: it changes the population the sample represents | Yes, in designs that fix group sizes | Somewhat: multilevel designs often fix the numbers of schools and students per school, which likewise shapes the estimand |
+| D4, D9 | The true effect (target) | Yes: bias is measured against it | Yes: choosing the estimand, the effect for which population | Yes: student-level or school-level effects, averaged over which students or schools |
+| D5 | GPS model and its fitting tolerance | Yes: misspecification drives GPS bias; the tolerance matters only replication by replication | Yes: the GPS model is the main practical risk of GPS methods | Central: whether the model represents the clustering (school effects or school-level terms) is where multilevel propensity methods differ |
+| D6 | Matching distance | Yes, for CM | Yes: scaling and choice of covariates | Yes: matching across schools or within them, and how school covariates are weighted |
+| D7 | Reading of Eq. (4) | Possibly large (D13) | Yes | Theoretically required: to impute Y(s), the balancing score is the probability of s (Imbens, 2000), so the t′ term must be matched on the score for t′ |
+| D8 | Interval method | Coverage only | Yes: the bootstrap is not valid for matching estimators | Yes: with clustered data, intervals must allow for correlation within schools; neither the rebuild's bootstrap nor the Abadie–Imbens formulas do, which is harmless here only because the simulated units are independent |
+| D10 | Groups 6 and 7 assigned identically | Barely | No | No |
+| D11 | No trimming (overlap) | Somewhat, in Simulation 2 | Yes: limited overlap biases matching | Yes: small schools and small groups often have poor overlap (the paper's application has a group of 8 students) |
+| D12 | Software record | Reproducibility only | Yes | No |
+| D13 | Literal Eq. (4) check | A sensitivity check of D7 | | |
+
+The decisions that could change the paper's conclusion about the bias of CM against GPS are D1–D5, D7 and D9; D8, D11 and D12 affect intervals, overlap and reproducibility rather than that conclusion.
 
 ## 5. Coverage, and the D8 sensitivity analysis
 
@@ -186,6 +215,23 @@ Interval width against the actual spread of the estimates (implied standard erro
 - **CM:** coverage is driven by bias (section 5.1). AI 2006 intervals are 11% and 23% wider than the bootstrap ones, which raises coverage from 91.4% to 94.8% (Simulation 1) and from 78.4% to 90.1% (Simulation 2). In Simulation 1 that is within 1.4 points of the paper per pair on average; in Simulation 2 the remaining gap follows the bias gap (the paper's CM bias is about half the rebuild's).
 
 **Conclusion on D8.** The paper's reported coverage is closer to analytic Abadie–Imbens (2006) intervals than to the percentile bootstrap: for CM the mean distance from the paper falls from 3.6 to 1.4 points (Simulation 1) and from 18.6 to 7.4 points (Simulation 2); for GPS the two are equally close. This is consistent with the paper having used analytic variances, which `Matching` and `multilevelMatching` report by default, but does not prove it. For the rebuild, the bootstrap can stay as the documented D8 choice with these analytic intervals as its sensitivity analysis; for inference rather than for matching the paper, AI 2016 is the better GPS interval and AI 2006 the better CM interval. The bootstrap is not formally valid for matching estimators (Abadie and Imbens, 2008).
+
+## 6. What "multilevel" means here
+
+The word is used in two different senses.
+
+- **Yang et al. (2016): treatments with more than two levels.** The title says "multi-level treatments": a treatment that takes several values, such as several programmes or doses, as levels of a factor. It does not refer to nested data, and the package name `multilevelMatching` follows that usage. For independent units, a one-level multinomial model for the generalized propensity score is the appropriate model; Imbens (2000) introduced the generalized propensity score for this case.
+- **Guo, Liu and Wang (2022): nested data.** Students are nested in schools, the covariates are at two levels (X for students, Z for schools), and a student-level and a school-level treatment are combined into one multi-valued treatment. Estimation is nevertheless single-level: the GPS model and the matching use X and Z as ordinary covariates, with no school identifiers, school effects or within-school matching. That is why the paper's methods reduce to Yang et al.'s when Z is dropped, and why the package can reproduce the rebuild.
+
+So neither the paper's estimators nor Yang et al.'s are multilevel matching in the hierarchical sense. Methods that use the clustering include propensity score models with school random or fixed effects (Arpino and Mealli, 2011), propensity score weighting with multilevel data (Li, Zaslavsky and Landrum, 2013), and the approaches in the paper's own references [43] (Wang, 2015) and [45] (Yang, 2018). The rebuild's README lists matching that uses the clustering as future work.
+
+References for sections 4 and 6:
+
+- Arpino, B., & Mealli, F. (2011). The specification of the propensity score in multilevel observational studies. *Computational Statistics & Data Analysis, 55*(4), 1770–1780.
+- Imbens, G. W. (2000). The role of the propensity score in estimating dose-response functions. *Biometrika, 87*(3), 706–710.
+- Li, F., Zaslavsky, A. M., & Landrum, M. B. (2013). Propensity score weighting with multilevel data. *Statistics in Medicine, 32*(19), 3373–3387.
+- Wang, Q. (2015). Propensity score matching on multilevel data. In W. Pan & H. Bai (Eds.), *Propensity score analysis: Fundamentals and developments* (pp. 217–235). Guilford Press.
+- Yang, S. (2018). Propensity score weighting for causal inference with clustered data. *Journal of Causal Inference, 6*.
 
 ## Files
 
