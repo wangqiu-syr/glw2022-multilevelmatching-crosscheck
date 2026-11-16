@@ -19,6 +19,7 @@ This repo adds a cross-check: the rebuild's covariate matching (CM) and generali
 | Side-by-side tables and figures (paper, rebuild, package) and D8 analytic-interval sensitivity | Done, merged into `main` (PR #5): `crosscheck/side_by_side/`; summarized in the README (PR #6) |
 | D8 in `docs/spec.md` and `docs/replication_verdict.md` | Updated: both mention the analytic-interval sensitivity analysis (in the spec, section "Inference and coverage" and the D8 row of the decisions table; in the verdict, the D8 row) |
 | Repo-specific text inherited from the import (README, CITATION.cff) | Updated, merged into `main` (PR #3): new title, cross-check section, reproduce steps, files, references, citation |
+| Intervals and coverage: sources, math, why CM coverage is low | Done on branch `claude/bootstrap-ci`: `crosscheck/intervals/README.md`, scripts 09–11 |
 
 ## Result: replication 1 of Simulation 1
 
@@ -105,6 +106,11 @@ crosscheck/R/07_d8_analytic_intervals.R  D8: AI 2006 and AI 2016 variances for t
 crosscheck/R/08_side_by_side.R    side-by-side tables and figures, D8 summaries
 crosscheck/results/sim{1,2}_d8_gps_variances.csv  per-replication analytic GPS variances
 crosscheck/side_by_side/          README.md (discussion: package rerun, CM vs GPS, D7, the other D's, D8), tables/, figures/
+crosscheck/R/09_cm_bias_decomposition.R  exact split of each CM estimate (sample mix, matching gap, noise); regression-adjusted check; AI 2006 variance parts
+crosscheck/R/10_cm_bootstrap_centring.R  CM-only rerun of the percentile bootstrap, to see where its intervals are centred
+crosscheck/R/11_intervals_summary.R     tables and figure for crosscheck/intervals/
+crosscheck/results/sim{1,2}_cm_{gap,terms,bc,boot}_reps.csv  per-replication results of 09 and 10
+crosscheck/intervals/             README.md (interval methods: sources, math, coverage; why CM coverage is low), tables/, figures/
 ```
 
 The script suggested by another assistant fails as written: a plain matrix `X` errors on R >= 4.3, `fit$estimate` partially matches `estimate_args`, `summary()` returns `NULL`, it does not flip signs, and it omits `existing`. `03_check_pasted.R` records this.
@@ -150,6 +156,15 @@ On a laptop: `install.packages("Matching")`, then install `multilevelMatching` f
 6. Done and merged into `main`: side-by-side tables and figures (bias and MSE first, coverage last), the D8 analytic-interval sensitivity analysis, what this repository tests among D1–D13 and which decisions matter beyond this replication, and what "multilevel" means in Yang et al. and in the paper, all in `crosscheck/side_by_side/README.md`. Finding: the paper's coverage is closer to analytic Abadie-Imbens (2006) intervals than to the percentile bootstrap (CM: 1.4 against 3.6 points in Simulation 1, 7.4 against 18.6 in Simulation 2), consistent with, but not proof of, the paper having used analytic variances; for the GPS, AI 2016 intervals have the right width (coverage 95.9% and 94.6%).
 7. Done and merged into `main` (PR #6, 2026-11-16): the README now leads with bias and MSE for the paper, the rebuild and the package ("At a glance") and has a "Side by side with Yang et al.'s package" section (Figures G-K) after the rebuild's results.
 8. Done (2026-11-16): D8 in `docs/spec.md` now mentions the analytic-interval sensitivity analysis, both in the section "Inference and coverage" (which no longer says Abadie-Imbens standard errors are out of scope) and in the D8 row of the decisions table, with the coverage results; the D8 row of `docs/replication_verdict.md` points to the same analysis. The bootstrap stays the D8 default.
+9. Done (2026-11-16, branch `claude/bootstrap-ci`): `crosscheck/intervals/README.md` covers several things.
+   - **Sources:** where each interval method comes from (the paper, the rebuild, Yang et al. 2016, AI 2006/2008/2016).
+   - **Math:** the bootstrap, AI 2006 and AI 2016 intervals, as the code computes them. The rebuilt AI 2006 variance equals the package's in all 21,000 cells.
+   - **Coverage:** why it depends on bias relative to spread and on width, rather than on accuracy.
+   - **CM bias:** an exact split of every CM estimate. The matching gap is most of CM's bias. Pair (1,3) in Simulation 2 is the worst pair because both gap terms push its estimate down and its estimates vary least of all pairs.
+   - **Checks:** a regression-adjusted CM removes the bias against τ_bal. A CM-only bootstrap rerun shows that the percentile intervals sit further from the truth than the estimate. The bootstrap estimates repeat about a sixth (Simulation 1) to a quarter (Simulation 2) of the bias.
+   - **AI 2006 noise estimate:** σ̂² is inflated about 16-fold by within-group covariate gaps.
+
+   Rebuild-2 (an independent rebuild from the paper alone, in the separate repo `glw2022-rebuild2`) was started the same day. Its decisions and code are to be compared with this rebuild after its stage 2, before its stage 3 runs, without passing anything back to it.
 
 ## References
 

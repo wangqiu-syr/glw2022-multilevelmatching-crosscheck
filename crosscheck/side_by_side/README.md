@@ -168,7 +168,7 @@ The cause is CM's bias. For each pair, a normal approximation predicts coverage 
 | 2 | CM | 78.41 | 82.36 | 93.12 | 0.99 | (1,3) | 39.60 | 1.82 |
 | 2 | GPS | 100.00 | 98.79 | 98.88 |  | (1,2) | 100.00 | 0.16 |
 
-The prediction tracks the observed CM coverage pair by pair (correlation 0.99). In the worst pair, (1,3) in Simulation 2, the CM bias is 1.8 times the spread of the estimates, so an interval centred on the estimate rarely reaches the truth: 39.6% observed, 50% predicted. With the same intervals and no bias, CM coverage would be about 93–94% in both simulations. GPS has little bias and over-covers (section 5.2).
+The prediction tracks the observed CM coverage pair by pair (correlation 0.99). In the worst pair, (1,3) in Simulation 2, the CM bias is 1.8 times the spread of the estimates, so an interval centred on the estimate rarely reaches the truth: 39.6% observed, 50% predicted. With the same intervals and no bias, CM coverage would be about 93–94% in both simulations. GPS has little bias and over-covers (section 5.2). [../intervals/README.md](../intervals/README.md) traces CM's bias, exactly, to the covariate gaps between units and their matches. It also explains why (1,3) is the worst pair.
 
 ### 5.2 Analytic intervals (D8)
 
