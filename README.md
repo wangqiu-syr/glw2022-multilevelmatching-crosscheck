@@ -4,7 +4,24 @@ Qiu Wang, Syracuse University · v1.0 · November 2026
 
 This repository continues [glw2022-matching-replication](https://github.com/wangqiu-syr/glw2022-matching-replication), an R rebuild of the two simulation studies in Guo, Liu and Wang (2022). It keeps that rebuild unchanged and adds a cross-check: every replication of both simulations is re-estimated with `multilevelMatching`, the R package that implements the matching estimators of Yang et al. (2016), to which the paper's methods reduce without the school-level covariates. The cross-check is summarized under [Cross-check with multilevelMatching](#cross-check-with-multilevelmatching) and reported in full in [docs/crosscheck.md](docs/crosscheck.md); [BRIDGE.md](BRIDGE.md) records how this repository was set up.
 
-## Key findings
+## Cross-check with multilevelMatching
+
+Every replication of both simulations (500 each) was re-estimated with `multilevelMatching` 1.0.0 (Yang and Barkley, 2019), on the same samples as the main run. Full report: [docs/crosscheck.md](docs/crosscheck.md).
+
+| Package fit | Compared with | Simulation 1 | Simulation 2 |
+|---|---|---|---|
+| `covariates` (Mahalanobis on the 7 covariates) | our CM | identical in 500 of 500 replications | identical in 500 of 500 |
+| `existing` (our fitted GPS) | our GPS | identical in 499 of 500 | identical in 476 of 500 |
+| `multinom` (the package's own GPS fit) | our GPS | identical in 405 of 500 | identical in 0 of 500 |
+
+"Identical" means every imputed potential outcome agrees.
+
+- **The package computes the rebuild's estimators.** Covariate matching agrees in every replication. Given our fitted GPS, GPS matching agrees except for 30 imputed outcomes in 25 of 1,000 replications. All 30 are near-ties that the package's matching routine (`Matching::Match`) treats as ties and breaks at random; in each, ours is the nearest candidate. This also confirms D7: the package matches the t′ term on the score for t′.
+- **The GPS model's fitting tolerance matters (D5).** The package fits the GPS model at nnet's default tolerance. In Simulation 2 that changes about 6% of the matched outcomes in every replication and moves single estimates by up to 2.7. Mean absolute bias hardly changes (0.0995 against our 0.0991, τ\_pop).
+- **Analytic variances.** For GPS, the package's Abadie–Imbens (2016) variance, which accounts for estimating the GPS, gives coverage of 95.9% (Simulation 1) and 94.7% (Simulation 2), against 100% for our bootstrap intervals. For CM, its Abadie–Imbens (2006) variance gives 94.8% and 90.1%, against 91.4% and 78.4%.
+- **Reproducibility across setups.** The regenerated samples are the main run's. Our DIF and CM estimates, and our GPS estimates in Simulation 1, reproduce the main run's exactly. In Simulation 2 a few GPS near-ties fall differently on this setup (Linux, R 4.3.3) than in the main run (Windows, R 4.5.1), moving GPS summary means by at most 5.6e-5.
+
+## Key findings of the rebuild
 
 Guo, Liu and Wang (2022) proposed covariate matching (CM) and generalized propensity score (GPS) matching to estimate pairwise effects across multilevel treatment combinations, and reported simulations showing that both reduce the bias of the raw group difference.
 
@@ -179,8 +196,8 @@ From the repository root (R 4.5; packages MASS and nnet):
 | 2. Rebuild summaries only | `Rscript R/summarize.R` | seconds |
 | 3. Figures and comparisons | `Rscript R/plots.R` | seconds |
 | 4. D13 sensitivity (Simulation 1) | `Rscript R/run_gps_literal.R`, then `Rscript R/run_gps_literal2.R` (`check` runs the self-tests) | |
-| 5. Cross-check with multilevelMatching | `R_LIBS=<lib> Rscript crosscheck/R/04_crosscheck_all.R sim=1`, then `sim=2` (options: `workers=4`) | On 4 workers: Simulation 1 about 1 min, Simulation 2 about 20 min |
-| 6. Cross-check summaries | `Rscript crosscheck/R/05_summarize_crosscheck.R` | seconds |
+| 5. Cross-check with multilevelMatching | `R_LIBS=<lib> Rscript crosscheck/R/04_crosscheck_all.R sim=1`, then `sim=2` (options: `workers=4`) | On 4 workers: Simulation 1 about 1 min, Simulation 2 about 18 min (log: 55 s, 18 min 16 s) |
+| 6. Cross-check summaries | `Rscript crosscheck/R/05_summarize_crosscheck.R`, then `R_LIBS=<lib> Rscript crosscheck/R/06_existing_mismatches.R` | seconds; about 2 min |
 
 Each replication is saved to `results/reps/simK/rep_###.rds` when it finishes. Re-running `run_all.R` skips replications that are already done, so an interrupted run resumes where it stopped. It refuses to mix checkpoints made with different settings (R, B, seed, optimizer tolerance). Progress goes to standard output; redirect it to `results/run_log.txt` for a background run.
 
@@ -192,7 +209,7 @@ Each replication uses its own pre-generated L'Ecuyer-CMRG random-number stream, 
 
 ### Start here
 
-[README.md](README.md) gives the overview. [docs/replication_verdict.md](docs/replication_verdict.md) says what replicates and what does not, and [docs/two_way.md](docs/two_way.md) sets our numbers beside the paper's Tables 1 and 3, pair by pair.
+[README.md](README.md) gives the overview. [docs/replication_verdict.md](docs/replication_verdict.md) says what replicates and what does not, and [docs/two_way.md](docs/two_way.md) sets our numbers beside the paper's Tables 1 and 3, pair by pair. For the cross-check with Yang et al.'s package, start with [docs/crosscheck.md](docs/crosscheck.md).
 
 ### Design and decisions
 
@@ -234,8 +251,8 @@ Per-replication checkpoints (results/reps/, results/reps_gps_literal/, results/r
 
 [docs/crosscheck.md](docs/crosscheck.md) reports the cross-check; [BRIDGE.md](BRIDGE.md) records the setup, the package facts and the workarounds. Code and results are in [crosscheck/](crosscheck/):
 
-- **Scripts:** [crosscheck/R/04_crosscheck_all.R](crosscheck/R/04_crosscheck_all.R) (all replications, both simulations) and [crosscheck/R/05_summarize_crosscheck.R](crosscheck/R/05_summarize_crosscheck.R) (summaries); [crosscheck/R/01_export_rep001.R](crosscheck/R/01_export_rep001.R), [crosscheck/R/02_pkg_fits.R](crosscheck/R/02_pkg_fits.R) and [crosscheck/R/03_check_pasted.R](crosscheck/R/03_check_pasted.R) (the first check, replication 1 of Simulation 1).
-- **Results:** `crosscheck/results/sim1_crosscheck_reps.csv` and `sim2_crosscheck_reps.csv` (every estimate, ours and the package's, with the package's variances); `sim*_crosscheck_info.csv` (per-replication checks); `sim*_crosscheck_summary.csv` (bias, MSE and coverage by pair); `crosscheck_agreement.csv`, `crosscheck_verification.csv` and `crosscheck_overview.csv` (the tables in docs/crosscheck.md); `sim*_crosscheck_multinom_minus_ours.csv` (paired differences).
+- **Scripts:** [crosscheck/R/04_crosscheck_all.R](crosscheck/R/04_crosscheck_all.R) (all replications, both simulations), [crosscheck/R/05_summarize_crosscheck.R](crosscheck/R/05_summarize_crosscheck.R) (summaries) and [crosscheck/R/06_existing_mismatches.R](crosscheck/R/06_existing_mismatches.R) (the `existing` near-ties, unit by unit); [crosscheck/R/01_export_rep001.R](crosscheck/R/01_export_rep001.R), [crosscheck/R/02_pkg_fits.R](crosscheck/R/02_pkg_fits.R) and [crosscheck/R/03_check_pasted.R](crosscheck/R/03_check_pasted.R) (the first check, replication 1 of Simulation 1).
+- **Results:** `crosscheck/results/sim1_crosscheck_reps.csv` and `sim2_crosscheck_reps.csv` (every estimate, ours and the package's, with the package's variances); `sim*_crosscheck_info.csv` (per-replication checks); `sim*_crosscheck_summary.csv` (bias, MSE and coverage by pair); `crosscheck_agreement.csv`, `crosscheck_verification.csv` and `crosscheck_overview.csv` (the tables in docs/crosscheck.md); `sim*_crosscheck_multinom_minus_ours.csv` (paired differences); `existing_mismatches.csv` (the 30 near-ties).
 - **Logs:** [crosscheck/logs/](crosscheck/logs/).
 
 Per-replication checkpoints (crosscheck/reps/) are local only, not in the repo.
@@ -250,7 +267,7 @@ Per-replication checkpoints (crosscheck/reps/) are local only, not in the repo.
 
 ## Lesson
 
-The GPS model's fitting tolerance matters when matching on fitted probabilities. With `nnet::multinom`'s defaults (reltol = 1e-8, maxit = 100), the fitted probabilities were not precise enough for the very small matching distances, and the GPS estimate depended on the optimizer's starting point. Fitting at reltol = 1e-14 with maxit = 10000 (D5) removed this, and a test now checks it.
+The GPS model's fitting tolerance matters when matching on fitted probabilities. With `nnet::multinom`'s defaults (reltol = 1e-8, maxit = 100), the fitted probabilities were not precise enough for the very small matching distances, and the GPS estimate depended on the optimizer's starting point. Fitting at reltol = 1e-14 with maxit = 10000 (D5) removed this, and a test now checks it. The cross-check shows the same with `multilevelMatching` as shipped: it fits the GPS model at the defaults, and in Simulation 2 about 6% of its matched outcomes differ from ours in every replication ([docs/crosscheck.md](docs/crosscheck.md)).
 
 ## Conclusions
 

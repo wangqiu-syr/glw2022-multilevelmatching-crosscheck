@@ -10,3 +10,19 @@
 [2026-11-15 23:44:51] Simulation 2: 160/500 done (0 errors), elapsed 357s, ETA 760s
 [2026-11-15 23:45:35] Simulation 2: 180/500 done (0 errors), elapsed 401s, ETA 714s
 [2026-11-15 23:46:20] Simulation 2: 200/500 done (0 errors), elapsed 447s, ETA 670s
+[2026-11-15 23:47:04] Simulation 2: 220/500 done (0 errors), elapsed 490s, ETA 624s
+[2026-11-15 23:47:48] Simulation 2: 240/500 done (0 errors), elapsed 534s, ETA 579s
+[2026-11-15 23:48:32] Simulation 2: 260/500 done (0 errors), elapsed 579s, ETA 534s
+[2026-11-15 23:49:17] Simulation 2: 280/500 done (0 errors), elapsed 623s, ETA 490s
+[2026-11-15 23:50:00] Simulation 2: 300/500 done (0 errors), elapsed 666s, ETA 444s
+[2026-11-15 23:50:43] Simulation 2: 320/500 done (0 errors), elapsed 709s, ETA 399s
+[2026-11-15 23:51:27] Simulation 2: 340/500 done (0 errors), elapsed 754s, ETA 355s
+[2026-11-15 23:52:11] Simulation 2: 360/500 done (0 errors), elapsed 797s, ETA 310s
+[2026-11-15 23:52:53] Simulation 2: 380/500 done (0 errors), elapsed 840s, ETA 265s
+[2026-11-15 23:53:36] Simulation 2: 400/500 done (0 errors), elapsed 883s, ETA 221s
+[2026-11-15 23:54:18] Simulation 2: 420/500 done (0 errors), elapsed 924s, ETA 176s
+[2026-11-15 23:55:00] Simulation 2: 440/500 done (0 errors), elapsed 967s, ETA 132s
+[2026-11-15 23:55:44] Simulation 2: 460/500 done (0 errors), elapsed 1010s, ETA 88s
+[2026-11-15 23:56:27] Simulation 2: 480/500 done (0 errors), elapsed 1053s, ETA 44s
+[2026-11-15 23:57:10] Simulation 2: 500/500 done (0 errors), elapsed 1096s, ETA 0s
+[2026-11-15 23:57:10] Wrote sim2_crosscheck_reps.csv and sim2_crosscheck_info.csv
