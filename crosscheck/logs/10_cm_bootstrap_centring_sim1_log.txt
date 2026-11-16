@@ -1,2 +1,16 @@
 [16:55:07] Simulation 1: 500 of 500 replications to run, B = 200, 4 workers
 [16:55:44] Simulation 1: 40/500 done, elapsed 36s
+[16:56:15] Simulation 1: 80/500 done, elapsed 68s
+[16:56:47] Simulation 1: 120/500 done, elapsed 99s
+[16:57:18] Simulation 1: 160/500 done, elapsed 130s
+[16:57:48] Simulation 1: 200/500 done, elapsed 161s
+[16:58:21] Simulation 1: 240/500 done, elapsed 193s
+[16:58:56] Simulation 1: 280/500 done, elapsed 228s
+[16:59:36] Simulation 1: 320/500 done, elapsed 269s
+[17:00:15] Simulation 1: 360/500 done, elapsed 307s
+[17:00:54] Simulation 1: 400/500 done, elapsed 346s
+[17:01:31] Simulation 1: 440/500 done, elapsed 384s
+[17:02:04] Simulation 1: 480/500 done, elapsed 416s
+[17:02:25] Simulation 1: 500/500 done, elapsed 437s
+[17:02:25] CM estimates vs the main run's (per replication and pair): max |difference| = 5.00e-12
+[17:02:25] Wrote crosscheck/results/sim1_cm_boot_reps.csv (3000 rows)

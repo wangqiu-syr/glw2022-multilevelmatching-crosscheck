@@ -1,5 +1,5 @@
 # 10_cm_bootstrap_centring.R -- where the percentile bootstrap interval for CM
-# is centred, relative to the estimate (docs/intervals.md, section 4.4).
+# is centred, relative to the estimate (crosscheck/intervals/README.md, section 4.5).
 #
 # The main run's percentile intervals were not kept per replication (only their
 # coverage and mean width, in results/sim<k>_summary.csv). This script reruns the
@@ -15,7 +15,10 @@
 # bootstrap estimates, and the percentile limits. From these the summary builds
 # percentile, basic (2*est - quantiles) and normal (est +- 1.96 SD*) intervals.
 #
-#   Rscript crosscheck/R/10_cm_bootstrap_centring.R sim=2 [R=200] [B=200] [workers=4]
+#   Rscript crosscheck/R/10_cm_bootstrap_centring.R sim=2 R=120 [B=200] [workers=4]
+#   Rscript crosscheck/R/10_cm_bootstrap_centring.R sim=1 R=500 [B=200] [workers=4]
+# (as run: the first 120 replications of Simulation 2, about 36 min on 4 workers;
+# all 500 of Simulation 1, about 7 min)
 # Run from the repo root. Writes crosscheck/results/sim<k>_cm_boot_reps.csv;
 # per-replication checkpoints go to crosscheck/reps/cmboot_sim<k>/ (git-ignored).
 

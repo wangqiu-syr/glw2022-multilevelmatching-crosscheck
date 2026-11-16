@@ -209,7 +209,11 @@ save_table(summ, "cm_coverage_summary", digits = c(`Mean abs. bias` = 3, `Mean a
            `Reg.-adjusted: mean abs. bias` = 3, `Reg.-adjusted: mean abs. bias vs tau_bal` = 3, `Reg.-adjusted: mean SD` = 3,
            `Reg.-adjusted: coverage, oracle width` = 1))
 save_table(do.call(rbind, var_rows), "cm_variance_parts_summary", digits = 4)
-if (length(boot_rows)) save_table(do.call(rbind, boot_rows), "cm_bootstrap_centring_summary", digits = 3)
+if (length(boot_rows)) save_table(do.call(rbind, boot_rows), "cm_bootstrap_centring_summary",
+                                  digits = c(`Mean abs. bias` = 3, `Mean (bootstrap mean - estimate) / bias` = 2,
+                                             `Correlation over pairs: shift vs bias` = 2, `Mean SD of estimates` = 3,
+                                             `Mean bootstrap SD` = 3, `Coverage: percentile` = 1, `Coverage: basic` = 1,
+                                             `Coverage: normal` = 1, `Coverage: main run (500 replications)` = 1))
 
 # ---- figure: coverage against |bias| / SD -----------------------------------
 # Curves: coverage of est +- 1.96 * r * SD when est ~ N(tau + b, SD^2), for

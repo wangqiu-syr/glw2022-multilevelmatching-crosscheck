@@ -224,12 +224,18 @@ The adjustment removes almost all of the bias against τ\_bal. What is left agai
 
 In Simulation 2 the main run's CM bootstrap intervals cover less than the formula of section 2.5 predicts from their bias, spread and mean width. For pair (1,3) they cover 39.6% against a predicted 50.3%; averaged over pairs, 78.4% against 82.4% ([side_by_side, section 5.1](../side_by_side/README.md#51-why-the-rebuilds-cm-coverage-is-low)). The AI 2006 intervals match their prediction (section 4.6), so the shortfall is specific to the bootstrap. The main run did not keep its intervals per replication. So [10_cm_bootstrap_centring.R](../R/10_cm_bootstrap_centring.R) reran the same CM bootstrap on the main run's samples: 200 draws within groups, everything re-estimated in each draw. It used the first 120 replications of Simulation 2 and all 500 of Simulation 1. The draws are not the main run's: those also refitted the GPS, which used the random-number stream differently. The procedure is the same, and the rerun's percentile coverage in Simulation 2 (78.4% over 120 replications) equals the main run's (78.4% over 500).
 
-SIM_BOOT_TABLE
+Means over pairs, target τ\_pop ([tables/cm_bootstrap_centring_summary.md](tables/cm_bootstrap_centring_summary.md); per pair in [tables/sim1_cm_bootstrap_centring.md](tables/sim1_cm_bootstrap_centring.md) and [tables/sim2_cm_bootstrap_centring.md](tables/sim2_cm_bootstrap_centring.md)):
 
-- **The bootstrap reproduces part of CM's bias, in the same direction.** In a bootstrap sample each group holds only about 63% distinct units, so the matches are sparser and the gaps larger. The bootstrap estimates therefore sit further from the truth than τ̂ does: on average by about a quarter of the bias, and in the bias's direction in nearly every pair (correlation 0.94 over the 36 pairs).
+| Simulation | Replications | Mean abs. bias | (Bootstrap mean − estimate) / bias | Correlation over pairs: shift vs bias | SD of estimates | Mean bootstrap SD | Coverage: percentile | Coverage: basic | Coverage: normal | Coverage: main run (500 replications) |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | 500 | 0.187 | 0.17 | 0.99 | 0.559 | 0.558 | 91.2 | 91.3 | 93.2 | 91.4 |
+| 2 | 120 | 0.288 | 0.24 | 0.94 | 0.406 | 0.379 | 78.4 | 84.4 | 83.4 | 78.4 |
+
+- **The bootstrap reproduces part of CM's bias, in the same direction.** In a bootstrap sample each group holds only about 63% distinct units, so the matches are sparser and the gaps larger. The bootstrap estimates therefore sit further from the truth than τ̂ does: by about a sixth of the bias on average in Simulation 1 and a quarter in Simulation 2. The direction is the bias's in nearly every pair (correlation 0.99 and 0.94 over pairs).
 - **The percentile interval is centred on the bootstrap estimates, so it moves with them.** Its midpoint sits on the far side of τ̂ from the truth. That is why it covers less than an interval of the same width centred on τ̂ would.
-- **The basic interval reflects the shift back** and covers more: 84.4% against 78.4% in Simulation 2. It still falls short of 95% because the bootstrap sees only a quarter of the bias. The normal interval, τ̂ ± 1.96 SD\*, does about as well (83.4%).
-- **The bootstrap SD is also a little small:** 0.379 against an actual 0.406 in Simulation 2, so the intervals are about 7% too narrow.
+- **The basic interval reflects the shift back** and covers more in Simulation 2: 84.4% against 78.4%. It still falls short of 95%, because the bootstrap sees only a quarter of the bias. The normal interval, τ̂ ± 1.96 SD\*, does about as well (83.4%). In Simulation 1, where the bias is smaller relative to the spread, the three intervals differ little (91.2–93.2%).
+- **The bootstrap SD is right in Simulation 1** (0.558 against 0.559) and **a little small in Simulation 2** (0.379 against 0.406, about 7% too narrow).
+- **Pair (1,3) in Simulation 2.** Over these 120 replications its bias is −0.401 and the bootstrap mean sits a further −0.042 out. Its coverage is 49.2% for the percentile interval, 63.3% for basic and 56.7% for normal. The main run's 39.6% is over all 500 replications, whose bias relative to spread is larger (1.82 SDs, against 1.55 in these 120).
 
 Abadie and Imbens (2008) show that the bootstrap is not valid for nearest-neighbour matching estimators (section 1). This rerun shows one concrete way it goes wrong here. It is not a general result about the size of the problem.
 
@@ -263,7 +269,7 @@ From the repository root, after the cross-check steps in the main [README](../..
 | Step | Command | Time on 4 workers |
 |---|---|---|
 | CM decomposition, regression-adjusted check, AI 2006 parts | `Rscript crosscheck/R/09_cm_bias_decomposition.R sim=1`, then `sim=2` | seconds; about 1 min |
-| CM-only bootstrap rerun | `Rscript crosscheck/R/10_cm_bootstrap_centring.R sim=2 R=200`, then `sim=1 R=500` | |
+| CM-only bootstrap rerun | `Rscript crosscheck/R/10_cm_bootstrap_centring.R sim=2 R=120`, then `sim=1 R=500` | about 36 min; about 7 min |
 | Tables and figure | `Rscript crosscheck/R/11_intervals_summary.R` | seconds |
 
 Logs are in [crosscheck/logs/](../logs/).

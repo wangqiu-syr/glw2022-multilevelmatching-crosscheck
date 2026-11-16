@@ -1,5 +1,5 @@
 # 09_cm_bias_decomposition.R -- where the CM bias comes from, replication by
-# replication (docs/intervals.md, section 4).
+# replication (crosscheck/intervals/README.md, section 4).
 #
 # The outcomes are linear without intercept: Y_i(s) = beta_s' w_i + eps_i, with
 # w = the 7 covariates minus the design's shift (R/dgp.R). CM imputes Y_i(s) by
