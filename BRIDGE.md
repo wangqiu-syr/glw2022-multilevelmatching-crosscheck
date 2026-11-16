@@ -134,8 +134,8 @@ On a laptop: `install.packages("Matching")`, then install `multilevelMatching` f
 1. Done: the D7 and D13 wording is applied in `docs/spec.md`, `docs/replication_verdict.md`, `docs/sensitivity.md`, `docs/table3_checks.md` and `README.md`.
 2. Done: README and `CITATION.cff` updated for this repo (branch `claude/crosscheck-500`).
 3. Done: cross-check of all 500 replications of Simulations 1 and 2 (branch `claude/crosscheck-500`; report in `docs/crosscheck.md`).
-4. Merge `claude/apply-d7-d13-wording` and `claude/crosscheck-500` into `main` (the second contains the first).
-5. Optional: add a note to D5 in `docs/spec.md` that `multilevelMatching` fits `nnet::multinom` at its default tolerance, and that in Simulation 2 the rebuild's GPS estimates are reproducible across setups only up to near-ties (summary means within 5.6e-5).
+4. Done (2026-11-16): `claude/apply-d7-d13-wording` and `claude/crosscheck-500` merged into `main`.
+5. Done: D5 in `docs/spec.md` notes that `multilevelMatching` fits `nnet::multinom` at its default tolerance, and that in Simulation 2 the rebuild's GPS estimates are reproducible across setups only up to near-ties (summary means within 5.6e-5). The README's Background writes out the estimator and the three GPS versions compared.
 
 ## References
 
