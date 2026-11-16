@@ -281,6 +281,11 @@ Mean coverage of τ\_pop (%):
 - **GPS:** AI 2016 intervals have the right width (their implied standard errors match the spread of the estimates), and their coverage is near 95%. The bootstrap and AI 2006 intervals are 30–54% too wide and cover in nearly every replication, as the paper's do.
 - **CM:** AI 2006 intervals are a little wider than the bootstrap ones and bring coverage closer to the paper's (within 1.4 points per pair on average in Simulation 1); in Simulation 2 the remaining gap follows the bias gap.
 - **Reading:** this is consistent with the paper having used analytic Abadie–Imbens (2006) variances, which `Matching` and `multilevelMatching` report by default, but it does not prove it. The bootstrap remains the rebuild's documented D8 choice; the bootstrap is not formally valid for matching estimators (Abadie and Imbens, 2008).
+- **More in [crosscheck/intervals/README.md](crosscheck/intervals/README.md):**
+  - where each interval method comes from: the paper, the rebuild, Yang et al. (2016), and Abadie and Imbens (2006, 2008, 2016);
+  - the math of the bootstrap, AI 2006 and AI 2016 intervals, as the code computes them;
+  - why coverage depends on bias relative to spread, and on interval width, rather than on accuracy;
+  - an exact breakdown of CM's bias into matching gaps, which explains why CM coverage is low in Simulation 2 and lowest for pair (1,3).
 
 <img src="crosscheck/side_by_side/figures/fig5_coverage_by_method.png" width="100%" alt="Coverage of 95% intervals by pair for CM and GPS in both simulations: the paper, and the rebuild's estimates with bootstrap, AI 2006 and AI 2016 intervals">
 
@@ -306,10 +311,13 @@ From the repository root (R 4.5; packages MASS and nnet):
 | 6. Cross-check summaries | `Rscript crosscheck/R/05_summarize_crosscheck.R`, then `R_LIBS=<lib> Rscript crosscheck/R/06_existing_mismatches.R` | seconds; about 2 min |
 | 7. Analytic variances for the rebuild's GPS (D8) | `R_LIBS=<lib> Rscript crosscheck/R/07_d8_analytic_intervals.R sim=1`, then `sim=2` (options: `workers=4`) | On 4 workers: Simulation 1 under 1 min, Simulation 2 about 12 min |
 | 8. Side-by-side tables and figures | `Rscript crosscheck/R/08_side_by_side.R` | seconds |
+| 9. CM bias decomposition and AI 2006 variance parts | `Rscript crosscheck/R/09_cm_bias_decomposition.R sim=1`, then `sim=2` | On 4 workers: seconds; about 1 min |
+| 10. CM-only bootstrap rerun (interval centring) | `Rscript crosscheck/R/10_cm_bootstrap_centring.R sim=2 R=120`, then `sim=1 R=500` | On 4 workers: about 1 h; about 15 min |
+| 11. Intervals tables and figure | `Rscript crosscheck/R/11_intervals_summary.R` | seconds |
 
 Each replication is saved to `results/reps/simK/rep_###.rds` when it finishes. Re-running `run_all.R` skips replications that are already done, so an interrupted run resumes where it stopped. It refuses to mix checkpoints made with different settings (R, B, seed, optimizer tolerance). Progress goes to standard output; redirect it to `results/run_log.txt` for a background run.
 
-Steps 5–7 need `multilevelMatching` 1.0.0 and `Matching`; on R 4.3 or later the package needs an input workaround that the scripts apply (see [BRIDGE.md](BRIDGE.md) for installation and details). The cross-check ran on R 4.3.3; its replications regenerate the main run's samples from the same seeds.
+Steps 9–11 need only R with MASS and nnet. Steps 5–7 need `multilevelMatching` 1.0.0 and `Matching`; on R 4.3 or later the package needs an input workaround that the scripts apply (see [BRIDGE.md](BRIDGE.md) for installation and details). The cross-check ran on R 4.3.3; its replications regenerate the main run's samples from the same seeds.
 
 Each replication uses its own pre-generated L'Ecuyer-CMRG random-number stream, so results do not depend on the number of workers or the order in which replications run. The scripts use only base R, `parallel` and `nnet`, plus `MASS` for data generation. The R version and session details of the full run are in `results/run_session_info.txt`; the `nnet` and `MASS` versions used (7.3.20 and 7.3.65) are on the second line of `results/run_log.txt`. No `renv` lockfile is included.
 
@@ -368,6 +376,10 @@ Per-replication checkpoints (crosscheck/reps/) are local only, not in the repo.
 ### Side by side: paper, rebuild and package
 
 [crosscheck/side_by_side/README.md](crosscheck/side_by_side/README.md) is the full comparison: bias and MSE, D7 and the thirteen decisions, coverage and the D8 sensitivity analysis, and what "multilevel" means. Its tables are in [crosscheck/side_by_side/tables/](crosscheck/side_by_side/tables/) (CSV and Markdown) and its figures, used as Figures G–K above, in [crosscheck/side_by_side/figures/](crosscheck/side_by_side/figures/). Scripts: [crosscheck/R/07_d8_analytic_intervals.R](crosscheck/R/07_d8_analytic_intervals.R) (analytic variances for the rebuild's GPS) and [crosscheck/R/08_side_by_side.R](crosscheck/R/08_side_by_side.R) (all tables and figures); per-replication analytic variances are in `crosscheck/results/sim{1,2}_d8_gps_variances.csv`.
+
+### Intervals and coverage
+
+[crosscheck/intervals/README.md](crosscheck/intervals/README.md) covers four things: where each interval method comes from, the math of the bootstrap, AI 2006 and AI 2016 intervals, why coverage is not a measure of accuracy, and why CM coverage is low. Its tables are in [crosscheck/intervals/tables/](crosscheck/intervals/tables/) and its figure in [crosscheck/intervals/figures/](crosscheck/intervals/figures/). The scripts are [crosscheck/R/09_cm_bias_decomposition.R](crosscheck/R/09_cm_bias_decomposition.R) (CM bias decomposition, regression-adjusted check, AI 2006 variance parts), [crosscheck/R/10_cm_bootstrap_centring.R](crosscheck/R/10_cm_bootstrap_centring.R) (CM-only bootstrap rerun) and [crosscheck/R/11_intervals_summary.R](crosscheck/R/11_intervals_summary.R) (tables and figure). The per-replication results are `crosscheck/results/sim{1,2}_cm_{gap,terms,bc,boot}_reps.csv`.
 
 ### Published values
 

@@ -1,0 +1,8 @@
+[16:25:49] Simulation 1: 500 replications in 9s
+[16:25:49] Decomposition identity: max |reconstructed - tau_hat| over all replications and pairs = 8.88e-16
+[16:25:49] Ties among CM nearest neighbours (all replications): 0
+[16:25:49] Mean CM estimate vs the main run's (results/sim1_summary.csv): max |difference| = 3.77e-15
+[16:25:49] Wrote crosscheck/results/sim1_cm_gap_reps.csv (2000 rows)
+[16:25:49] Wrote crosscheck/results/sim1_cm_bc_reps.csv (3000 rows)
+[16:25:49] AI 2006 variance rebuilt here vs the package's (04): max relative difference 3.45e-12; 0 of 3000 (replication, pair) cells differ by more than 1e-8
+[16:25:49] Wrote crosscheck/results/sim1_cm_terms_reps.csv (3000 rows)
