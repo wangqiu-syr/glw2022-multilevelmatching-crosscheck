@@ -72,7 +72,9 @@ This rebuild follows the paper's design. Matching that uses the clustering, such
 
 **The GPS estimator in the cross-check.** The rebuild and Yang et al.'s package compute the same estimator (the paper's Eqs. 3 and 4, read as in D7). For each unit i and level s, with a score r\_s(x, z):
 
-$$\hat Y_i(s) = \begin{cases} Y_i & \text{if } T_i = s,\\ Y_{j(i,s)} & \text{otherwise,} \end{cases} \qquad j(i,s) = \arg\min_{j:\,T_j = s} \bigl| r_s(x_j, z_j) - r_s(x_i, z_i) \bigr|,$$
+```math
+\hat Y_i(s) = \begin{cases} Y_i & \text{if } T_i = s,\\ Y_{j(i,s)} & \text{otherwise,} \end{cases} \qquad j(i,s) = \arg\min_{j:\,T_j = s} \bigl| r_s(x_j, z_j) - r_s(x_i, z_i) \bigr|,
+```
 
 $$\hat\tau(t, t') = \frac{1}{n} \sum_{i=1}^{n} \bigl[ \hat Y_i(t) - \hat Y_i(t') \bigr].$$
 
@@ -88,7 +90,7 @@ The three GPS versions compared in the cross-check differ only in the coefficien
 | **`existing`** (package, given our scores) | the same p̂\_s (rows adjusted by at most 4.2e-16 so each sums to exactly 1) | not refitted: β̂ as above | `Matching::Match`: candidates within about 1e-10 of the minimum squared standardized distance count as tied, and one is picked at random |
 | **`multinom`** (package's own fit) | p̃\_s | β̃: the same likelihood with `nnet::multinom` at its defaults, which stop when an iteration improves the fit by less than a relative 1e-8, or after 100 iterations | as for `existing` |
 
-So `existing` equals our GPS except at near-ties. `multinom` uses β̃ ≈ β̂, but its probabilities differ from ours by up to |p̃ − p̂| = 1.7e-4 in Simulation 1 and 2.2e-3 in Simulation 2. Those differences are larger than many of the gaps between competing candidates, so some j(i, s) change. The package reports μ̂(t′) − μ̂(t); its signs are flipped to τ(t, t′) = E[Y(t) − Y(t′)] here. CM is compared the same way, with the Mahalanobis distance on the seven covariates in place of |r\_s(x\_j, z\_j) − r\_s(x\_i, z\_i)|.
+So `existing` equals our GPS except at near-ties. `multinom` uses β̃ ≈ β̂, but its probabilities differ from ours by up to |p̃ − p̂| = 1.7e-4 in Simulation 1 and 2.2e-3 in Simulation 2. Those differences are larger than many of the gaps between competing candidates, so some j(i, s) change. The package reports μ̂(t′) − μ̂(t); its signs are flipped to τ(t, t′) = E[Y(t) − Y(t′)] here. CM is compared the same way, with the Mahalanobis distance on the seven covariates in place of |r\_s(x\_j, z\_j) − r\_s(x\_i, z\_i)|. [docs/crosscheck_math.md](docs/crosscheck_math.md) shows step by step, from the code of both, that the rebuild and the package compute this estimator, and when their results can differ.
 
 **What the rebuild has to decide.** Rebuilding from the text alone requires thirteen decisions, recorded in [docs/spec.md](docs/spec.md):
 - *Data generation:* treatment probabilities (D1), the distribution of Z1 (D2), fixed group sizes (D3), identical assignment for groups 6 and 7 (D10) and thin overlap (D11).
@@ -269,7 +271,7 @@ Per-replication checkpoints (results/reps/, results/reps_gps_literal/, results/r
 
 ### Cross-check with multilevelMatching
 
-[docs/crosscheck.md](docs/crosscheck.md) reports the cross-check; [BRIDGE.md](BRIDGE.md) records the setup, the package facts and the workarounds. Code and results are in [crosscheck/](crosscheck/):
+[docs/crosscheck.md](docs/crosscheck.md) reports the cross-check, and [docs/crosscheck_math.md](docs/crosscheck_math.md) shows why the three GPS versions compute the same estimator; [BRIDGE.md](BRIDGE.md) records the setup, the package facts and the workarounds. Code and results are in [crosscheck/](crosscheck/):
 
 - **Scripts:** [crosscheck/R/04_crosscheck_all.R](crosscheck/R/04_crosscheck_all.R) (all replications, both simulations), [crosscheck/R/05_summarize_crosscheck.R](crosscheck/R/05_summarize_crosscheck.R) (summaries) and [crosscheck/R/06_existing_mismatches.R](crosscheck/R/06_existing_mismatches.R) (the `existing` near-ties, unit by unit); [crosscheck/R/01_export_rep001.R](crosscheck/R/01_export_rep001.R), [crosscheck/R/02_pkg_fits.R](crosscheck/R/02_pkg_fits.R) and [crosscheck/R/03_check_pasted.R](crosscheck/R/03_check_pasted.R) (the first check, replication 1 of Simulation 1).
 - **Results:** `crosscheck/results/sim1_crosscheck_reps.csv` and `sim2_crosscheck_reps.csv` (every estimate, ours and the package's, with the package's variances); `sim*_crosscheck_info.csv` (per-replication checks); `sim*_crosscheck_summary.csv` (bias, MSE and coverage by pair); `crosscheck_agreement.csv`, `crosscheck_verification.csv` and `crosscheck_overview.csv` (the tables in docs/crosscheck.md); `sim*_crosscheck_multinom_minus_ours.csv` (paired differences); `existing_mismatches.csv` (the 30 near-ties).

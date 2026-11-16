@@ -15,7 +15,7 @@ For each replication of each simulation:
    - `existing`: the package matches on our fitted GPS matrix, compared with our GPS;
    - `multinom`: the package fits its own multinomial logit (`nnet::multinom` at its default settings) and matches on it, also compared with our GPS.
 
-   The estimator and the three GPS versions are written out in the README's Background ("The GPS estimator in the cross-check").
+   The estimator and the three GPS versions are written out in the README's Background ("The GPS estimator in the cross-check"); [crosscheck_math.md](crosscheck_math.md) derives step by step why all three compute it and when they can differ.
 4. **Recorded:** all estimates (package signs flipped to our tau(t, t') = E[Y(t) - Y(t')]), the package's Abadie–Imbens variances, and unit-level diagnostics: how many imputed potential outcomes differ from ours, ties and near-ties in our matching, and the fitted-probability difference for `multinom`.
 
 Two input workarounds are applied; the package itself is not modified. On R 4.3 or later its `class(X)` check fails for any matrix, so `X` is passed with `oldClass(X) <- "matrix"` (values unchanged). `existing` requires each row of the GPS matrix to sum to exactly 1, so rows off by rounding (on average 75 of 400 rows in Simulation 1 and 602 of 1,800 in Simulation 2) were adjusted by at most 4.2e-16. Details are in `BRIDGE.md`.
