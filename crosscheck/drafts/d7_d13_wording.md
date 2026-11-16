@@ -1,6 +1,6 @@
 # Draft wording: D7 and D13 after the multilevelMatching cross-check
 
-Drafts only; not yet applied to `docs/` or `README.md`. Paths refer to the glw2022-multilevelmatching-crosscheck layout (see BRIDGE.md). The software fact in D13 was checked against the paper's PDF on 2026-11-15.
+Applied on 2026-11-15 (branch `claude/apply-d7-d13-wording`), together with the same change in `docs/table3_checks.md`; kept for the record. Paths refer to the glw2022-multilevelmatching-crosscheck layout (see BRIDGE.md). The software fact in D13 was checked against the paper's PDF on 2026-11-15.
 
 ## 1. docs/spec.md — decisions table
 

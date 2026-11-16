@@ -57,7 +57,7 @@ The qualitative pattern replicates; the GPS bias in Simulation 1 and some pair-l
 - **DIF in Simulation 1.** Similar size, but different pair by pair (pair (1,3): ours 1.16, paper 0.47).
 - **CM coverage in Simulation 1.** Ours 83–95% against τ\_pop (79–95% against τ\_bal), the paper's 92–98%.
 
-**Sensitivity check (D13).** The paper's Eq. (4) prints the same score in both terms of the effect. We read it as a typo in the main run, then tested the literal reading on Simulation 1. Applied only to units outside both groups (GPS\_lit), mean absolute bias is 0.044. Applied to units in group t as well (GPS\_lit2), it rises to 0.159, about half the way to the paper's 0.293; MSE rises 50–134% against the main GPS and coverage stays at 99–100% (both against τ\_pop). This explains part of the gap, not all of it.
+**Sensitivity check (D13).** The paper's Eq. (4) prints the same score in both terms of the effect. We read it as a typo in the main run, then tested the literal reading on Simulation 1. Applied only to units outside both groups (GPS\_lit), mean absolute bias is 0.044. Applied to units in group t as well (GPS\_lit2), it rises to 0.159, about half the way to the paper's 0.293; MSE rises 50–134% against the main GPS and coverage stays at 99–100% (both against τ\_pop). This would explain part of the gap, not all of it, and only if the paper's code followed Eq. (4) as printed: Yang et al.'s (2016) own package computes the main GPS, not the literal reading (D7).
 
 ## Decisions D1–D13
 
@@ -71,19 +71,19 @@ Thirteen points where the paper is silent, ambiguous or inconsistent, and what w
 | D4 | True effects are not stated | Two targets, both reported: population ATE (primary, the paper's Eq. 1) and balanced-design ATE |
 | D5 | The GPS model is not stated | Linear multinomial logit in x1–x4 and z1–z3, misspecified on purpose |
 | D6 | The paper builds the covariance matrix from X only but matches on X and Z | Mahalanobis distance on all 7 covariates, pooled sample covariance |
-| D7 | Eq. (4) uses p\_t in both terms of the effect | Use p\_t′ for the t′ term, treated as a typo; the literal reading is tested in D13 |
+| D7 | Eq. (4) uses p\_t in both terms of the effect | Use p\_t′ for the t′ term, treated as a typo. This is how Yang et al.'s (2016) R package multilevelMatching computes the estimator; given our fitted scores, it reproduces our GPS estimates exactly on a test replication. The literal reading is tested in D13 |
 | D8 | The confidence interval method is not stated | Percentile bootstrap, B = 200, resampling within treatment groups, refitting the GPS model and covariance matrix each time |
 | D9 | The D3 design does not sample from the population: it gives an equal-weight mixture of the group-specific covariate distributions. CM and GPS average over the sample's units, so they estimate the ATE for that mixture, not τ\_pop | Report bias, MSE and coverage against both τ\_pop and τ\_bal |
 | D10 | η₆ and η₇ differ only by z3 versus z3², and z3 is binary | Kept as printed; p₆ = p₇ for every unit, so the two groups cannot be told apart by covariates |
 | D11 | Thin tails in groups 1–5 and 9: poor overlap, some fitted probabilities near 0 | No trimming; the paper's simulation section describes none |
 | D12 | Recording the software environment | Base R, parallel, nnet and MASS; no renv lockfile. R and base-package versions are in results/run\_session\_info.txt; for the full run, nnet 7.3.20 and MASS 7.3.65 appear only in results/run\_log.txt (later runs list them in the session file too) |
-| D13 | Our GPS bias is smaller than the paper's | Sensitivity runs GPS\_lit and GPS\_lit2 (Simulation 1 only) that read Eq. (4) literally; the main GPS is unchanged |
+| D13 | Our GPS bias is smaller than the paper's | Sensitivity runs GPS\_lit and GPS\_lit2 (Simulation 1 only) that read Eq. (4) literally; the main GPS is unchanged. Neither variant is what multilevelMatching computes |
 
 ## What this does not show
 
 These results support the pattern, not the paper's exact numbers, and several claims stay out of reach.
 
-- **Which reading of Eq. (4) the paper used.** The experiments show the literal reading explains part of the GPS gap, not that the authors used it.
+- **Which reading of Eq. (4) the paper used.** The literal reading explains part of the GPS gap, but it is not how Yang et al.'s own package computes the estimator, and we do not know whether the paper used that package or its own code.
 - **Why some numbers differ.** Our Simulation 1 DIF differences do not depend on any estimator choice, so the data design probably differs somewhere (D1–D3). Simulation 2's DIF pattern matches closely, which argues against a large mismatch.
 - **Which sign convention the paper used.** Its Table 1 reports only absolute bias.
 - **Anything beyond this data-generating process.** As in the paper (its Sections 2 and 4), the two treatment levels are combined into one multi-group treatment, so the results say little about other multilevel designs.
@@ -96,4 +96,4 @@ This replication was written from the simulation procedures described in the pub
 
 ## Conclusions
 
-In these simulations, covariate matching and GPS matching both remove most of the bias in the raw group difference, as the paper reports. GPS had the smallest bias and CM the smallest mean squared error, so the better choice depends on whether bias or variance matters more. The published numbers cannot be reproduced exactly from the paper alone, because thirteen points are left open; reading Eq. (4) literally accounts for about half of the GPS discrepancy in Simulation 1. These results are a baseline for extending the comparison to clustered, multilevel data.
+In these simulations, covariate matching and GPS matching both remove most of the bias in the raw group difference, as the paper reports. GPS had the smallest bias and CM the smallest mean squared error, so the better choice depends on whether bias or variance matters more. The published numbers cannot be reproduced exactly from the paper alone, because thirteen points are left open; reading Eq. (4) literally would close about half of the GPS discrepancy in Simulation 1, but that is not how Yang et al.'s own package computes the estimator, so it explains the gap only if the paper's code followed Eq. (4) as printed. These results are a baseline for extending the comparison to clustered, multilevel data.

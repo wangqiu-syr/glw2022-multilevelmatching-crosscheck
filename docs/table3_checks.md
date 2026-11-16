@@ -16,7 +16,7 @@ The published MSE for the raw difference (DIF) is about 100 times ours (median r
 
 ## Simulation 1
 
-With six pairs, the evidence is weak. An exchange fits the mean levels better, but the correlations are mixed, and the literal reading of Eq. (4) (D7, tested in D13) already accounts for about half of the Simulation 1 GPS gap without an exchange.
+With six pairs, the evidence is weak. An exchange fits the mean levels better, but the correlations are mixed, and the literal reading of Eq. (4) (D7, tested in D13) would already close about half of the Simulation 1 GPS gap without an exchange, if the paper's code followed Eq. (4) as printed.
 
 ## Reproduce
 
