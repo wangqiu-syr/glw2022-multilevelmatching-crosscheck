@@ -1,0 +1,9 @@
+"Simulation","Comparison","Paper","Rebuild","Package","Pairs"
+1,"GPS less biased than CM (pairs)",0,6,6,6
+1,"CM lower MSE than GPS (pairs)",NA,5,5,6
+1,"Mean absolute bias, CM",0.1432,0.187335469005259,0.187335469005254,6
+1,"Mean absolute bias, GPS",0.292966666666667,0.0262636842078562,0.0261893819257048,6
+2,"GPS less biased than CM (pairs)",4,31,31,36
+2,"CM lower MSE than GPS (pairs)",36,33,33,36
+2,"Mean absolute bias, CM",0.139377777777778,0.295275419673852,0.295275419673854,36
+2,"Mean absolute bias, GPS",0.307475,0.0990625010808253,0.0995429957974661,36

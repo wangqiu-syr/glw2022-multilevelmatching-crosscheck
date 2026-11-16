@@ -25,8 +25,14 @@ z <- qnorm(0.975)
 key <- function(t, tp) paste0("(", t, ",", tp, ")")
 
 md_table <- function(df, digits = 3) {
-  f <- function(v) if (is.numeric(v)) ifelse(is.na(v), "", formatC(v, format = "f", digits = digits)) else as.character(v)
-  cells <- vapply(df, f, character(nrow(df)))
+  # digits: one number, or a named vector by column; whole-number columns print as integers
+  dg <- function(j) if (!is.null(names(digits)) && j %in% names(digits)) digits[[j]] else if (is.null(names(digits))) digits else 3
+  f <- function(v, j) {
+    if (!is.numeric(v)) return(as.character(v))
+    w <- v[!is.na(v)]; d <- if (length(w) && all(w == round(w))) 0 else dg(j)
+    ifelse(is.na(v), "", formatC(v, format = "f", digits = d))
+  }
+  cells <- vapply(names(df), function(j) f(df[[j]], j), character(nrow(df)))
   if (is.null(dim(cells))) cells <- matrix(cells, nrow = 1)
   c(paste0("| ", paste(names(df), collapse = " | "), " |"),
     paste0("|", paste(rep("---", ncol(df)), collapse = "|"), "|"),
@@ -134,7 +140,11 @@ ord <- do.call(rbind, lapply(1:2, function(sim) {
     data.frame(Simulation = sim, Comparison = "Mean absolute bias, GPS",
       Paper = mean(pp$GPS_absbias_paper), Rebuild = mean(pp$GPS_absbias_rebuild), Package = mean(pp$GPS_absbias_package), Pairs = n))
 }))
-save_table(ord, "orderings")
+save_table(ord[grepl("pairs", ord$Comparison), ], "orderings_counts")
+mb <- ord[grepl("Mean absolute", ord$Comparison), ]; names(mb)[2] <- "Mean absolute bias vs τ_pop"
+mb[[2]] <- sub("Mean absolute bias, ", "", mb[[2]])
+save_table(mb[c("Simulation", "Mean absolute bias vs τ_pop", "Paper", "Rebuild", "Package")], "mean_abs_bias")
+write.csv(ord, file.path(TAB, "orderings.csv"), row.names = FALSE)
 
 # D8 summary: coverage by interval method, and distance from the paper's coverage.
 d8_sum <- do.call(rbind, lapply(split(d8_long, list(d8_long$sim, d8_long$estimator, d8_long$method, d8_long$target), drop = TRUE), function(g) {
@@ -156,8 +166,24 @@ paper_rows <- do.call(rbind, lapply(1:2, function(sim) do.call(rbind, lapply(c("
 d8_sum <- rbind(paper_rows, d8_sum)
 d8_sum <- d8_sum[order(d8_sum$Target != "pop", d8_sum$Simulation, d8_sum$Estimator,
                        match(d8_sum$Method, c("paper", "bootstrap (main run)", "AI 2006", "AI 2016"))), ]
-save_table(d8_sum, "d8_coverage_summary", digits = 2)
+d8dig <- c(`Mean coverage` = 1, Min = 1, Max = 1, `Mean width` = 2, `Mean abs. diff. from paper` = 1)
+write.csv(d8_sum, file.path(TAB, "d8_coverage_summary.csv"), row.names = FALSE)
+writeLines(md_table(d8_sum[d8_sum$Target == "pop", names(d8_sum) != "Target"], d8dig), file.path(TAB, "d8_coverage_summary_pop.md"))
+writeLines(md_table(d8_sum[d8_sum$Target == "bal", !names(d8_sum) %in% c("Target", "Mean abs. diff. from paper")], d8dig),
+           file.path(TAB, "d8_coverage_summary_bal.md"))
 write.csv(d8_long, file.path(TAB, "d8_coverage_by_pair.csv"), row.names = FALSE)
+
+# Interval width against the actual spread of the estimates: implied standard
+# error (mean width / 3.92; for the percentile bootstrap an approximation)
+# versus the Monte Carlo SD of the estimates, averaged over pairs (tau_pop).
+spread <- do.call(rbind, lapply(1:2, function(sim) do.call(rbind, lapply(c("CM", "GPS"), function(e) {
+  m <- read.csv(file.path("results", sprintf("sim%d_summary.csv", sim))); m <- m[m$estimator == e & m$target == "pop", ]
+  w <- function(meth) { x <- d8_long[d8_long$sim == sim & d8_long$estimator == e & d8_long$method == meth & d8_long$target == "pop", ]
+                        if (nrow(x)) mean(x$mean_width) / (2 * z) else NA }
+  data.frame(Simulation = sim, Estimator = e, `Monte Carlo SD of the estimates` = mean(m$sd_est),
+             `Bootstrap` = w("bootstrap (main run)"), `AI 2006` = w("AI 2006"), `AI 2016` = w("AI 2016"),
+             `Mean abs. bias / SD` = mean(m$abs_bias / m$sd_est), check.names = FALSE) }))))
+save_table(spread, "d8_interval_width_vs_spread")
 
 # ---- figures --------------------------------------------------------------------
 pch_src <- c(paper = 1, rebuild = 16, package = 17)
@@ -169,9 +195,9 @@ fig_bias <- function(sim, file, w, h) {
     v <- cbind(paper = pp[[paste0(e, "_absbias_paper")]], rebuild = pp[[paste0(e, "_absbias_rebuild")]],
                package = pp[[paste0(e, "_absbias_package")]])
     off <- c(paper = 0, rebuild = -0.18, package = 0.18) * (if (sim == 1) 1 else 0)
-    plot(NA, xlim = c(0.5, k + 0.5), ylim = c(0, max(v) * 1.08), xaxt = "n", xlab = if (sim == 1) "Pair (t, t')" else "",
-         ylab = "Absolute bias vs τ_pop", main = e, las = 1)
-    abline(h = pretty(c(0, max(v))), col = "grey92"); abline(h = 0, col = "grey60")
+    plot(NA, xlim = c(0.5, k + 0.5), ylim = c(0, max(v) * (if (sim == 1) 1.55 else 1.3)), xaxt = "n",
+         xlab = if (sim == 1) "Pair (t, t')" else "", ylab = expression("Absolute bias vs " * tau[pop]), main = e, las = 1)
+    abline(h = axTicks(2), col = "grey92"); abline(h = 0, col = "grey60")
     axis(1, at = 1:k, labels = pp$pair, las = if (sim == 1) 1 else 2, cex.axis = if (sim == 1) 0.9 else 0.7)
     if (sim == 2) {
       lines(1:k, v[, "paper"], lty = 3, lwd = 1.3, col = COL[[e]])
@@ -180,8 +206,8 @@ fig_bias <- function(sim, file, w, h) {
     }
     for (s in names(pch_src)) points((1:k) + off[[s]], v[, s], pch = pch_src[[s]],
                                      col = if (s == "package") "grey20" else COL[[e]], cex = if (sim == 1) 1.4 else 0.9, lwd = 1.5)
-    legend("topleft", bty = "n", cex = 0.8, pch = pch_src, pt.lwd = 1.5,
-           lty = if (sim == 2) c(3, 1, 2) else NA, col = c(COL[[e]], COL[[e]], "grey20"),
+    legend(if (sim == 1) "topleft" else "top", horiz = sim == 2, bty = "n", cex = 0.8, pch = pch_src, pt.lwd = 1.5,
+           lty = if (sim == 2) c(3, 1, 2) else c(0, 0, 0), col = c(COL[[e]], COL[[e]], "grey20"),
            legend = c(sprintf("paper (Table %d)", if (sim == 1) 1 else 3), "rebuild (main run)", "package (multilevelMatching)"))
   }
   mtext(sprintf("Simulation %d: absolute bias by pair, paper vs rebuild vs Yang et al.'s package", sim), outer = TRUE, cex = 1.05, font = 2)
@@ -191,36 +217,39 @@ fig_bias(1, "fig1_sim1_abs_bias.png", 1600, 750)
 fig_bias(2, "fig2_sim2_abs_bias.png", 1600, 1250)
 
 # Coverage by pair and interval method.
-png(file.path(FIG, "fig3_coverage_by_method.png"), width = 1600, height = 1300, res = 150)
-op <- par(mfrow = c(2, 2), mar = c(5.5, 4.5, 2.5, 1), oma = c(0, 0, 2.2, 0))
+png(file.path(FIG, "fig4_coverage_by_method.png"), width = 1600, height = 1300, res = 150)
+op <- par(mfrow = c(2, 2), mar = c(5.5, 4.5, 2.5, 1), oma = c(3, 0, 2.2, 0))
 meth <- c("paper", "bootstrap", "AI2006", "AI2016"); pch_m <- c(paper = 1, bootstrap = 16, AI2006 = 2, AI2016 = 18)
 lab_m <- c(paper = "paper", bootstrap = "rebuild: bootstrap (main run)", AI2006 = "rebuild: AI 2006", AI2016 = "rebuild: AI 2016 (GPS only)")
 for (sim in 1:2) for (e in c("CM", "GPS")) {
   pp <- per_pair[[sim]]; k <- nrow(pp)
   ms <- if (e == "CM") meth[1:3] else meth
   v <- sapply(ms, function(m) pp[[paste0(e, "_cov_", m)]])
-  plot(NA, xlim = c(0.5, k + 0.5), ylim = c(min(v, 90, na.rm = TRUE) - 2, 101), xaxt = "n", xlab = "", ylab = "Coverage of τ_pop (%)",
+  plot(NA, xlim = c(0.5, k + 0.5), ylim = c(min(v, 90, na.rm = TRUE) - 2, 101), xaxt = "n", xlab = "",
+       ylab = expression("Coverage of " * tau[pop] * " (%)"),
        main = sprintf("Simulation %d, %s", sim, e), las = 1)
-  abline(h = pretty(c(min(v, 90, na.rm = TRUE), 100)), col = "grey92"); abline(h = 95, lty = 2, col = "grey40")
+  abline(h = axTicks(2), col = "grey92"); abline(h = 95, lty = 2, col = "grey40")
   axis(1, at = 1:k, labels = pp$pair, las = 2, cex.axis = if (sim == 1) 0.9 else 0.6)
   for (m in ms) points(1:k, pp[[paste0(e, "_cov_", m)]], pch = pch_m[[m]], col = if (m == "paper") "black" else COL[[e]],
                        cex = if (sim == 1) 1.3 else 0.85, lwd = 1.3)
-  legend("bottomleft", bty = "n", cex = 0.75, pch = pch_m[ms], col = ifelse(ms == "paper", "black", COL[[e]]), pt.lwd = 1.3, legend = lab_m[ms])
 }
 mtext("Coverage of 95% intervals by pair: the paper, and the rebuild's estimates with bootstrap or analytic (Abadie-Imbens) intervals (D8)",
       outer = TRUE, cex = 1, font = 2)
+par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE); plot.new()
+legend("bottom", horiz = TRUE, bty = "n", cex = 0.85, pch = c(pch_m, NA), pt.lwd = 1.3, col = c("black", rep("grey25", 3), NA),
+       legend = c(lab_m, "colour: green = CM, blue = GPS"), inset = 0.005)
 par(op); dev.off()
 
 # Per-replication GPS estimates: package's own fit vs the rebuild (D5).
-png(file.path(FIG, "fig4_gps_per_replication.png"), width = 1600, height = 800, res = 150)
+png(file.path(FIG, "fig3_gps_per_replication.png"), width = 1600, height = 800, res = 150)
 op <- par(mfrow = c(1, 2), mar = c(4.5, 4.5, 2.5, 1), oma = c(0, 0, 2.2, 0))
 for (sim in 1:2) {
   reps <- read.csv(file.path("crosscheck", "results", sprintf("sim%d_crosscheck_reps.csv", sim)))
   lim <- range(reps$GPS, reps$pkg_GPS_multinom)
   plot(reps$GPS, reps$pkg_GPS_multinom, pch = 16, cex = 0.35, col = adjustcolor(COL[["GPS"]], 0.25), xlim = lim, ylim = lim,
        xlab = "Rebuild GPS estimate", ylab = "Package GPS estimate (own fit, nnet defaults)", las = 1,
-       main = sprintf("Simulation %d: %s estimates, %d of them identical", sim, format(nrow(reps), big.mark = ","),
-                      sum(abs(reps$GPS - reps$pkg_GPS_multinom) < 1e-12)))
+       main = sprintf("Simulation %d: %s of %s identical", sim,
+                      format(sum(abs(reps$GPS - reps$pkg_GPS_multinom) < 1e-12), big.mark = ","), format(nrow(reps), big.mark = ",")))
   abline(0, 1, col = "grey30", lwd = 1)
 }
 mtext("Every GPS estimate (all pairs, all replications): the package's own GPS fit against the rebuild's (D5)", outer = TRUE, cex = 1, font = 2)
