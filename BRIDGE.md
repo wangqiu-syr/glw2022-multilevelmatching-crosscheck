@@ -97,6 +97,7 @@ crosscheck/results/crosscheck_{agreement,verification,overview}.csv  the tables 
 crosscheck/results/existing_mismatches.csv  the 30 near-ties
 crosscheck/reps/                  per-replication checkpoints (*.rds, git-ignored, local only)
 docs/crosscheck.md                 the full report
+docs/crosscheck_math.md            why the three GPS versions compute the same estimator (math, from the code of both)
 ```
 
 The script suggested by another assistant fails as written: a plain matrix `X` errors on R >= 4.3, `fit$estimate` partially matches `estimate_args`, `summary()` returns `NULL`, it does not flip signs, and it omits `existing`. `03_check_pasted.R` records this.
