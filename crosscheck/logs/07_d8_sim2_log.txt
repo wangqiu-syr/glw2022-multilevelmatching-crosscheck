@@ -1,0 +1,8 @@
+[02:40:37] Check (Simulation 2, replication 1): internal steps with the package's own fit reproduce multiMatch's AI 2006 and AI 2016 variances exactly: TRUE
+[02:40:37] Simulation 2: 500 replications to run on 4 workers
+[02:42:55] Simulation 2: 100/500 done, elapsed 138s
+[02:45:06] Simulation 2: 200/500 done, elapsed 269s
+[02:47:27] Simulation 2: 300/500 done, elapsed 410s
+[02:49:52] Simulation 2: 400/500 done, elapsed 555s
+[02:52:14] Simulation 2: 500/500 done, elapsed 697s
+[02:52:14] Wrote sim2_d8_gps_variances.csv (18000 rows); fits identical to the main GPS fit in 500 of 500 replications

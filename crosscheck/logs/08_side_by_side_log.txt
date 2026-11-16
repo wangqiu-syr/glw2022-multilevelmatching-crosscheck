@@ -1,0 +1,30 @@
+null device 
+          1 
+null device 
+          1 
+null device 
+          1 
+null device 
+          1 
+null device 
+          1 
+Wrote tables:
+ [1] "bias_mse_summary.csv"            "bias_mse_summary.md"            
+ [3] "coverage_vs_bias.csv"            "coverage_vs_bias.md"            
+ [5] "d8_coverage_by_pair.csv"         "d8_coverage_summary.csv"        
+ [7] "d8_coverage_summary_bal.md"      "d8_coverage_summary_pop.md"     
+ [9] "d8_interval_width_vs_spread.csv" "d8_interval_width_vs_spread.md" 
+[11] "mean_abs_bias.csv"               "mean_abs_bias.md"               
+[13] "orderings.csv"                   "orderings_counts.csv"           
+[15] "orderings_counts.md"             "sim1_abs_bias.csv"              
+[17] "sim1_abs_bias.md"                "sim1_coverage.csv"              
+[19] "sim1_coverage.md"                "sim1_mse.csv"                   
+[21] "sim1_mse.md"                     "sim1_side_by_side.csv"          
+[23] "sim2_abs_bias.csv"               "sim2_abs_bias.md"               
+[25] "sim2_coverage.csv"               "sim2_coverage.md"               
+[27] "sim2_mse.csv"                    "sim2_mse.md"                    
+[29] "sim2_side_by_side.csv"          
+Wrote figures:
+[1] "fig1_sim1_abs_bias.png"       "fig2_sim2_abs_bias.png"      
+[3] "fig3_mse_by_pair.png"         "fig4_gps_per_replication.png"
+[5] "fig5_coverage_by_method.png" 
