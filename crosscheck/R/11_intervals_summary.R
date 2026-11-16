@@ -41,7 +41,7 @@ save_table <- function(df, name, digits = 3) {
 pcov <- function(b, s, h) 100 * (pnorm((h - b) / s) - pnorm((-h - b) / s))
 
 d8 <- read.csv(file.path("crosscheck", "side_by_side", "tables", "d8_coverage_by_pair.csv"))
-per_pair <- list(); summ_rows <- list(); boot_rows <- list(); var_rows <- list()
+per_pair <- list(); summ_rows <- list(); boot_rows <- list(); var_rows <- list(); shift_rows <- list()
 
 for (sim in 1:2) {
   setup <- sim_setup(sim); A <- setup$A; B <- setup$beta
@@ -200,6 +200,24 @@ for (sim in 1:2) {
       `Coverage: normal` = mean(br$`Coverage: normal`),
       `Coverage: main run (500 replications)` = mean(br$`Coverage: main run (500 replications)`),
       check.names = FALSE)
+
+    # Appendix A.3: predicted coverage of the main run's percentile intervals,
+    # centred on the estimate (b) and centred on the bootstrap mean (b + shift),
+    # with the main run's bias, SD and mean half-width and the rerun's shift.
+    p0 <- pcov(bias, sdv, h_boot); p1 <- pcov(bias + br$`Bootstrap mean - estimate`, sdv, h_boot)
+    obs <- ms("CM", "coverage")
+    sp <- data.frame(Pair = pk, Bias = bias, `Shift (bootstrap mean - estimate)` = br$`Bootstrap mean - estimate`,
+                     SD = sdv, `Half-width` = h_boot, `Coverage: main run` = obs,
+                     `Predicted: centred on estimate` = p0, `Predicted: centred on bootstrap mean` = p1, check.names = FALSE)
+    save_table(sp, sprintf("sim%d_cm_bootstrap_shift_prediction", sim),
+               digits = c(Bias = 3, `Shift (bootstrap mean - estimate)` = 3, SD = 3, `Half-width` = 3, `Coverage: main run` = 1,
+                          `Predicted: centred on estimate` = 1, `Predicted: centred on bootstrap mean` = 1))
+    shift_rows[[sim]] <- data.frame(
+      Simulation = sim, `Coverage: main run` = mean(obs),
+      `Predicted: centred on estimate` = mean(p0), `Predicted: centred on bootstrap mean` = mean(p1),
+      `Mean abs. error: centred on estimate` = mean(abs(obs - p0)), `Mean abs. error: centred on bootstrap mean` = mean(abs(obs - p1)),
+      `Correlation: centred on estimate` = cor(obs, p0), `Correlation: centred on bootstrap mean` = cor(obs, p1),
+      check.names = FALSE)
   }
 }
 
@@ -247,6 +265,27 @@ legend("bottom", horiz = FALSE, ncol = 3, bty = "n", cex = 0.8, inset = c(0, 0.0
        pch = c(1, 2, 1, 5, NA, NA), lty = c(NA, NA, NA, NA, 1, 3), lwd = c(1.3, 1.3, 1, 1, 2, 1.5),
        col = c(COL[["CM"]], COL[["CM"]], COL[["GPS"]], COL[["GPS"]], "grey30", "grey30"))
 par(op); dev.off()
+
+if (length(shift_rows)) save_table(do.call(rbind, shift_rows), "cm_bootstrap_shift_prediction_summary",
+                                   digits = c(`Coverage: main run` = 1, `Predicted: centred on estimate` = 1,
+                                              `Predicted: centred on bootstrap mean` = 1, `Mean abs. error: centred on estimate` = 1,
+                                              `Mean abs. error: centred on bootstrap mean` = 1, `Correlation: centred on estimate` = 3,
+                                              `Correlation: centred on bootstrap mean` = 3))
+
+# ---- the paper's application intervals (Table 5): what form are they? ------
+# Checks whether each 95% limit equals estimate -/+ z * sd, with z = 1.96 and
+# with z = qnorm(0.975), using the values transcribed in results/paper_table5.csv.
+p5 <- read.csv(file.path("results", "paper_table5.csv"))
+t5 <- do.call(rbind, lapply(c("CM", "GPS"), function(e) {
+  est <- p5[[paste0(e, "_est")]]; s <- p5[[paste0(e, "_sd")]]; lo <- p5[[paste0(e, "_LL")]]; hi <- p5[[paste0(e, "_UL")]]
+  err <- function(zz) max(abs(c(lo - (est - zz * s), hi - (est + zz * s))))
+  data.frame(Estimator = e, Pairs = nrow(p5),
+             `Max abs. (midpoint - estimate)` = max(abs((lo + hi) / 2 - est)),
+             `Max abs. error, est +- 1.96 sd` = err(1.96),
+             `Max abs. error, est +- qnorm(0.975) sd` = err(qnorm(0.975)),
+             `Implied z: min` = min((hi - lo) / (2 * s)), `Implied z: max` = max((hi - lo) / (2 * s)), check.names = FALSE)
+}))
+save_table(t5, "paper_table5_interval_form", digits = 6)
 
 cat("CM coverage summary:\n"); print(summ, digits = 3)
 if (length(boot_rows)) { cat("\nBootstrap centring:\n"); print(do.call(rbind, boot_rows), digits = 3) }

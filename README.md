@@ -285,7 +285,8 @@ Mean coverage of τ\_pop (%):
   - where each interval method comes from: the paper, the rebuild, Yang et al. (2016), and Abadie and Imbens (2006, 2008, 2016);
   - the math of the bootstrap, AI 2006 and AI 2016 intervals, as the code computes them;
   - why coverage depends on bias relative to spread, and on interval width, rather than on accuracy;
-  - an exact breakdown of CM's bias into matching gaps, which explains why CM coverage is low in Simulation 2 and lowest for pair (1,3).
+  - an exact breakdown of CM's bias into matching gaps, which explains why CM coverage is low in Simulation 2 and lowest for pair (1,3);
+  - a math appendix deriving these results step by step.
 
 <img src="crosscheck/side_by_side/figures/fig5_coverage_by_method.png" width="100%" alt="Coverage of 95% intervals by pair for CM and GPS in both simulations: the paper, and the rebuild's estimates with bootstrap, AI 2006 and AI 2016 intervals">
 

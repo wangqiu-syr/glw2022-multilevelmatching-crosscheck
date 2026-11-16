@@ -1,0 +1,3 @@
+"Simulation","Coverage: main run","Predicted: centred on estimate","Predicted: centred on bootstrap mean","Mean abs. error: centred on estimate","Mean abs. error: centred on bootstrap mean","Correlation: centred on estimate","Correlation: centred on bootstrap mean"
+1,91.4333333333333,92.177309287794,91.3704959983627,0.882816543772002,0.450616931107464,0.993871976426981,0.99222390704341
+2,78.4055555555556,82.3638542162762,79.9267421027152,3.95829866072062,1.76385996816307,0.990306975748825,0.995495968774991

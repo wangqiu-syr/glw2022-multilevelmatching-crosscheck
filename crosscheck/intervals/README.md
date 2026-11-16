@@ -4,13 +4,13 @@ This note answers three questions about the confidence intervals in this reposit
 
 1. **Where does each interval method come from?** Is the bootstrap proposed in the paper (Guo, Liu and Wang, 2022), chosen by the rebuild, or used by Yang et al. (2016), Abadie and Imbens (2006) or Abadie and Imbens (2016)? (Section 1.)
 2. **What do the intervals compute?** The math of the rebuild's percentile bootstrap interval, and of the analytic Abadie–Imbens (AI 2006 and AI 2016) intervals that Yang et al.'s package `multilevelMatching` provides, as the code computes them. (Section 2.)
-3. **Why is coverage a poor guide to which estimator is better, and why is covariate matching (CM) coverage so low in Simulation 2, lowest for pair (1,3)?** (Sections 3 and 4.)
+3. **Why is coverage a poor guide to which estimator is better, and why is covariate matching (CM) coverage so low in Simulation 2, lowest for pair (1,3)?** (Sections 3 and 4; the derivations behind section 4 are in Appendix A.)
 
 Coverage is secondary in this repository, as in the paper, whose main criteria are bias and MSE. That does not mean intervals are unnecessary. It means coverage answers a different question: not "which estimator is closer to the truth?" but "are the intervals honest about how far off the estimate can be?" Bias and MSE answer the first question. Coverage answers the second, and it is the second that this note is about.
 
 ## In short
 
-- **The bootstrap is the rebuild's choice, not the paper's.** The paper reports coverage but, as this repository records it, does not say how its intervals were built (D8). Abadie and Imbens derived analytic variances for matching estimators (2006, and 2016 for an estimated propensity score) and showed that the standard bootstrap is not valid for them (2008). Yang et al.'s package reports AI 2006 and AI 2016 variances for matching, and uses the bootstrap only for subclassification. See section 1.
+- **The bootstrap is the rebuild's choice, not the paper's.** The paper reports coverage and 95% limits but never says how they were computed, and never mentions the bootstrap. Its application's limits are exactly estimate ± 1.96 sd, so they are symmetric normal intervals, not percentile bootstrap intervals (D8). Abadie and Imbens derived analytic variances for matching estimators (2006, and 2016 for an estimated propensity score) and showed that the standard bootstrap is not valid for them (2008). Yang et al.'s package reports AI 2006 and AI 2016 variances for matching, and uses the bootstrap only for subclassification. See section 1.
 - **The three intervals.** The bootstrap resamples the data and reads the 2.5% and 97.5% quantiles of the re-estimated effects. AI 2006 adds two estimated pieces: the spread of the unit-level imputed effects, and the outcome noise weighted by how often each unit is reused as a match. AI 2016 subtracts a correction for having estimated the GPS. See section 2.
 - **Coverage depends on two ratios, not on accuracy.** Approximately, coverage = Φ(1.96 r − b/s) − Φ(−1.96 r − b/s). Here b/s is bias divided by the spread of the estimates, and r is interval width divided by its correct width. GPS covers about 100% because its intervals are about 30% too wide (r ≈ 1.3), not because it is accurate. CM covers too little because its bias is large relative to its spread. See section 3 and Figure 1.
 - **CM's bias is the matching gap.** Exactly, in every sample, each CM estimate is the sum of a sample-mix term, a matching-gap term and a noise term. The matching-gap term is the outcome slope times the covariate difference between each unit and its match. It makes up most of the bias: in Simulation 2 its mean absolute size is 0.27, against a mean absolute bias of 0.30. The gaps do not average out, because the groups' covariate distributions differ and z2 is skewed. See section 4.
@@ -20,11 +20,11 @@ Coverage is secondary in this repository, as in the paper, whose main criteria a
 
 ## 1. Where each interval method comes from
 
-The last column says how each statement was checked for this note. Full texts were not reachable from the environment this note was written in, including the paper's PDF, which is kept out of the repository. So statements about papers rest on their published abstracts, and statements about the paper on this repository's record of it.
+The last column says how each statement was checked for this note. The paper's PDF was searched in full; it stays out of the repository, because it is under copyright. The other papers' full texts were not reachable from the environment this note was written in, so statements about them rest on their published abstracts.
 
 | Source | What it uses or proposes for uncertainty | The bootstrap's role | Checked against |
 |---|---|---|---|
-| **Guo, Liu and Wang (2022)**, the paper | Reports coverage of 95% intervals in its simulation Tables 1 and 3, and 95% limits in its application (Table 5). It does not say how the intervals were built, names no software, and gives "Code Availability N/A". | Not mentioned | This repository's record of the published text: [docs/spec.md](../../docs/spec.md) (D8) and [BRIDGE.md](../../BRIDGE.md) ("Facts from the paper") |
+| **Guo, Liu and Wang (2022)**, the paper | Reports coverage of 95% intervals in its simulations (Tables 1 and 3), and 95% lower and upper limits in its application (Table 5; Fig. 2: "Dash lines are the 95% confidence intervals"). It does not say how intervals or standard deviations were computed. The words "bootstrap" and "Abadie" do not occur, no software is named, and it gives "Data Availability N/A" and "Code Availability N/A". In Table 5, every limit equals the estimate ∓ qnorm(0.975) × "sd", which the caption calls "the sample standard deviation", to within rounding. That holds for all 30 CM and GPS intervals ([tables/paper_table5_interval_form.md](tables/paper_table5_interval_form.md)). So these are symmetric normal intervals, not percentile intervals; the paper does not say where the sd comes from. | Not mentioned | The published PDF, searched in full; the transcription in [results/paper_table5.csv](../../results/paper_table5.csv) |
 | **The rebuild** (main run) | Percentile bootstrap, B = 200, resampling within treatment groups, everything re-estimated in each draw. This is the D8 default, chosen because the paper is silent. The specification itself notes that the bootstrap is not formally valid for matching estimators. Analytic AI 2006 and AI 2016 intervals were added later as a sensitivity analysis. | The rebuild's choice | Code: [R/estimators.R](../../R/estimators.R); [docs/spec.md](../../docs/spec.md) (D8) |
 | **Yang et al. (2016)**, via their package `multilevelMatching` 1.0.0 | **Matching** (`multiMatch()`, on covariates or on the GPS): the AI 2006 variance always, plus the AI 2016 variance when the GPS is fitted by multinomial logit. **Subclassification** on the GPS (`multilevelGPSStratification()`): a bootstrap variance. | No bootstrap option for matching; the bootstrap is used for subclassification (`boot::boot` over all rows, `nboot` replicates; it returns a variance, not an interval) | Package source code (`estimateTau.R`, `multiMatch.R`, `multilevelGPSStratification.R`) |
 | **Yang et al. (2016)**, the paper | By search summaries of the paper, its Monte Carlo study uses the AI 2006 variance for covariate matching, and the Abadie–Imbens adjustment for an estimated propensity score (the working-paper version of AI 2016) for GPS matching. | | Not verified from the full text here |
@@ -35,7 +35,7 @@ The last column says how each statement was checked for this note. Full texts we
 | **Otsu and Rai (2017)** | A weighted ("wild") bootstrap that is valid for matching estimators with a fixed number of matches. It resamples linear forms of the estimator rather than the data, and handles several covariates by including the AI 2011 bias correction. | A valid alternative bootstrap | Published abstract |
 
 So, to the questions:
-- **Is the bootstrap designed or proposed in the paper?** Not as far as this repository's record of the paper goes. The paper reports coverage without saying how its intervals were built.
+- **Is the bootstrap designed or proposed in the paper?** No. The paper never mentions the bootstrap and does not say how its intervals were built. Its intervals can be inspected in one place, Table 5. There they have the form estimate ± 1.96 sd. A percentile bootstrap would not in general give limits symmetric about the estimate; a normal interval built from an analytic or a bootstrap standard deviation would.
 - **In the rebuild?** Yes, as the D8 default, chosen because the paper is silent, and flagged in the specification as not formally valid.
 - **In Yang et al. (2016)?** Not for matching. Their package computes analytic AI 2006 and AI 2016 variances, and has no bootstrap option for matching. It uses the bootstrap only for its other estimator, subclassification on the GPS.
 - **In Abadie and Imbens?** AI 2006 and AI 2016 propose the analytic variances. AI 2008 shows that the standard bootstrap, the kind the rebuild uses, is not valid for nearest-neighbour matching, and names the AI 2006 variance and subsampling as valid alternatives.
@@ -161,7 +161,7 @@ N_s = \frac{1}{n}\sum_i \varepsilon_{j(i,s)} \quad (j(i,s) = i \text{ if } T_i =
 - **Matching gap.** D\_s is the mean covariate difference between the units imputed for level s and their matches. Multiplied by the outcome slopes β\_s, it is how far the imputed Y(s) is off on average.
 - **Noise.** It averages to zero, because matching uses the covariates only.
 
-So bias against τ\_pop = (τ\_bal − τ\_pop) + E[matching gap] + Monte Carlo noise, and the matching-gap part splits by level (t or t′) and by covariate. [09_cm_bias_decomposition.R](../R/09_cm_bias_decomposition.R) regenerates all 500 samples of each simulation from the main run's random-number streams. It reproduces the main run's CM estimates (means within 4e-15) and checks the identity in every replication (largest error 9e-16).
+So bias against τ\_pop = (τ\_bal − τ\_pop) + E[matching gap] + Monte Carlo noise, and the matching-gap part splits by level (t or t′) and by covariate. Appendix A.1 derives this step by step. [09_cm_bias_decomposition.R](../R/09_cm_bias_decomposition.R) regenerates all 500 samples of each simulation from the main run's random-number streams. It reproduces the main run's CM estimates (means within 4e-15) and checks the identity in every replication (largest error 9e-16).
 
 ### 4.2 The matching gap is most of the bias
 
@@ -240,7 +240,7 @@ with μ̂\_s an ordinary least-squares fit of Y on the 7 covariates within group
 | 1 | 0.187 | 0.040 | 0.007 | 0.559 | 0.310 | 95.2 |
 | 2 | 0.295 | 0.080 | 0.008 | 0.397 | 0.190 | 92.2 |
 
-The adjustment removes almost all of the bias against τ\_bal. What is left against τ\_pop is the sample-mix difference τ\_bal − τ\_pop (D9), which concerns *which* population the sample represents, and which no matching can remove. It also halves the SD, because the gap varies from sample to sample (section 4.6). The coverage column uses an interval of the correct width (1.96 × the SD of the adjusted estimates). It is an oracle check that the remaining bias is small, not an interval one could compute from a single sample. For pair (1,3) in Simulation 2, the adjusted estimate's bias is −0.068 against τ\_pop and 0.006 against τ\_bal ([tables/sim2_cm_bias_coverage.md](tables/sim2_cm_bias_coverage.md)).
+The adjustment removes almost all of the bias against τ\_bal. What is left against τ\_pop is the sample-mix difference τ\_bal − τ\_pop (D9), which concerns *which* population the sample represents, and which no matching can remove. It also halves the SD, because the gap varies from sample to sample (section 4.6). The coverage column uses an interval of the correct width (1.96 × the SD of the adjusted estimates). It is an oracle check that the remaining bias is small, not an interval one could compute from a single sample. For pair (1,3) in Simulation 2, the adjusted estimate's bias is −0.068 against τ\_pop and 0.006 against τ\_bal ([tables/sim2_cm_bias_coverage.md](tables/sim2_cm_bias_coverage.md)). Appendix A.2 shows why the adjustment removes the gap, and A.4 why the τ\_pop difference remains.
 
 ### 4.5 Why the bootstrap covers less than its width predicts
 
@@ -259,7 +259,7 @@ Means over pairs, target τ\_pop ([tables/cm_bootstrap_centring_summary.md](tabl
 - **The bootstrap SD is right in Simulation 1** (0.558 against 0.559) and **a little small in Simulation 2** (0.379 against 0.406, about 7% too narrow).
 - **Pair (1,3) in Simulation 2.** Over these 120 replications its bias is −0.401 and the bootstrap mean sits a further −0.042 out. Its coverage is 49.2% for the percentile interval, 63.3% for basic and 56.7% for normal. The main run's 39.6% is over all 500 replications, whose bias relative to spread is larger (1.82 SDs, against 1.55 in these 120).
 
-Abadie and Imbens (2008) show that the bootstrap is not valid for nearest-neighbour matching estimators (section 1). This rerun shows one concrete way it goes wrong here. It is not a general result about the size of the problem.
+Abadie and Imbens (2008) show that the bootstrap is not valid for nearest-neighbour matching estimators (section 1). This rerun shows one concrete way it goes wrong here. It is not a general result about the size of the problem. Appendix A.3 derives how the shift lowers coverage, and checks the result against the main run's coverage.
 
 ### 4.6 Why AI 2006 intervals are wider, and right partly by accident
 
@@ -280,9 +280,178 @@ AI 2006 intervals for CM cover more than the bootstrap ones (90.1% against 78.4%
 ## 5. What this means
 
 - **For this rebuild:** nothing in the bias and MSE results changes. The bootstrap stays the documented D8 choice. When coverage is reported, the interval method should be named, because the same estimates give 78% or 90% CM coverage, or 100% or 95% GPS coverage, depending on it.
-- **For reading the paper's tables:** its 99–100% GPS coverage is what intervals about 30% too wide would give (the bootstrap or AI 2006 in the rebuild), and its higher CM coverage goes with its smaller CM bias. Neither says which estimator is more accurate.
+- **For reading the paper's tables:** its 99–100% GPS coverage is what intervals about 30% too wide would give (the bootstrap or AI 2006 in the rebuild), and its higher CM coverage goes with its smaller CM bias. Neither says which estimator is more accurate. Its application intervals have the form estimate ± 1.96 sd, the form of a normal interval from an analytic (or bootstrap) standard deviation, not of a percentile interval. That fits the D8 reading that the paper's coverage is closer to analytic intervals, but it does not show which sd was used.
 - **For CM in practice:** with several continuous covariates, nearest-neighbour matching without bias correction leaves a bias that intervals do not account for, and the problem grows with sample size. Bias-corrected matching (Abadie and Imbens, 2011) is the standard remedy.
 - **For GPS in practice:** the AI 2016 interval has about the right width for the rebuild's GPS estimator in both simulations.
+
+## Appendix A. The math behind section 4
+
+This appendix derives the four results that section 4 uses:
+- **A.1:** the exact split of each CM estimate.
+- **A.2:** why the regression adjustment removes the matching gap.
+- **A.3:** why AI 2006 coverage matches the normal-theory prediction while percentile-bootstrap coverage falls short of it.
+- **A.4:** why the adjusted estimates still miss τ\_pop by the D9 sample-mix difference.
+
+**Notation:**
+- **Outcomes** (R/dgp.R, both simulations): Y\_i(s) = β\_s′w\_i + ε\_i. There is no intercept, and w\_i is the 7 covariates minus a fixed shift (zero in Simulation 1; z2 − 1 and z3 − 0.5 in Simulation 2).
+- **Noise:** each unit has one ε\_i ~ N(0, 1), shared by all its potential outcomes and independent of the covariates and of T.
+- **Observed outcome:** Y\_i = Y\_i(T\_i).
+- **Design:** there are A groups of n\_g units, so n = A·n\_g.
+- **Matches:** j(i, s) is the CM match of unit i in group s, with j(i, s) = i when T\_i = s.
+
+### A.1 The exact decomposition of a CM estimate
+
+**Step 1, one imputed outcome.** The match j = j(i, s) belongs to group s, so its observed outcome is its potential outcome under s: Y\_j = β\_s′w\_j + ε\_j. Add and subtract β\_s′w\_i:
+
+```math
+\hat Y_i(s) = Y_j = \beta_s^{\top} w_i + \beta_s^{\top}\,(w_j - w_i) + \varepsilon_j .
+```
+
+The first term is what unit i's own Y(s) would be without noise. The second is the error from the match's covariates differing from i's. The third is the match's noise.
+
+**Step 2, average over all n units.** The estimate of the mean of Y(s) is μ̂(s) = (1/n) Σ\_i Ŷ\_i(s):
+
+```math
+\hat\mu(s) = \beta_s^{\top}\bar w + \beta_s^{\top} D_s + N_s,
+\qquad
+\bar w = \frac1n\sum_i w_i,\quad
+D_s = \frac1n\sum_i \bigl(w_{j(i,s)} - w_i\bigr),\quad
+N_s = \frac1n\sum_i \varepsilon_{j(i,s)} .
+```
+
+Units of group s contribute nothing to D\_s, because for them j(i, s) = i.
+
+**Step 3, take the difference of two levels.** τ̂(t, t′) = μ̂(t) − μ̂(t′):
+
+```math
+\hat\tau(t,t') = \underbrace{(\beta_t - \beta_{t'})^{\top}\bar w}_{\text{sample mix}}
++ \underbrace{\beta_t^{\top} D_t - \beta_{t'}^{\top} D_{t'}}_{\text{matching gap}}
++ \underbrace{N_t - N_{t'}}_{\text{noise}} .
+```
+
+Nothing was approximated, so this holds in every sample. Per covariate k, the matching-gap term is Σ\_k (β\_t,k D\_t,k − β\_t′,k D\_t′,k), which is how the tables of section 4.3 split it.
+
+**Step 4, expected values.**
+- **Sample mix.** The sample has n\_g units from each group, so E[w̄] = (1/A) Σ\_s E[w | T = s] = E\_bal[w]. Hence E[(β\_t − β\_t′)′w̄] = (β\_t − β\_t′)′E\_bal[w] = τ\_bal (D9). The population effect is τ\_pop = (β\_t − β\_t′)′E\_pop[w].
+- **Noise.** The matches j(i, s) depend only on the covariates and treatments. ε is independent of both, so E[ε\_j(i,s) | all covariates and treatments] = 0, and E[N\_s] = 0.
+- **Matching gap.** Nothing makes E[D\_s] zero. This term is the conditional bias of matching.
+
+So
+
+```math
+E[\hat\tau(t,t')] - \tau_{pop}(t,t') = \bigl(\tau_{bal} - \tau_{pop}\bigr) + E\bigl[\beta_t^{\top} D_t - \beta_{t'}^{\top} D_{t'}\bigr] + 0 .
+```
+
+**How the terms were computed.** [09_cm_bias_decomposition.R](../R/09_cm_bias_decomposition.R) regenerates each replication's sample. It sets that replication's stored L'Ecuyer-CMRG random-number stream and calls `gen_sample()`, exactly as the main run did (`R/replicate.R`), and then redoes the CM matching. There are no ties, so the matching uses no random numbers, and the matches are the main run's: the mean estimates agree with `results/sim<k>_summary.csv` to 4e-15. Because this is a simulation, β\_s, w\_i and ε\_i = Y\_i − β\_T\_i′w\_i are known, so each term is computed directly. The three terms add up to τ̂ to 9e-16 in every replication. With real data this split cannot be computed, since β\_s is unknown. That is exactly why the conditional bias cannot be measured from one sample, and why an interval built from one sample does not allow for it.
+
+### A.2 The regression-adjusted check
+
+**The adjustment.** Within each group s, fit ordinary least squares of Y on the 7 covariates: μ̂\_s(x) = α̂\_s + γ̂\_s′x. Keep CM's matches, and correct each imputed outcome by the fitted difference between unit i and its match:
+
+```math
+\hat Y^{\mathrm{adj}}_i(s) = Y_j + \hat\mu_s(x_i) - \hat\mu_s(x_j) = Y_j - \hat\gamma_s^{\top}(x_j - x_i).
+```
+
+The intercept cancels, and so does the shift between x and w, because only differences enter.
+
+**Substituting Y\_j** from step 1 of A.1:
+
+```math
+\hat Y^{\mathrm{adj}}_i(s) = \beta_s^{\top} w_i + (\beta_s - \hat\gamma_s)^{\top}(w_j - w_i) + \varepsilon_j ,
+\qquad
+\hat\tau^{\mathrm{adj}}(t,t') = (\beta_t - \beta_{t'})^{\top}\bar w + \bigl[(\beta_t - \hat\gamma_t)^{\top} D_t - (\beta_{t'} - \hat\gamma_{t'})^{\top} D_{t'}\bigr] + (N_t - N_{t'}) .
+```
+
+So the adjustment replaces the slope β\_s in the gap term by the estimation error β\_s − γ̂\_s.
+
+**Why the gap term then has mean zero.** The outcome model is linear in the covariates, so the within-group OLS fit is unbiased: E[γ̂\_s | covariates, treatments] = β\_s. D\_s depends on the covariates and treatments only, so
+
+```math
+E\bigl[(\beta_s - \hat\gamma_s)^{\top} D_s \,\big|\, \text{covariates, treatments}\bigr] = \bigl(\beta_s - E[\hat\gamma_s \mid \cdot\,]\bigr)^{\top} D_s = 0 ,
+```
+
+and with E[N\_s] = 0 from A.1,
+
+```math
+E\bigl[\hat\tau^{\mathrm{adj}}(t,t') \,\big|\, \text{covariates, treatments}\bigr] = (\beta_t - \beta_{t'})^{\top}\bar w ,
+\qquad
+E\bigl[\hat\tau^{\mathrm{adj}}(t,t')\bigr] = \tau_{bal}(t,t') .
+```
+
+The observed mean absolute bias against τ\_bal, 0.007 (Simulation 1) and 0.008 (Simulation 2), is Monte Carlo error. It comes from 500 replications, and τ\_bal is itself a Monte Carlo value with standard errors of 0.001–0.008 ([results/true_effects_sim2.csv](../../results/true_effects_sim2.csv)).
+
+**Why the spread halves.** For CM, the gap term β\_s′D\_s varies from sample to sample, and that variation is most of CM's variance (0.120 of 0.162 in Simulation 2; section 4.6). In the adjusted estimator that term becomes (β\_s − γ̂\_s)′D\_s, the product of two small quantities, so the mean SD falls from 0.40 to 0.19 (Simulation 2).
+
+**Another way to read it.** Ŷ^adj\_i(s) = μ̂\_s(x\_i) + [Y\_j − μ̂\_s(x\_j)]: the regression's prediction for unit i, plus the match's residual. Matching then only has to supply the residual, which does not depend on the covariates when the regression is right.
+
+**Limit.** If the outcome model were not linear, E[γ̂\_s] would not equal the true local slope, and the adjustment would remove only the part of the gap the regression captures. Here it is correctly specified, which is the favourable case.
+
+### A.3 Why AI 2006 coverage matches the prediction, and the bootstrap's falls short
+
+**The prediction (section 2.5).** Suppose that across replications τ̂ ≈ τ + b + sZ, with Z standard normal, and the interval is τ̂ ± h. The interval covers τ when |τ̂ − τ| ≤ h:
+
+```math
+P\bigl(\,|b + sZ| \le h\,\bigr) = \Phi\!\left(\frac{h - b}{s}\right) - \Phi\!\left(\frac{-h - b}{s}\right).
+```
+
+The formula assumes the interval is **centred on τ̂**.
+
+**AI 2006 meets that assumption.** Its interval is τ̂ ± 1.96√V̂, centred on τ̂ by construction, and √V̂ varies little across replications. So, with h set to its mean half-width, the prediction applies: 63.6% observed against 64.2% predicted for pair (1,3) in Simulation 2, and within 2.6 points for every pair (0.7 on average; 0.3 in Simulation 1).
+
+**The percentile bootstrap does not.** Describe the bootstrap distribution in one sample by its mean and spread, τ̂\* ≈ τ̂ + δ + s\*Z\*, where δ = E\*[τ̂\*] − τ̂ is the bootstrap's own bias and s\* its standard deviation. Its quantiles are then
+
+```math
+q^*_{0.025} \approx \hat\tau + \delta - 1.96\,s^*,\qquad q^*_{0.975} \approx \hat\tau + \delta + 1.96\,s^*,
+```
+
+so the percentile interval is centred on τ̂ + δ, not on τ̂. It covers τ when |τ̂ + δ − τ| ≤ 1.96 s\*:
+
+```math
+\text{coverage} \approx P\bigl(\,|(b + \delta) + sZ| \le 1.96\,s^*\,\bigr).
+```
+
+The bias that counts is **b + δ**. When δ has the same sign as b, the interval sits further from the truth than the estimate does.
+
+**Why δ has the sign of b.** A bootstrap sample of a group of n\_g units contains each unit with probability 1 − (1 − 1/n\_g)^n\_g ≈ 1 − e⁻¹. On average it holds about 63% distinct units (63.4% for n\_g = 100, 63.3% for n\_g = 200), with the rest duplicates. The group's covariate distribution is unchanged, but it has fewer distinct points. So the nearest-neighbour gaps D\_s grow in the same systematic direction, and the bootstrap estimates carry CM's bias again, on top of τ̂.
+
+**What was measured.** [10_cm_bootstrap_centring.R](../R/10_cm_bootstrap_centring.R) gives δ ≈ 0.17b in Simulation 1 and 0.24b in Simulation 2, with correlation 0.99 and 0.94 over pairs (section 4.5). Using the main run's b, s and mean half-width h, the prediction with and without δ ([tables/cm_bootstrap_shift_prediction_summary.md](tables/cm_bootstrap_shift_prediction_summary.md); per pair in [tables/sim2_cm_bootstrap_shift_prediction.md](tables/sim2_cm_bootstrap_shift_prediction.md)):
+
+| Simulation | Observed coverage (main run) | Predicted, centred on τ̂ | Predicted, centred on τ̂ + δ | Mean abs. error over pairs: centred on τ̂ | Mean abs. error: centred on τ̂ + δ | Pair (1,3): observed / centred on τ̂ / on τ̂ + δ |
+|---|---|---|---|---|---|---|
+| 1 | 91.4 | 92.2 | 91.4 | 0.9 | 0.5 | 83.4 / 85.7 / 82.8 |
+| 2 | 78.4 | 82.4 | 79.9 | 4.0 | 1.8 | 39.6 / 50.3 / 43.3 |
+
+Centring on τ̂ + δ accounts for most of the shortfall. What remains in Simulation 2 fits two things: the bootstrap SD is a little small (s\* ≈ 0.93 s, about 7% narrow), and δ was measured on 120 of the 500 replications.
+
+**The basic and normal intervals follow from the same picture.**
+- **Basic interval:** [2τ̂ − q\*\_0.975, 2τ̂ − q\*\_0.025] ≈ τ̂ − δ ± 1.96 s\*. It reflects the shift back, so the bias that counts is b − δ, smaller than b. It covers 84.4% in Simulation 2, against 78.4% for the percentile interval. It still falls short of 95% because δ is only about a quarter of b.
+- **Normal interval:** τ̂ ± 1.96 s\*, centred on τ̂. The bias that counts is b, and it covers 83.4%.
+- **In Simulation 1** the bias is small relative to the spread, so the three intervals differ little (91.2–93.2%).
+
+**The regression adjustment removes the matching gap** in the estimate itself (A.2), not just in the interval. With the gap gone, b is the small D9 difference (A.4), so any interval of about the right width covers close to 95% of τ\_bal.
+
+### A.4 Why the adjusted estimates still miss τ\_pop (D9)
+
+Write m\_s = E[w | T = s] for group s's mean covariate profile, and p\_s = P(T = s) for its share of the population (from 6% to 19% in Simulation 2). Then
+
+```math
+E_{pop}[w] = \sum_{s=1}^{A} p_s\, m_s, \qquad
+E_{bal}[w] = \sum_{s=1}^{A} \tfrac{1}{A}\, m_s, \qquad
+\tau_{bal} - \tau_{pop} = (\beta_t - \beta_{t'})^{\top} \sum_{s=1}^{A} \Bigl(\tfrac{1}{A} - p_s\Bigr) m_s .
+```
+
+**Why the two differ.** The design keeps n\_g units in every group (D3), so each group's covariate profile gets weight 1/A in the sample, about 11% in Simulation 2, instead of p\_s. The difference is zero when every p\_s = 1/A. It is also zero when β\_t − β\_t′ is orthogonal to the differences between the groups' profiles m\_s, that is, when the effect is the same at every group's mean profile. Neither holds here.
+
+**Why no imputation can remove it.** It is a property of *who is in the sample*, not of how their outcomes are imputed. Even perfect imputation, Ŷ\_i(s) = β\_s′w\_i exactly, would give τ̂ = (β\_t − β\_t′)′w̄, the sample-mix term, whose expected value is τ\_bal. Matching and the regression adjustment both average over the sample's own units, so both target τ\_bal.
+
+**What would remove it.** Reweighting the sample to the population: give each unit of group s the weight A·p\_s. Then the weighted mean of w has expected value Σ\_s p\_s m\_s = E\_pop[w], and the weighted average of perfectly imputed effects has expected value τ\_pop. In the simulation the p\_s are known. In a real study they would have to come from population counts (for example, school or district enrolment by group).
+
+**For pair (1,3) in Simulation 2:**
+- τ\_bal − τ\_pop = −0.074.
+- The adjusted estimate's bias is −0.068 against τ\_pop and +0.006 against τ\_bal.
+- Its SD is only 0.160, so this small target difference alone is 0.42 SDs (0.068 / 0.160).
+
+The more precise the estimator, the more such a target mismatch matters for coverage. That is why, against τ\_pop, the adjusted estimates still sit at up to 1.02 SDs of bias in Simulation 2.
 
 ## Reproduce
 
