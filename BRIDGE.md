@@ -161,7 +161,7 @@ On a laptop: `install.packages("Matching")`, then install `multilevelMatching` f
    - **Math:** the bootstrap, AI 2006 and AI 2016 intervals, as the code computes them. The rebuilt AI 2006 variance equals the package's in all 21,000 cells.
    - **Coverage:** why it depends on bias relative to spread and on width, rather than on accuracy.
    - **CM bias:** an exact split of every CM estimate. The matching gap is most of CM's bias. Pair (1,3) in Simulation 2 is the worst pair because both gap terms push its estimate down and its estimates vary least of all pairs.
-   - **Checks:** a regression-adjusted CM removes the bias against τ_bal. A CM-only bootstrap rerun shows where the percentile intervals are centred.
+   - **Checks:** a regression-adjusted CM removes the bias against τ_bal. A CM-only bootstrap rerun shows that the percentile intervals sit further from the truth than the estimate. The bootstrap estimates repeat about a sixth (Simulation 1) to a quarter (Simulation 2) of the bias.
    - **AI 2006 noise estimate:** σ̂² is inflated about 16-fold by within-group covariate gaps.
 
    Rebuild-2 (an independent rebuild from the paper alone, in the separate repo `glw2022-rebuild2`) was started the same day. Its decisions and code are to be compared with this rebuild after its stage 2, before its stage 3 runs, without passing anything back to it.
