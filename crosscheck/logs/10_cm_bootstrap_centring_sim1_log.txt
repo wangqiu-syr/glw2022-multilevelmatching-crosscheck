@@ -1,1 +1,2 @@
 [16:55:07] Simulation 1: 500 of 500 replications to run, B = 200, 4 workers
+[16:55:44] Simulation 1: 40/500 done, elapsed 36s
