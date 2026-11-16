@@ -1,0 +1,1 @@
+[16:55:07] Simulation 1: 500 of 500 replications to run, B = 200, 4 workers

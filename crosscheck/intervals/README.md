@@ -222,7 +222,16 @@ The adjustment removes almost all of the bias against τ\_bal. What is left agai
 
 ### 4.5 Why the bootstrap covers less than its width predicts
 
-*Filled in from the CM bootstrap rerun.*
+In Simulation 2 the main run's CM bootstrap intervals cover less than the formula of section 2.5 predicts from their bias, spread and mean width. For pair (1,3) they cover 39.6% against a predicted 50.3%; averaged over pairs, 78.4% against 82.4% ([side_by_side, section 5.1](../side_by_side/README.md#51-why-the-rebuilds-cm-coverage-is-low)). The AI 2006 intervals match their prediction (section 4.6), so the shortfall is specific to the bootstrap. The main run did not keep its intervals per replication. So [10_cm_bootstrap_centring.R](../R/10_cm_bootstrap_centring.R) reran the same CM bootstrap on the main run's samples: 200 draws within groups, everything re-estimated in each draw. It used the first 120 replications of Simulation 2 and all 500 of Simulation 1. The draws are not the main run's: those also refitted the GPS, which used the random-number stream differently. The procedure is the same, and the rerun's percentile coverage in Simulation 2 (78.4% over 120 replications) equals the main run's (78.4% over 500).
+
+SIM_BOOT_TABLE
+
+- **The bootstrap reproduces part of CM's bias, in the same direction.** In a bootstrap sample each group holds only about 63% distinct units, so the matches are sparser and the gaps larger. The bootstrap estimates therefore sit further from the truth than τ̂ does: on average by about a quarter of the bias, and in the bias's direction in nearly every pair (correlation 0.94 over the 36 pairs).
+- **The percentile interval is centred on the bootstrap estimates, so it moves with them.** Its midpoint sits on the far side of τ̂ from the truth. That is why it covers less than an interval of the same width centred on τ̂ would.
+- **The basic interval reflects the shift back** and covers more: 84.4% against 78.4% in Simulation 2. It still falls short of 95% because the bootstrap sees only a quarter of the bias. The normal interval, τ̂ ± 1.96 SD\*, does about as well (83.4%).
+- **The bootstrap SD is also a little small:** 0.379 against an actual 0.406 in Simulation 2, so the intervals are about 7% too narrow.
+
+Abadie and Imbens (2008) show that the bootstrap is not valid for nearest-neighbour matching estimators (section 1). This rerun shows one concrete way it goes wrong here. It is not a general result about the size of the problem.
 
 ### 4.6 Why AI 2006 intervals are wider, and right partly by accident
 

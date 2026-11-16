@@ -1,2 +1,7 @@
 [16:18:43] Simulation 2: 200 of 200 replications to run, B = 200, 4 workers
 [16:32:21] Simulation 2: 40/200 done, elapsed 818s
+[16:43:35] Simulation 2: 80/200 done, elapsed 1491s
+[16:54:35] Simulation 2: 120/200 done, elapsed 2152s
+[16:55:03] Simulation 2: 0 of 120 replications to run, B = 200, 4 workers
+[16:55:03] CM estimates vs the main run's (per replication and pair): max |difference| = 4.99e-12
+[16:55:03] Wrote crosscheck/results/sim2_cm_boot_reps.csv (4320 rows)

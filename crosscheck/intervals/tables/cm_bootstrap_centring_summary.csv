@@ -1,0 +1,2 @@
+"Simulation","Replications","Mean abs. bias","Mean (bootstrap mean - estimate) / bias","Correlation over pairs: shift vs bias","Mean SD of estimates","Mean bootstrap SD","Coverage: percentile","Coverage: basic","Coverage: normal","Coverage: main run (500 replications)"
+2,120,0.287560592038235,0.238672220098299,0.944390706870912,0.40643944198609,0.378806265796047,78.4490740740741,84.4444444444444,83.3564814814815,78.4055555555556
