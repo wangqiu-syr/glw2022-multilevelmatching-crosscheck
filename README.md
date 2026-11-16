@@ -1,8 +1,27 @@
-# Generalized propensity score and covariate matching for multilevel treatments in hierarchical data: Rebuilding Guo, Liu, and Wang (2022) in R
+# Cross-checking a rebuild of Guo, Liu, and Wang (2022) with Yang et al.'s (2016) multilevelMatching package
 
 Qiu Wang, Syracuse University · v1.0 · November 2026
 
-## Key findings
+This repository continues [glw2022-matching-replication](https://github.com/wangqiu-syr/glw2022-matching-replication), an R rebuild of the two simulation studies in Guo, Liu and Wang (2022). It keeps that rebuild unchanged and adds a cross-check: every replication of both simulations is re-estimated with `multilevelMatching`, the R package that implements the matching estimators of Yang et al. (2016), to which the paper's methods reduce without the school-level covariates. The cross-check is summarized under [Cross-check with multilevelMatching](#cross-check-with-multilevelmatching) and reported in full in [docs/crosscheck.md](docs/crosscheck.md); [BRIDGE.md](BRIDGE.md) records how this repository was set up.
+
+## Cross-check with multilevelMatching
+
+Every replication of both simulations (500 each) was re-estimated with `multilevelMatching` 1.0.0 (Yang and Barkley, 2019), on the same samples as the main run. Full report: [docs/crosscheck.md](docs/crosscheck.md).
+
+| Package fit | Matches on | Compared with | Replications with every matched outcome identical, Sim. 1 / Sim. 2 | Matched outcomes that differ, average per replication, Sim. 1 / Sim. 2 | Mean absolute bias vs τ\_pop, Sim. 1 / Sim. 2: package (ours) |
+|---|---|---|---|---|---|
+| `covariates` | the 7 covariates (Mahalanobis) | our CM | 500 / 500 of 500 | 0 / 0 | 0.187 / 0.295 (0.187 / 0.295) |
+| `existing` | our fitted GPS, p̂ | our GPS | 499 / 476 of 500 | 0.002 / 0.06 | 0.026 / 0.099 (0.026 / 0.099) |
+| `multinom` | its own fitted GPS, p̃ | our GPS | 405 / 0 of 500 | 0.4 of 1,600 / 1,003 of 16,200 (6.2%) | 0.026 / 0.100 (0.026 / 0.099) |
+
+A matched outcome is one imputed potential outcome Ŷ\_i(s); a replication has 400 x 4 = 1,600 of them in Simulation 1 and 1,800 x 9 = 16,200 in Simulation 2. "0 of 500" for `multinom` in Simulation 2 means that every replication has at least one differing matched outcome (6.2% on average), not that the estimates disagree broadly: the bias is the same to two decimals. The three fits are defined in the [Background](#background) ("The GPS estimator in the cross-check").
+
+- **The package computes the rebuild's estimators.** Covariate matching agrees in every replication. Given our fitted GPS, GPS matching agrees except for 30 imputed outcomes in 25 of 1,000 replications. All 30 are near-ties that the package's matching routine (`Matching::Match`) treats as ties and breaks at random; in each, ours is the nearest candidate. This also confirms D7: the package matches the t′ term on the score for t′.
+- **The GPS model's fitting tolerance matters (D5).** The package fits the GPS model at nnet's default tolerance. In Simulation 2 that changes about 6% of the matched outcomes in every replication and moves single estimates by up to 2.7. Mean absolute bias hardly changes (0.0995 against our 0.0991, τ\_pop).
+- **Analytic variances.** For GPS, the package's Abadie–Imbens (2016) variance, which accounts for estimating the GPS, gives coverage of 95.9% (Simulation 1) and 94.7% (Simulation 2), against 100% for our bootstrap intervals. For CM, its Abadie–Imbens (2006) variance gives 94.8% and 90.1%, against 91.4% and 78.4%.
+- **Reproducibility across setups.** The regenerated samples are the main run's. Our DIF and CM estimates, and our GPS estimates in Simulation 1, reproduce the main run's exactly. In Simulation 2 a few GPS near-ties fall differently on this setup (Linux, R 4.3.3) than in the main run (Windows, R 4.5.1), moving GPS summary means by at most 5.6e-5.
+
+## Key findings of the rebuild
 
 Guo, Liu and Wang (2022) proposed covariate matching (CM) and generalized propensity score (GPS) matching to estimate pairwise effects across multilevel treatment combinations, and reported simulations showing that both reduce the bias of the raw group difference.
 
@@ -50,6 +69,26 @@ This repository rebuilds the two simulation studies in Guo, Liu and Wang (2022) 
 - **Simulations.** Z is drawn separately for each unit, so the simulated data are not nested in schools.
 
 This rebuild follows the paper's design. Matching that uses the clustering, such as matching within schools first, is left for future work.
+
+**The GPS estimator in the cross-check.** The rebuild and Yang et al.'s package compute the same estimator (the paper's Eqs. 3 and 4, read as in D7). For each unit i and level s, with a score r\_s(x, z):
+
+$$\hat Y_i(s) = \begin{cases} Y_i & \text{if } T_i = s,\\ Y_{j(i,s)} & \text{otherwise,} \end{cases} \qquad j(i,s) = \arg\min_{j:\,T_j = s} \bigl| r_s(x_j, z_j) - r_s(x_i, z_i) \bigr|,$$
+
+$$\hat\tau(t, t') = \frac{1}{n} \sum_{i=1}^{n} \bigl[ \hat Y_i(t) - \hat Y_i(t') \bigr].$$
+
+The score is a fitted multinomial logit, with w = (1, x1, …, x4, z1, z2, z3) and level 1 as the baseline (β\_1 = 0):
+
+$$r_s(x, z) = \frac{\exp(w^\top \beta_s)}{\sum_{k=1}^{A} \exp(w^\top \beta_k)}.$$
+
+The three GPS versions compared in the cross-check differ only in the coefficients and in how nearest neighbours are chosen:
+
+| Version | Score r\_s | Coefficients β | Nearest neighbour j(i, s) |
+|---|---|---|---|
+| **Our GPS** (rebuild) | p̂\_s | β̂: maximum likelihood with `nnet::multinom` run to reltol = 1e-14, maxit = 10000 (D5) | exact arg min; exact ties broken at random (none occurred) |
+| **`existing`** (package, given our scores) | the same p̂\_s (rows adjusted by at most 4.2e-16 so each sums to exactly 1) | not refitted: β̂ as above | `Matching::Match`: candidates within about 1e-10 of the minimum squared standardized distance count as tied, and one is picked at random |
+| **`multinom`** (package's own fit) | p̃\_s | β̃: the same likelihood with `nnet::multinom` at its defaults, which stop when an iteration improves the fit by less than a relative 1e-8, or after 100 iterations | as for `existing` |
+
+So `existing` equals our GPS except at near-ties. `multinom` uses β̃ ≈ β̂, but its probabilities differ from ours by up to |p̃ − p̂| = 1.7e-4 in Simulation 1 and 2.2e-3 in Simulation 2. Those differences are larger than many of the gaps between competing candidates, so some j(i, s) change. The package reports μ̂(t′) − μ̂(t); its signs are flipped to τ(t, t′) = E[Y(t) − Y(t′)] here. CM is compared the same way, with the Mahalanobis distance on the seven covariates in place of |r\_s(x\_j, z\_j) − r\_s(x\_i, z\_i)|.
 
 **What the rebuild has to decide.** Rebuilding from the text alone requires thirteen decisions, recorded in [docs/spec.md](docs/spec.md):
 - *Data generation:* treatment probabilities (D1), the distribution of Z1 (D2), fixed group sizes (D3), identical assignment for groups 6 and 7 (D10) and thin overlap (D11).
@@ -177,8 +216,12 @@ From the repository root (R 4.5; packages MASS and nnet):
 | 2. Rebuild summaries only | `Rscript R/summarize.R` | seconds |
 | 3. Figures and comparisons | `Rscript R/plots.R` | seconds |
 | 4. D13 sensitivity (Simulation 1) | `Rscript R/run_gps_literal.R`, then `Rscript R/run_gps_literal2.R` (`check` runs the self-tests) | |
+| 5. Cross-check with multilevelMatching | `R_LIBS=<lib> Rscript crosscheck/R/04_crosscheck_all.R sim=1`, then `sim=2` (options: `workers=4`) | On 4 workers: Simulation 1 about 1 min, Simulation 2 about 18 min (log: 55 s, 18 min 16 s) |
+| 6. Cross-check summaries | `Rscript crosscheck/R/05_summarize_crosscheck.R`, then `R_LIBS=<lib> Rscript crosscheck/R/06_existing_mismatches.R` | seconds; about 2 min |
 
 Each replication is saved to `results/reps/simK/rep_###.rds` when it finishes. Re-running `run_all.R` skips replications that are already done, so an interrupted run resumes where it stopped. It refuses to mix checkpoints made with different settings (R, B, seed, optimizer tolerance). Progress goes to standard output; redirect it to `results/run_log.txt` for a background run.
+
+Steps 5 and 6 need `multilevelMatching` 1.0.0 and `Matching`; on R 4.3 or later the package needs an input workaround that the scripts apply (see [BRIDGE.md](BRIDGE.md) for installation and details). The cross-check ran on R 4.3.3; its replications regenerate the main run's samples from the same seeds.
 
 Each replication uses its own pre-generated L'Ecuyer-CMRG random-number stream, so results do not depend on the number of workers or the order in which replications run. The scripts use only base R, `parallel` and `nnet`, plus `MASS` for data generation. The R version and session details of the full run are in `results/run_session_info.txt`; the `nnet` and `MASS` versions used (7.3.20 and 7.3.65) are on the second line of `results/run_log.txt`. No `renv` lockfile is included.
 
@@ -186,7 +229,7 @@ Each replication uses its own pre-generated L'Ecuyer-CMRG random-number stream, 
 
 ### Start here
 
-[README.md](README.md) gives the overview. [docs/replication_verdict.md](docs/replication_verdict.md) says what replicates and what does not, and [docs/two_way.md](docs/two_way.md) sets our numbers beside the paper's Tables 1 and 3, pair by pair.
+[README.md](README.md) gives the overview. [docs/replication_verdict.md](docs/replication_verdict.md) says what replicates and what does not, and [docs/two_way.md](docs/two_way.md) sets our numbers beside the paper's Tables 1 and 3, pair by pair. For the cross-check with Yang et al.'s package, start with [docs/crosscheck.md](docs/crosscheck.md).
 
 ### Design and decisions
 
@@ -224,6 +267,16 @@ R scripts in the R/ folder, run from the repository root; the order is under Rep
 
 Per-replication checkpoints (results/reps/, results/reps_gps_literal/, results/reps_gps_literal2/) are local only, not in the repo.
 
+### Cross-check with multilevelMatching
+
+[docs/crosscheck.md](docs/crosscheck.md) reports the cross-check; [BRIDGE.md](BRIDGE.md) records the setup, the package facts and the workarounds. Code and results are in [crosscheck/](crosscheck/):
+
+- **Scripts:** [crosscheck/R/04_crosscheck_all.R](crosscheck/R/04_crosscheck_all.R) (all replications, both simulations), [crosscheck/R/05_summarize_crosscheck.R](crosscheck/R/05_summarize_crosscheck.R) (summaries) and [crosscheck/R/06_existing_mismatches.R](crosscheck/R/06_existing_mismatches.R) (the `existing` near-ties, unit by unit); [crosscheck/R/01_export_rep001.R](crosscheck/R/01_export_rep001.R), [crosscheck/R/02_pkg_fits.R](crosscheck/R/02_pkg_fits.R) and [crosscheck/R/03_check_pasted.R](crosscheck/R/03_check_pasted.R) (the first check, replication 1 of Simulation 1).
+- **Results:** `crosscheck/results/sim1_crosscheck_reps.csv` and `sim2_crosscheck_reps.csv` (every estimate, ours and the package's, with the package's variances); `sim*_crosscheck_info.csv` (per-replication checks); `sim*_crosscheck_summary.csv` (bias, MSE and coverage by pair); `crosscheck_agreement.csv`, `crosscheck_verification.csv` and `crosscheck_overview.csv` (the tables in docs/crosscheck.md); `sim*_crosscheck_multinom_minus_ours.csv` (paired differences); `existing_mismatches.csv` (the 30 near-ties).
+- **Logs:** [crosscheck/logs/](crosscheck/logs/).
+
+Per-replication checkpoints (crosscheck/reps/) are local only, not in the repo.
+
 ### Published values
 
 [results/paper_table1.csv](results/paper_table1.csv), [results/paper_table3.csv](results/paper_table3.csv) and [results/paper_table5.csv](results/paper_table5.csv) hold values transcribed from the paper's published tables, for comparison only. The paper's PDF is not included.
@@ -234,7 +287,7 @@ Per-replication checkpoints (results/reps/, results/reps_gps_literal/, results/r
 
 ## Lesson
 
-The GPS model's fitting tolerance matters when matching on fitted probabilities. With `nnet::multinom`'s defaults (reltol = 1e-8, maxit = 100), the fitted probabilities were not precise enough for the very small matching distances, and the GPS estimate depended on the optimizer's starting point. Fitting at reltol = 1e-14 with maxit = 10000 (D5) removed this, and a test now checks it.
+The GPS model's fitting tolerance matters when matching on fitted probabilities. With `nnet::multinom`'s defaults (reltol = 1e-8, maxit = 100), the fitted probabilities were not precise enough for the very small matching distances, and the GPS estimate depended on the optimizer's starting point. Fitting at reltol = 1e-14 with maxit = 10000 (D5) removed this, and a test now checks it. The cross-check shows the same with `multilevelMatching` as shipped: it fits the GPS model at the defaults, and in Simulation 2 about 6% of its matched outcomes differ from ours in every replication ([docs/crosscheck.md](docs/crosscheck.md)).
 
 ## Conclusions
 
@@ -254,13 +307,15 @@ The code was written with assistance from Claude Code (Anthropic).
 
 - Crump, R. K., Hotz, V. J., Imbens, G. W., & Mitnik, O. A. (2009). Dealing with limited overlap in estimation of average treatment effects. *Biometrika, 96*(1), 187–199. https://doi.org/10.1093/biomet/asn055
 - Guo, S., Liu, J., & Wang, Q. (2022). Effective learning during COVID-19: Multilevel covariates matching and propensity score matching. *Annals of Data Science, 9*(5), 967–982. https://doi.org/10.1007/s40745-022-00392-x
-- Yang, S., Imbens, G., Cui, Z., Faries, D., & Kadziola, Z. (2016). Propensity score matching and subclassification in observational studies with multi-level treatments. *Biometrics, 72*, 1055–1065.
+- Wang, Q. (2026). *Generalized propensity score and covariate matching for multilevel treatments in hierarchical data: Rebuilding Guo, Liu, and Wang (2022) in R* (Version 1.0) [Computer software]. https://github.com/wangqiu-syr/glw2022-matching-replication
+- Yang, S., & Barkley, B. G. (2019). *multilevelMatching: Propensity score matching and subclassification in observational studies with multi-level treatments* (R package version 1.0.0). https://CRAN.R-project.org/package=multilevelMatching
+- Yang, S., Imbens, G., Cui, Z., Faries, D., & Kadziola, Z. (2016). Propensity score matching and subclassification in observational studies with multi-level treatments. *Biometrics, 72*, 1055–1065. https://doi.org/10.1111/biom.12505
 
 ## How to cite
 
-Wang, Q. (2026). *Generalized propensity score and covariate matching for multilevel treatments in hierarchical data: Rebuilding Guo, Liu, and Wang (2022) in R* (Version 1.0) [Computer software]. https://github.com/wangqiu-syr/glw2022-matching-replication
+Wang, Q. (2026). *Cross-checking a rebuild of Guo, Liu, and Wang (2022) with Yang et al.'s (2016) multilevelMatching package* (Version 1.0) [Computer software]. https://github.com/wangqiu-syr/glw2022-multilevelmatching-crosscheck
 
-DOI: to be added after the Zenodo release. Citation metadata are in [`CITATION.cff`](CITATION.cff); please also cite the original paper.
+DOI: to be added after the Zenodo release. Citation metadata are in [`CITATION.cff`](CITATION.cff); please also cite the original paper, Yang et al. (2016) and the rebuild it builds on.
 
 ## License
 

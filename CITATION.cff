@@ -1,7 +1,8 @@
 cff-version: 1.2.0
-message: "If you use this code, please cite it as below, and also cite the original paper listed under references."
+message: "If you use this code, please cite it as below, and also cite the works listed under references."
 type: software
-title: "Generalized propensity score and covariate matching for multilevel treatments in hierarchical data: Rebuilding Guo, Liu, and Wang (2022) in R"
+title: "Cross-checking a rebuild of Guo, Liu, and Wang (2022) with Yang et al.'s (2016) multilevelMatching package"
+abstract: "An R rebuild of the simulation studies in Guo, Liu, and Wang (2022), covariate matching and generalized propensity score matching for multilevel treatments, cross-checked replication by replication against the R package multilevelMatching that implements the matching estimators of Yang et al. (2016). Derived from the repository glw2022-matching-replication."
 authors:
   - family-names: Wang
     given-names: Qiu
@@ -9,8 +10,17 @@ authors:
 version: 1.0.0
 # date-released: TODO (YYYY-MM-DD of the release)
 # doi: TODO (the Zenodo DOI minted for the release)
-repository-code: "https://github.com/wangqiu-syr/glw2022-matching-replication"
+repository-code: "https://github.com/wangqiu-syr/glw2022-multilevelmatching-crosscheck"
 license: MIT
+keywords:
+  - causal inference
+  - propensity score
+  - generalized propensity score
+  - matching
+  - multilevel treatments
+  - replication
+  - simulation
+  - R
 references:
   - type: article
     authors:
@@ -28,3 +38,40 @@ references:
     start: 967
     end: 982
     doi: 10.1007/s40745-022-00392-x
+  - type: article
+    authors:
+      - family-names: Yang
+        given-names: Shu
+      - family-names: Imbens
+        given-names: Guido W.
+      - family-names: Cui
+        given-names: Zhanglin
+      - family-names: Faries
+        given-names: Douglas E.
+      - family-names: Kadziola
+        given-names: Zbigniew
+    title: "Propensity Score Matching and Subclassification in Observational Studies with Multi-Level Treatments"
+    journal: "Biometrics"
+    year: 2016
+    volume: 72
+    start: 1055
+    end: 1065
+    doi: 10.1111/biom.12505
+  - type: software
+    authors:
+      - family-names: Yang
+        given-names: Shu
+      - family-names: Barkley
+        given-names: Brian G.
+    title: "multilevelMatching: Propensity Score Matching and Subclassification in Observational Studies with Multi-Level Treatments"
+    version: 1.0.0
+    year: 2019
+    url: "https://CRAN.R-project.org/package=multilevelMatching"
+  - type: software
+    authors:
+      - family-names: Wang
+        given-names: Qiu
+    title: "Generalized propensity score and covariate matching for multilevel treatments in hierarchical data: Rebuilding Guo, Liu, and Wang (2022) in R"
+    version: 1.0.0
+    year: 2026
+    repository-code: "https://github.com/wangqiu-syr/glw2022-matching-replication"

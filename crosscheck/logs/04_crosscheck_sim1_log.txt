@@ -1,0 +1,28 @@
+[2026-11-15 23:37:58] Cross-check, Simulation 1: 500 replications requested, 500 to run, 4 workers
+[2026-11-15 23:37:58] R version 4.3.3 (2024-02-29); multilevelMatching 1.0.0; Matching 4.10.14; nnet 7.3.19; MASS 7.3.60.0.1
+[2026-11-15 23:38:01] Simulation 1: 20/500 done (0 errors), elapsed 3s, ETA 60s
+[2026-11-15 23:38:03] Simulation 1: 40/500 done (0 errors), elapsed 5s, ETA 53s
+[2026-11-15 23:38:05] Simulation 1: 60/500 done (0 errors), elapsed 7s, ETA 50s
+[2026-11-15 23:38:07] Simulation 1: 80/500 done (0 errors), elapsed 9s, ETA 48s
+[2026-11-15 23:38:09] Simulation 1: 100/500 done (0 errors), elapsed 11s, ETA 45s
+[2026-11-15 23:38:12] Simulation 1: 120/500 done (0 errors), elapsed 14s, ETA 43s
+[2026-11-15 23:38:13] Simulation 1: 140/500 done (0 errors), elapsed 15s, ETA 40s
+[2026-11-15 23:38:16] Simulation 1: 160/500 done (0 errors), elapsed 18s, ETA 37s
+[2026-11-15 23:38:18] Simulation 1: 180/500 done (0 errors), elapsed 20s, ETA 35s
+[2026-11-15 23:38:20] Simulation 1: 200/500 done (0 errors), elapsed 22s, ETA 33s
+[2026-11-15 23:38:22] Simulation 1: 220/500 done (0 errors), elapsed 24s, ETA 31s
+[2026-11-15 23:38:25] Simulation 1: 240/500 done (0 errors), elapsed 27s, ETA 29s
+[2026-11-15 23:38:27] Simulation 1: 260/500 done (0 errors), elapsed 29s, ETA 26s
+[2026-11-15 23:38:29] Simulation 1: 280/500 done (0 errors), elapsed 31s, ETA 24s
+[2026-11-15 23:38:31] Simulation 1: 300/500 done (0 errors), elapsed 33s, ETA 22s
+[2026-11-15 23:38:33] Simulation 1: 320/500 done (0 errors), elapsed 35s, ETA 20s
+[2026-11-15 23:38:35] Simulation 1: 340/500 done (0 errors), elapsed 37s, ETA 17s
+[2026-11-15 23:38:37] Simulation 1: 360/500 done (0 errors), elapsed 39s, ETA 15s
+[2026-11-15 23:38:40] Simulation 1: 380/500 done (0 errors), elapsed 42s, ETA 13s
+[2026-11-15 23:38:42] Simulation 1: 400/500 done (0 errors), elapsed 44s, ETA 11s
+[2026-11-15 23:38:44] Simulation 1: 420/500 done (0 errors), elapsed 46s, ETA 9s
+[2026-11-15 23:38:46] Simulation 1: 440/500 done (0 errors), elapsed 48s, ETA 7s
+[2026-11-15 23:38:49] Simulation 1: 460/500 done (0 errors), elapsed 51s, ETA 4s
+[2026-11-15 23:38:51] Simulation 1: 480/500 done (0 errors), elapsed 53s, ETA 2s
+[2026-11-15 23:38:53] Simulation 1: 500/500 done (0 errors), elapsed 55s, ETA 0s
+[2026-11-15 23:38:53] Wrote sim1_crosscheck_reps.csv and sim1_crosscheck_info.csv
