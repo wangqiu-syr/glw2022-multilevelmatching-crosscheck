@@ -19,7 +19,8 @@ This repo adds a cross-check: the rebuild's covariate matching (CM) and generali
 | Side-by-side tables and figures (paper, rebuild, package) and D8 analytic-interval sensitivity | Done, merged into `main` (PR #5): `crosscheck/side_by_side/`; summarized in the README (PR #6) |
 | D8 in `docs/spec.md` and `docs/replication_verdict.md` | Updated: both mention the analytic-interval sensitivity analysis (in the spec, section "Inference and coverage" and the D8 row of the decisions table; in the verdict, the D8 row) |
 | Repo-specific text inherited from the import (README, CITATION.cff) | Updated, merged into `main` (PR #3): new title, cross-check section, reproduce steps, files, references, citation |
-| Intervals and coverage: sources, math, why CM coverage is low | Done on branch `claude/bootstrap-ci`: `crosscheck/intervals/README.md`, scripts 09–11 |
+| Intervals and coverage: sources, math, why CM coverage is low | Done, merged into `main` (PR #8): `crosscheck/intervals/README.md`, scripts 09–11 |
+| Math appendix to the intervals note; paper's interval facts from the PDF | Done on branch `claude/intervals-math-appendix` |
 
 ## Result: replication 1 of Simulation 1
 
@@ -71,6 +72,9 @@ From `?multiMatch` and the package source (`R/prepareData.R`, `R/matchAllTreatme
 ## Facts from the paper (checked against the PDF, 2026-11-15)
 
 - Eq. (4) prints Pr(t | x_i, z_i) in both terms. Read with Eq. (3), the literal reading is GPS_lit2 (D13).
+- Checked again against the PDF on 2026-11-16, for the intervals note:
+  - **Nothing on how intervals were computed:** the words "bootstrap" and "Abadie" do not occur, no software is named, and the paper never says how its intervals or standard deviations were computed (D8).
+  - **Table 5's limits are symmetric normal intervals:** each 95% limit equals the estimate ∓ qnorm(0.975) × "sd" ("the sample standard deviation") to within rounding, for all 30 CM and GPS intervals. These are not percentile intervals (`crosscheck/intervals/tables/paper_table5_interval_form.md`).
 - "Code Availability N/A"; the paper names no software.
 - Yang et al. (2016) is reference [44]; the methods "are reduced to that in [44]" without Z.
 - The PDF is under copyright. Keep it out of the repo (`.gitignore` excludes `*.pdf`).
@@ -156,7 +160,7 @@ On a laptop: `install.packages("Matching")`, then install `multilevelMatching` f
 6. Done and merged into `main`: side-by-side tables and figures (bias and MSE first, coverage last), the D8 analytic-interval sensitivity analysis, what this repository tests among D1–D13 and which decisions matter beyond this replication, and what "multilevel" means in Yang et al. and in the paper, all in `crosscheck/side_by_side/README.md`. Finding: the paper's coverage is closer to analytic Abadie-Imbens (2006) intervals than to the percentile bootstrap (CM: 1.4 against 3.6 points in Simulation 1, 7.4 against 18.6 in Simulation 2), consistent with, but not proof of, the paper having used analytic variances; for the GPS, AI 2016 intervals have the right width (coverage 95.9% and 94.6%).
 7. Done and merged into `main` (PR #6, 2026-11-16): the README now leads with bias and MSE for the paper, the rebuild and the package ("At a glance") and has a "Side by side with Yang et al.'s package" section (Figures G-K) after the rebuild's results.
 8. Done (2026-11-16): D8 in `docs/spec.md` now mentions the analytic-interval sensitivity analysis, both in the section "Inference and coverage" (which no longer says Abadie-Imbens standard errors are out of scope) and in the D8 row of the decisions table, with the coverage results; the D8 row of `docs/replication_verdict.md` points to the same analysis. The bootstrap stays the D8 default.
-9. Done (2026-11-16, branch `claude/bootstrap-ci`): `crosscheck/intervals/README.md` covers several things.
+9. Done and merged into `main` (PR #8, 2026-11-16): `crosscheck/intervals/README.md` covers several things.
    - **Sources:** where each interval method comes from (the paper, the rebuild, Yang et al. 2016, AI 2006/2008/2016).
    - **Math:** the bootstrap, AI 2006 and AI 2016 intervals, as the code computes them. The rebuilt AI 2006 variance equals the package's in all 21,000 cells.
    - **Coverage:** why it depends on bias relative to spread and on width, rather than on accuracy.
@@ -165,6 +169,13 @@ On a laptop: `install.packages("Matching")`, then install `multilevelMatching` f
    - **AI 2006 noise estimate:** σ̂² is inflated about 16-fold by within-group covariate gaps.
 
    Rebuild-2 (an independent rebuild from the paper alone, in the separate repo `glw2022-rebuild2`) was started the same day. Its decisions and code are to be compared with this rebuild after its stage 2, before its stage 3 runs, without passing anything back to it.
+10. Done (2026-11-16, branch `claude/intervals-math-appendix`): Appendix A of `crosscheck/intervals/README.md` covers four derivations.
+    - **A.1:** the exact CM split.
+    - **A.2:** why the regression adjustment removes the gap, so that its expected value is τ_bal.
+    - **A.3:** why AI 2006 coverage matches the normal-theory prediction while the percentile bootstrap's falls short, with the check: centring on the bootstrap mean cuts the prediction error from 4.0 to 1.8 points in Simulation 2.
+    - **A.4:** why the adjusted estimates still miss τ_pop by τ_bal − τ_pop (D9).
+
+    Section 1 of the note now rests on the paper's PDF: no bootstrap, and Table 5 uses estimate ± 1.96 sd.
 
 ## References
 
