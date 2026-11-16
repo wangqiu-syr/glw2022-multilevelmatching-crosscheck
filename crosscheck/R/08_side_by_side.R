@@ -146,6 +146,15 @@ mb[[2]] <- sub("Mean absolute bias, ", "", mb[[2]])
 save_table(mb[c("Simulation", "Mean absolute bias vs τ_pop", "Paper", "Rebuild", "Package")], "mean_abs_bias")
 write.csv(ord, file.path(TAB, "orderings.csv"), row.names = FALSE)
 
+# Headline: mean absolute bias and mean MSE over pairs, paper vs rebuild vs package.
+head_tab <- do.call(rbind, lapply(1:2, function(sim) do.call(rbind, lapply(c("CM", "GPS"), function(e) {
+  pp <- per_pair[[sim]]; g <- function(x) mean(pp[[paste0(e, "_", x)]])
+  data.frame(Simulation = sim, Estimator = e,
+             `Abs. bias: paper` = g("absbias_paper"), `Abs. bias: rebuild` = g("absbias_rebuild"), `Abs. bias: package` = g("absbias_package"),
+             `MSE: paper` = if (sim == 1) NA else g("mse_paper"), `MSE: rebuild` = g("mse_rebuild"), `MSE: package` = g("mse_package"),
+             check.names = FALSE) }))))
+save_table(head_tab, "bias_mse_summary")
+
 # D8 summary: coverage by interval method, and distance from the paper's coverage.
 d8_sum <- do.call(rbind, lapply(split(d8_long, list(d8_long$sim, d8_long$estimator, d8_long$method, d8_long$target), drop = TRUE), function(g) {
   pp <- per_pair[[g$sim[1]]]
@@ -185,6 +194,23 @@ spread <- do.call(rbind, lapply(1:2, function(sim) do.call(rbind, lapply(c("CM",
              `Mean abs. bias / SD` = mean(m$abs_bias / m$sd_est), check.names = FALSE) }))))
 save_table(spread, "d8_interval_width_vs_spread")
 
+# Is low bootstrap coverage explained by bias? For each pair, a normal
+# approximation predicts coverage from the estimator's bias b, its Monte Carlo
+# SD s and the interval's half-width h = mean width / 2:
+#   P(|b + s Z| <= h),  Z ~ N(0, 1);  "if unbiased" sets b = 0.
+# Main-run bootstrap intervals, tau_pop.
+cov_bias <- do.call(rbind, lapply(1:2, function(sim) do.call(rbind, lapply(c("CM", "GPS"), function(e) {
+  m <- read.csv(file.path("results", sprintf("sim%d_summary.csv", sim))); x <- m[m$estimator == e & m$target == "pop", ]
+  h <- x$mean_ci_width / 2; b <- x$bias; sg <- x$sd_est
+  pred <- 100 * (pnorm((h - b) / sg) - pnorm((-h - b) / sg)); nob <- 100 * (pnorm(h / sg) - pnorm(-h / sg))
+  i <- which.min(x$coverage)
+  data.frame(Simulation = sim, Estimator = e, `Observed mean coverage` = mean(x$coverage),
+             `Predicted from bias, SD and width` = mean(pred), `Predicted if unbiased` = mean(nob),
+             `Correlation, observed vs predicted (pairs)` = if (sd(x$coverage) > 0) cor(pred, x$coverage) else NA,
+             `Lowest pair` = key(x$t[i], x$tp[i]), `Its coverage` = x$coverage[i], `Its abs. bias / SD` = abs(b[i]) / sg[i],
+             check.names = FALSE) }))))
+save_table(cov_bias, "coverage_vs_bias", digits = 2)
+
 # ---- figures --------------------------------------------------------------------
 pch_src <- c(paper = 1, rebuild = 16, package = 17)
 fig_bias <- function(sim, file, w, h) {
@@ -216,8 +242,36 @@ fig_bias <- function(sim, file, w, h) {
 fig_bias(1, "fig1_sim1_abs_bias.png", 1600, 750)
 fig_bias(2, "fig2_sim2_abs_bias.png", 1600, 1250)
 
+# MSE by pair: Simulation 1 (rebuild, package; the paper's Table 1 has no MSE)
+# and Simulation 2 (the paper's Table 3, rebuild, package).
+png(file.path(FIG, "fig3_mse_by_pair.png"), width = 1600, height = 1300, res = 150)
+op <- par(mfrow = c(2, 2), mar = c(5.5, 4.5, 2.5, 1), oma = c(0, 0, 2.2, 0))
+for (sim in 1:2) for (e in c("CM", "GPS")) {
+  pp <- per_pair[[sim]]; k <- nrow(pp)
+  src <- if (sim == 1) c("rebuild", "package") else c("paper", "rebuild", "package")
+  v <- sapply(src, function(s) pp[[paste0(e, "_mse_", s)]])
+  plot(NA, xlim = c(0.5, k + 0.5), ylim = c(0, max(v) * 1.3), xaxt = "n", xlab = "", ylab = "MSE",
+       main = sprintf("Simulation %d, %s", sim, e), las = 1)
+  abline(h = axTicks(2), col = "grey92"); abline(h = 0, col = "grey60")
+  axis(1, at = 1:k, labels = pp$pair, las = 2, cex.axis = if (sim == 1) 0.9 else 0.6)
+  off <- if (sim == 1) c(rebuild = -0.15, package = 0.15) else c(paper = 0, rebuild = 0, package = 0)
+  if (sim == 2) {
+    lines(1:k, v[, "paper"], lty = 3, lwd = 1.3, col = COL[[e]])
+    lines(1:k, v[, "rebuild"], lty = 1, lwd = 1.8, col = COL[[e]])
+    lines(1:k, v[, "package"], lty = 2, lwd = 1.3, col = "grey20")
+  }
+  for (s in src) points((1:k) + off[[s]], v[, s], pch = pch_src[[s]], col = if (s == "package") "grey20" else COL[[e]],
+                        cex = if (sim == 1) 1.3 else 0.8, lwd = 1.5)
+  legend("top", horiz = TRUE, bty = "n", cex = 0.75, pch = pch_src[src], pt.lwd = 1.5,
+         lty = if (sim == 2) c(3, 1, 2) else c(0, 0), col = ifelse(src == "package", "grey20", COL[[e]]),
+         legend = c(paper = "paper (Table 3)", rebuild = "rebuild (main run)", package = "package")[src])
+}
+mtext(expression(bold("Mean squared error by pair, against ") * bold(tau[pop]) * bold(": paper vs rebuild vs Yang et al.'s package")),
+      outer = TRUE, cex = 1.05)
+par(op); dev.off()
+
 # Coverage by pair and interval method.
-png(file.path(FIG, "fig4_coverage_by_method.png"), width = 1600, height = 1300, res = 150)
+png(file.path(FIG, "fig5_coverage_by_method.png"), width = 1600, height = 1300, res = 150)
 op <- par(mfrow = c(2, 2), mar = c(5.5, 4.5, 2.5, 1), oma = c(3, 0, 2.2, 0))
 meth <- c("paper", "bootstrap", "AI2006", "AI2016"); pch_m <- c(paper = 1, bootstrap = 16, AI2006 = 2, AI2016 = 18)
 lab_m <- c(paper = "paper", bootstrap = "rebuild: bootstrap (main run)", AI2006 = "rebuild: AI 2006", AI2016 = "rebuild: AI 2016 (GPS only)")
@@ -241,7 +295,7 @@ legend("bottom", horiz = TRUE, bty = "n", cex = 0.85, pch = c(pch_m, NA), pt.lwd
 par(op); dev.off()
 
 # Per-replication GPS estimates: package's own fit vs the rebuild (D5).
-png(file.path(FIG, "fig3_gps_per_replication.png"), width = 1600, height = 800, res = 150)
+png(file.path(FIG, "fig4_gps_per_replication.png"), width = 1600, height = 800, res = 150)
 op <- par(mfrow = c(1, 2), mar = c(4.5, 4.5, 2.5, 1), oma = c(0, 0, 2.2, 0))
 for (sim in 1:2) {
   reps <- read.csv(file.path("crosscheck", "results", sprintf("sim%d_crosscheck_reps.csv", sim)))
