@@ -15,7 +15,7 @@ This repo adds a cross-check: the rebuild's covariate matching (CM) and generali
 | Cross-check, replication 1 of Simulation 1 | Done: exact agreement (below) |
 | Cross-check, all 500 replications of Simulations 1 and 2 | Done (branch `claude/crosscheck-500`); see below and `docs/crosscheck.md` |
 | D7 and D13 wording in `docs/spec.md` and related docs | Applied (branch `claude/apply-d7-d13-wording`, also contained in `claude/crosscheck-500`); drafts kept in `crosscheck/drafts/d7_d13_wording.md` |
-| Side-by-side tables and figures (paper, rebuild, package) and D8 analytic-interval sensitivity | Done and merged into `main`: `crosscheck/side_by_side/` (to be organized into the README later) |
+| Side-by-side tables and figures (paper, rebuild, package) and D8 analytic-interval sensitivity | Done and merged into `main`: `crosscheck/side_by_side/`; summarized in the README on branch `claude/readme-side-by-side` |
 | Repo-specific text inherited from the import (README, CITATION.cff) | Updated on `claude/crosscheck-500`: new title, cross-check section, reproduce steps, files, references, citation |
 
 ## Result: replication 1 of Simulation 1
@@ -146,7 +146,7 @@ On a laptop: `install.packages("Matching")`, then install `multilevelMatching` f
 4. Done (2026-11-16): `claude/apply-d7-d13-wording` and `claude/crosscheck-500` merged into `main`.
 5. Done: D5 in `docs/spec.md` notes that `multilevelMatching` fits `nnet::multinom` at its default tolerance, and that in Simulation 2 the rebuild's GPS estimates are reproducible across setups only up to near-ties (summary means within 5.6e-5). The README's Background writes out the estimator and the three GPS versions compared.
 6. Done and merged into `main`: side-by-side tables and figures (bias and MSE first, coverage last), the D8 analytic-interval sensitivity analysis, what this repository tests among D1–D13 and which decisions matter beyond this replication, and what "multilevel" means in Yang et al. and in the paper, all in `crosscheck/side_by_side/README.md`. Finding: the paper's coverage is closer to analytic Abadie-Imbens (2006) intervals than to the percentile bootstrap (CM: 1.4 against 3.6 points in Simulation 1, 7.4 against 18.6 in Simulation 2), consistent with, but not proof of, the paper having used analytic variances; for the GPS, AI 2016 intervals have the right width (coverage 95.9% and 94.6%).
-7. Later: organize `crosscheck/side_by_side/` into the README and the other documents; decide whether D8 in `docs/spec.md` should mention the analytic-interval sensitivity analysis.
+7. Done (branch `claude/readme-side-by-side`): the README now leads with bias and MSE for the paper, the rebuild and the package ("At a glance") and has a "Side by side with Yang et al.'s package" section (Figures G-K) after the rebuild's results. Still open: whether D8 in `docs/spec.md` should mention the analytic-interval sensitivity analysis.
 
 ## References
 

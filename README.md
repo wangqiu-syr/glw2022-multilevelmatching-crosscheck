@@ -2,24 +2,25 @@
 
 Qiu Wang, Syracuse University · v1.0 · November 2026
 
-This repository continues [glw2022-matching-replication](https://github.com/wangqiu-syr/glw2022-matching-replication), an R rebuild of the two simulation studies in Guo, Liu and Wang (2022). It keeps that rebuild unchanged and adds a cross-check: every replication of both simulations is re-estimated with `multilevelMatching`, the R package that implements the matching estimators of Yang et al. (2016), to which the paper's methods reduce without the school-level covariates. The cross-check is summarized under [Cross-check with multilevelMatching](#cross-check-with-multilevelmatching) and reported in full in [docs/crosscheck.md](docs/crosscheck.md); [BRIDGE.md](BRIDGE.md) records how this repository was set up.
+This repository continues [glw2022-matching-replication](https://github.com/wangqiu-syr/glw2022-matching-replication), an R rebuild of the two simulation studies in Guo, Liu and Wang (2022). It keeps that rebuild unchanged and adds a cross-check: every replication of both simulations is re-estimated with `multilevelMatching`, the R package that implements the matching estimators of Yang et al. (2016), to which the paper's methods reduce without the school-level covariates. The results are set side by side with the paper's published tables. As in the paper, the main criteria are bias and mean squared error (MSE); interval coverage comes last.
 
-## Cross-check with multilevelMatching
+The headline numbers are in [At a glance](#at-a-glance-bias-and-mse); the comparison is in [Side by side with Yang et al.'s package](#side-by-side-with-yang-et-als-package), after the rebuild's own results. The full comparison, with all tables and figures, is in [crosscheck/side_by_side/README.md](crosscheck/side_by_side/README.md); the cross-check itself is reported in [docs/crosscheck.md](docs/crosscheck.md), and [BRIDGE.md](BRIDGE.md) records how this repository was set up.
 
-Every replication of both simulations (500 each) was re-estimated with `multilevelMatching` 1.0.0 (Yang and Barkley, 2019), on the same samples as the main run. Full report: [docs/crosscheck.md](docs/crosscheck.md).
+## At a glance: bias and MSE
 
-| Package fit | Matches on | Compared with | Replications with every matched outcome identical, Sim. 1 / Sim. 2 | Matched outcomes that differ, average per replication, Sim. 1 / Sim. 2 | Mean absolute bias vs τ\_pop, Sim. 1 / Sim. 2: package (ours) |
-|---|---|---|---|---|---|
-| `covariates` | the 7 covariates (Mahalanobis) | our CM | 500 / 500 of 500 | 0 / 0 | 0.187 / 0.295 (0.187 / 0.295) |
-| `existing` | our fitted GPS, p̂ | our GPS | 499 / 476 of 500 | 0.002 / 0.06 | 0.026 / 0.099 (0.026 / 0.099) |
-| `multinom` | its own fitted GPS, p̃ | our GPS | 405 / 0 of 500 | 0.4 of 1,600 / 1,003 of 16,200 (6.2%) | 0.026 / 0.100 (0.026 / 0.099) |
+Mean absolute bias and mean MSE against τ\_pop, averaged over the 6 pairs of Simulation 1 and the 36 pairs of Simulation 2. "Paper" is the paper's Table 1 (which reports no MSE) and Table 3; "rebuild" is the main run; "package" is `multilevelMatching` 1.0.0 run as a user would run it, on the rebuild's samples.
 
-A matched outcome is one imputed potential outcome Ŷ\_i(s); a replication has 400 x 4 = 1,600 of them in Simulation 1 and 1,800 x 9 = 16,200 in Simulation 2. "0 of 500" for `multinom` in Simulation 2 means that every replication has at least one differing matched outcome (6.2% on average), not that the estimates disagree broadly: the bias is the same to two decimals. The three fits are defined in the [Background](#background) ("The GPS estimator in the cross-check").
+| Simulation | Estimator | Abs. bias: paper | Abs. bias: rebuild | Abs. bias: package | MSE: paper | MSE: rebuild | MSE: package |
+|---|---|---|---|---|---|---|---|
+| 1 | CM | 0.143 | 0.187 | 0.187 |  | 0.363 | 0.363 |
+| 1 | GPS | 0.293 | 0.026 | 0.026 |  | 0.676 | 0.676 |
+| 2 | CM | 0.139 | 0.295 | 0.295 | 0.368 | 0.288 | 0.288 |
+| 2 | GPS | 0.307 | 0.099 | 0.100 | 1.916 | 0.626 | 0.627 |
 
-- **The package computes the rebuild's estimators.** Covariate matching agrees in every replication. Given our fitted GPS, GPS matching agrees except for 30 imputed outcomes in 25 of 1,000 replications. All 30 are near-ties that the package's matching routine (`Matching::Match`) treats as ties and breaks at random; in each, ours is the nearest candidate. This also confirms D7: the package matches the t′ term on the score for t′.
-- **The GPS model's fitting tolerance matters (D5).** The package fits the GPS model at nnet's default tolerance. In Simulation 2 that changes about 6% of the matched outcomes in every replication and moves single estimates by up to 2.7. Mean absolute bias hardly changes (0.0995 against our 0.0991, τ\_pop).
-- **Analytic variances.** For GPS, the package's Abadie–Imbens (2016) variance, which accounts for estimating the GPS, gives coverage of 95.9% (Simulation 1) and 94.7% (Simulation 2), against 100% for our bootstrap intervals. For CM, its Abadie–Imbens (2006) variance gives 94.8% and 90.1%, against 91.4% and 78.4%.
-- **Reproducibility across setups.** The regenerated samples are the main run's. Our DIF and CM estimates, and our GPS estimates in Simulation 1, reproduce the main run's exactly. In Simulation 2 a few GPS near-ties fall differently on this setup (Linux, R 4.3.3) than in the main run (Windows, R 4.5.1), moving GPS summary means by at most 5.6e-5.
+- **The package reproduces the rebuild.** With the same samples, Yang et al.'s own software gives the rebuild's bias and MSE: exactly for CM, and to within 0.001 for GPS. The rebuild's estimators are implemented as the method's authors implement them.
+- **GPS is much less biased than CM, and CM has the lower MSE.** This bias–variance trade-off holds in the rebuild and the package alike.
+- **Against the paper, MSE agrees and bias does not.** The paper also has CM with the lower MSE (all 36 pairs of Simulation 2). But its GPS bias is 11 times the rebuild's in Simulation 1 and 3 times in Simulation 2, while its CM bias is smaller.
+- **So the bias gap is not in how the estimators are computed.** It must come from what the package cannot check: how the data were generated, which true effect bias is measured against, the GPS model, or the paper's own code (see [D7 and the other decisions](#d7-and-the-other-decisions)).
 
 ## Key findings of the rebuild
 
@@ -206,6 +207,89 @@ What Figure F shows: DIF swings widely across the 36 effects (−2.74 to 2.00), 
 
 In short, where the truth is known, the rebuild shows a bias–variance trade-off: GPS is the least biased estimator and CM the most efficient, in line with Sections 5 and 7. GPS is less biased here than in the paper's tables; reading Eq. (4) literally would close about half of the Simulation 1 gap, but Yang et al.'s own package computes the estimator as this rebuild does (D7), so that explains the gap only if the paper's code followed Eq. (4) as printed; the rest depends on details not reported in the paper. The application's own truth remains unknown, so these results speak to the simulated settings. Every choice and result is documented, so each can be checked.
 
+## Side by side with Yang et al.'s package
+
+Every replication of both simulations (500 each) was re-estimated with `multilevelMatching` 1.0.0 (Yang and Barkley, 2019), on the same samples as the main run: CM with `match_on = "covariates"`, and GPS with `match_on = "multinom"`, the package's own GPS fit (`existing`, the package matching on the rebuild's fitted GPS, is used to check the matching itself). The package does not compute DIF, which involves no matching. The paper's values are its Tables 1 and 3, as transcribed in `results/paper_table1.csv` and `results/paper_table3.csv` and checked against the published PDF. All tables and figures of this section, and more, are in [crosscheck/side_by_side/README.md](crosscheck/side_by_side/README.md).
+
+### Bias and MSE by pair
+
+Which estimator is less biased and which has the lower MSE, by pair (the paper's Table 1 has no MSE):
+
+| Simulation | Comparison | Paper | Rebuild | Package | Pairs |
+|---|---|---|---|---|---|
+| 1 | GPS less biased than CM (pairs) | 0 | 6 | 6 | 6 |
+| 1 | CM lower MSE than GPS (pairs) |  | 5 | 5 | 6 |
+| 2 | GPS less biased than CM (pairs) | 4 | 31 | 31 | 36 |
+| 2 | CM lower MSE than GPS (pairs) | 36 | 33 | 33 | 36 |
+
+<img src="crosscheck/side_by_side/figures/fig1_sim1_abs_bias.png" width="100%" alt="Simulation 1: absolute bias by pair for CM and GPS, paper vs rebuild vs package">
+
+**Figure G. Simulation 1, absolute bias by pair.** Open circles: the paper's Table 1; filled circles: the rebuild; triangles: the package. Rebuild and package coincide; the paper's GPS bias is several times larger.
+
+<img src="crosscheck/side_by_side/figures/fig2_sim2_abs_bias.png" width="100%" alt="Simulation 2: absolute bias of the 36 effects for CM and GPS, paper vs rebuild vs package">
+
+**Figure H. Simulation 2, absolute bias of the 36 effects.** Dotted line and open circles: the paper's Table 3 (absolute values, since its signs are not comparable; see Figure C); solid line: the rebuild; dashed grey line and triangles: the package.
+
+<img src="crosscheck/side_by_side/figures/fig3_mse_by_pair.png" width="100%" alt="MSE by pair for CM and GPS in both simulations, paper vs rebuild vs package">
+
+**Figure I. MSE by pair.** Simulation 1 (top; the paper reports no MSE) and Simulation 2 (bottom; dotted: the paper's Table 3). Rebuild and package coincide. The paper's GPS MSE follows the rebuild's pattern pair by pair (correlation 0.963, [docs/table3_checks.md](docs/table3_checks.md)) at about three times the level; its CM MSE is on the rebuild's scale.
+
+### How closely the package reproduces the rebuild
+
+| Package fit | Matches on | Compared with | Replications with every matched outcome identical, Sim. 1 / Sim. 2 | Matched outcomes that differ, average per replication, Sim. 1 / Sim. 2 | Mean absolute bias vs τ\_pop, Sim. 1 / Sim. 2: package (ours) |
+|---|---|---|---|---|---|
+| `covariates` | the 7 covariates (Mahalanobis) | our CM | 500 / 500 of 500 | 0 / 0 | 0.187 / 0.295 (0.187 / 0.295) |
+| `existing` | our fitted GPS, p̂ | our GPS | 499 / 476 of 500 | 0.002 / 0.06 | 0.026 / 0.099 (0.026 / 0.099) |
+| `multinom` | its own fitted GPS, p̃ | our GPS | 405 / 0 of 500 | 0.4 of 1,600 / 1,003 of 16,200 (6.2%) | 0.026 / 0.100 (0.026 / 0.099) |
+
+A matched outcome is one imputed potential outcome Ŷ\_i(s); a replication has 400 x 4 = 1,600 of them in Simulation 1 and 1,800 x 9 = 16,200 in Simulation 2. "0 of 500" for `multinom` in Simulation 2 means that every replication has at least one differing matched outcome (6.2% on average), not that the estimates disagree broadly: the bias is the same to two decimals. The three fits are defined in the [Background](#background) ("The GPS estimator in the cross-check").
+
+- **The package computes the rebuild's estimators.** Covariate matching agrees in every replication. Given our fitted GPS, GPS matching agrees except for 30 imputed outcomes in 25 of 1,000 replications. All 30 are near-ties that the package's matching routine (`Matching::Match`) treats as ties and breaks at random; in each, ours is the nearest candidate. [docs/crosscheck_math.md](docs/crosscheck_math.md) shows, from the code of both, why the three GPS versions compute the same estimator.
+- **The GPS model's fitting tolerance matters for single estimates (D5).** The package fits the GPS model at nnet's default tolerance. In Simulation 2 that changes about 6% of the matched outcomes in every replication and moves single estimates by up to 2.7 (Figure J), but not the bias or MSE.
+- **Reproducibility across setups.** The regenerated samples are the main run's. Our DIF and CM estimates, and our GPS estimates in Simulation 1, reproduce the main run's exactly. In Simulation 2 a few GPS near-ties fall differently on this setup (Linux, R 4.3.3) than in the main run (Windows, R 4.5.1), moving GPS summary means by at most 5.6e-5.
+
+<img src="crosscheck/side_by_side/figures/fig4_gps_per_replication.png" width="100%" alt="Every GPS estimate, the package's own GPS fit against the rebuild, Simulations 1 and 2">
+
+**Figure J. Every GPS estimate, package against rebuild.** Each point is one pair in one replication (3,000 in Simulation 1, 18,000 in Simulation 2). In Simulation 2 the package's own GPS fit moves estimates off the diagonal in both directions; the averages, and hence bias and MSE, are unchanged.
+
+### D7 and the other decisions
+
+The cross-check asks one question: does the rebuild compute the estimators the way Yang et al.'s own software computes them? It therefore bears on the decisions about estimation, not on how the samples or the true effects were made, and it is not a one-at-a-time sensitivity analysis of D1–D13.
+
+- **D7, the reading of Eq. (4): keep it.** The package imputes Y(s) by matching on the score for s, so the t′ term uses the score for t′, and it reproduces the rebuild's GPS. The literal reading is a different estimator from the one the method's authors implement; D13 stays as a sensitivity analysis of it, since the paper's own code is not available.
+- **D5 and D6 are confirmed** (the same GPS model form and the same Mahalanobis distance, up to a constant), with the fitting-tolerance note above.
+- **The decisions that could change the paper's conclusion about the bias of CM against GPS** are D1–D5, D7 and D9. The cross-check closes the estimation ones (D5, D6, D7); the remaining differences from the paper most likely lie in data generation and the target (D1–D4, D9, D10).
+
+Section 4 of [crosscheck/side_by_side/README.md](crosscheck/side_by_side/README.md) assesses each of D1–D13: what the cross-check says about it, and whether it matters for reproducing the paper, for real applications and for clustered (multilevel) matching.
+
+### Coverage and intervals (D8)
+
+Coverage is secondary: it depends on bias and on how intervals are built, and neither changes the bias and MSE above.
+
+- **The rebuild's low CM coverage comes from CM's bias.** CM's bootstrap intervals cover τ\_pop in 91.4% of replications on average in Simulation 1 and 78.4% in Simulation 2 (the main run's own numbers). A normal approximation from each pair's bias, spread and interval width predicts the observed coverage pair by pair (correlation 0.99). In the worst pair, (1,3) in Simulation 2, the bias is 1.8 times the spread of the estimates, and coverage is 39.6%. Without the bias, the same intervals would cover about 93–94% of the time.
+- **D8 sensitivity: analytic intervals.** The paper does not say how its intervals were built; the rebuild uses percentile bootstrap intervals. Replacing them with analytic Abadie–Imbens intervals, estimate ± 1.96 SE, keeps every estimate and changes only coverage. AI 2006 (Abadie and Imbens, 2006) is the large-sample variance of a matching estimator, treating the variable matched on as known; AI 2016 (Abadie and Imbens, 2016) adjusts it for having estimated the GPS.
+
+Mean coverage of τ\_pop (%):
+
+| Simulation | Estimator | Paper | Rebuild: bootstrap (main run) | Rebuild: AI 2006 | Rebuild: AI 2016 |
+|---|---|---|---|---|---|
+| 1 | CM | 95.0 | 91.4 | 94.8 |  |
+| 1 | GPS | 99.7 | 100.0 | 99.6 | 95.9 |
+| 2 | CM | 97.1 | 78.4 | 90.1 |  |
+| 2 | GPS | 98.9 | 100.0 | 99.6 | 94.6 |
+
+- **GPS:** AI 2016 intervals have the right width (their implied standard errors match the spread of the estimates), and their coverage is near 95%. The bootstrap and AI 2006 intervals are 30–54% too wide and cover in nearly every replication, as the paper's do.
+- **CM:** AI 2006 intervals are a little wider than the bootstrap ones and bring coverage closer to the paper's (within 1.4 points per pair on average in Simulation 1); in Simulation 2 the remaining gap follows the bias gap.
+- **Reading:** this is consistent with the paper having used analytic Abadie–Imbens (2006) variances, which `Matching` and `multilevelMatching` report by default, but it does not prove it. The bootstrap remains the rebuild's documented D8 choice; the bootstrap is not formally valid for matching estimators (Abadie and Imbens, 2008).
+
+<img src="crosscheck/side_by_side/figures/fig5_coverage_by_method.png" width="100%" alt="Coverage of 95% intervals by pair for CM and GPS in both simulations: the paper, and the rebuild's estimates with bootstrap, AI 2006 and AI 2016 intervals">
+
+**Figure K. Coverage of 95% intervals by pair.** Open circles: the paper. Filled circles: the rebuild's bootstrap intervals. Triangles: AI 2006 intervals. Diamonds (GPS only): AI 2016 intervals. Dashed line: 95%.
+
+### What "multilevel" means
+
+The word is used in two senses. In Yang et al. (2016), "multi-level treatments" are treatments with more than two levels, such as several programmes; the package name follows that usage, and for independent units a one-level multinomial model for the generalized propensity score (Imbens, 2000) is the appropriate model. In Guo, Liu and Wang (2022), "multilevel" refers to nested data (students in schools) and to covariates and treatments at two levels, but estimation is single-level: X and Z enter as ordinary covariates, with no school identifiers, school effects or within-school matching. That is why the paper's methods reduce to Yang et al.'s, and why neither is multilevel matching in the hierarchical sense. Methods that use the clustering include propensity score models with school effects (Arpino and Mealli, 2011) and propensity score weighting with multilevel data (Li, Zaslavsky and Landrum, 2013); see also the paper's references [43] and [45] (Wang, 2015; Yang, 2018).
+
 ## Reproduce
 
 From the repository root (R 4.5; packages MASS and nnet):
@@ -220,10 +304,12 @@ From the repository root (R 4.5; packages MASS and nnet):
 | 4. D13 sensitivity (Simulation 1) | `Rscript R/run_gps_literal.R`, then `Rscript R/run_gps_literal2.R` (`check` runs the self-tests) | |
 | 5. Cross-check with multilevelMatching | `R_LIBS=<lib> Rscript crosscheck/R/04_crosscheck_all.R sim=1`, then `sim=2` (options: `workers=4`) | On 4 workers: Simulation 1 about 1 min, Simulation 2 about 18 min (log: 55 s, 18 min 16 s) |
 | 6. Cross-check summaries | `Rscript crosscheck/R/05_summarize_crosscheck.R`, then `R_LIBS=<lib> Rscript crosscheck/R/06_existing_mismatches.R` | seconds; about 2 min |
+| 7. Analytic variances for the rebuild's GPS (D8) | `R_LIBS=<lib> Rscript crosscheck/R/07_d8_analytic_intervals.R sim=1`, then `sim=2` (options: `workers=4`) | On 4 workers: Simulation 1 under 1 min, Simulation 2 about 12 min |
+| 8. Side-by-side tables and figures | `Rscript crosscheck/R/08_side_by_side.R` | seconds |
 
 Each replication is saved to `results/reps/simK/rep_###.rds` when it finishes. Re-running `run_all.R` skips replications that are already done, so an interrupted run resumes where it stopped. It refuses to mix checkpoints made with different settings (R, B, seed, optimizer tolerance). Progress goes to standard output; redirect it to `results/run_log.txt` for a background run.
 
-Steps 5 and 6 need `multilevelMatching` 1.0.0 and `Matching`; on R 4.3 or later the package needs an input workaround that the scripts apply (see [BRIDGE.md](BRIDGE.md) for installation and details). The cross-check ran on R 4.3.3; its replications regenerate the main run's samples from the same seeds.
+Steps 5–7 need `multilevelMatching` 1.0.0 and `Matching`; on R 4.3 or later the package needs an input workaround that the scripts apply (see [BRIDGE.md](BRIDGE.md) for installation and details). The cross-check ran on R 4.3.3; its replications regenerate the main run's samples from the same seeds.
 
 Each replication uses its own pre-generated L'Ecuyer-CMRG random-number stream, so results do not depend on the number of workers or the order in which replications run. The scripts use only base R, `parallel` and `nnet`, plus `MASS` for data generation. The R version and session details of the full run are in `results/run_session_info.txt`; the `nnet` and `MASS` versions used (7.3.20 and 7.3.65) are on the second line of `results/run_log.txt`. No `renv` lockfile is included.
 
@@ -231,7 +317,7 @@ Each replication uses its own pre-generated L'Ecuyer-CMRG random-number stream, 
 
 ### Start here
 
-[README.md](README.md) gives the overview. [docs/replication_verdict.md](docs/replication_verdict.md) says what replicates and what does not, and [docs/two_way.md](docs/two_way.md) sets our numbers beside the paper's Tables 1 and 3, pair by pair. For the cross-check with Yang et al.'s package, start with [docs/crosscheck.md](docs/crosscheck.md).
+[README.md](README.md) gives the overview. [docs/replication_verdict.md](docs/replication_verdict.md) says what replicates and what does not, and [docs/two_way.md](docs/two_way.md) sets our numbers beside the paper's Tables 1 and 3, pair by pair. For the comparison with Yang et al.'s package and the paper, start with [crosscheck/side_by_side/README.md](crosscheck/side_by_side/README.md); the cross-check itself is in [docs/crosscheck.md](docs/crosscheck.md).
 
 ### Design and decisions
 
@@ -279,6 +365,10 @@ Per-replication checkpoints (results/reps/, results/reps_gps_literal/, results/r
 
 Per-replication checkpoints (crosscheck/reps/) are local only, not in the repo.
 
+### Side by side: paper, rebuild and package
+
+[crosscheck/side_by_side/README.md](crosscheck/side_by_side/README.md) is the full comparison: bias and MSE, D7 and the thirteen decisions, coverage and the D8 sensitivity analysis, and what "multilevel" means. Its tables are in [crosscheck/side_by_side/tables/](crosscheck/side_by_side/tables/) (CSV and Markdown) and its figures, used as Figures G–K above, in [crosscheck/side_by_side/figures/](crosscheck/side_by_side/figures/). Scripts: [crosscheck/R/07_d8_analytic_intervals.R](crosscheck/R/07_d8_analytic_intervals.R) (analytic variances for the rebuild's GPS) and [crosscheck/R/08_side_by_side.R](crosscheck/R/08_side_by_side.R) (all tables and figures); per-replication analytic variances are in `crosscheck/results/sim{1,2}_d8_gps_variances.csv`.
+
 ### Published values
 
 [results/paper_table1.csv](results/paper_table1.csv), [results/paper_table3.csv](results/paper_table3.csv) and [results/paper_table5.csv](results/paper_table5.csv) hold values transcribed from the paper's published tables, for comparison only. The paper's PDF is not included.
@@ -293,7 +383,7 @@ The GPS model's fitting tolerance matters when matching on fitted probabilities.
 
 ## Conclusions
 
-In these simulations, covariate matching and GPS matching both remove most of the bias in the raw group difference, as the paper reports. GPS had the smallest bias and CM the smallest mean squared error, so the better choice depends on whether bias or variance matters more. The published numbers cannot be reproduced exactly from the paper alone, because thirteen points are left open; reading Eq. (4) literally would close about half of the GPS discrepancy in Simulation 1, but that is not how Yang et al.'s own package computes the estimator, so it explains the gap only if the paper's code followed Eq. (4) as printed. These results are a baseline for extending the comparison to clustered, multilevel data.
+In these simulations, covariate matching and GPS matching both remove most of the bias in the raw group difference, as the paper reports. GPS had the smallest bias and CM the smallest mean squared error, so the better choice depends on whether bias or variance matters more. The published numbers cannot be reproduced exactly from the paper alone, because thirteen points are left open; reading Eq. (4) literally would close about half of the GPS discrepancy in Simulation 1, but that is not how Yang et al.'s own package computes the estimator, so it explains the gap only if the paper's code followed Eq. (4) as printed. Yang et al.'s own package, run on the rebuild's samples, gives the rebuild's bias and MSE, so these conclusions do not rest on the rebuild's code: the remaining differences from the paper lie in what the paper does not report, chiefly how its data were generated and which true effect its bias refers to. The paper's reported coverage is closer to analytic Abadie–Imbens intervals than to the rebuild's bootstrap intervals. These results are a baseline for extending the comparison to clustered, multilevel data.
 
 ## Acknowledgment
 
@@ -307,10 +397,18 @@ The code was written with assistance from Claude Code (Anthropic).
 
 ## References
 
+- Abadie, A., & Imbens, G. W. (2006). Large sample properties of matching estimators for average treatment effects. *Econometrica, 74*(1), 235–267.
+- Abadie, A., & Imbens, G. W. (2008). On the failure of the bootstrap for matching estimators. *Econometrica, 76*(6), 1537–1557.
+- Abadie, A., & Imbens, G. W. (2016). Matching on the estimated propensity score. *Econometrica, 84*(2), 781–807.
+- Arpino, B., & Mealli, F. (2011). The specification of the propensity score in multilevel observational studies. *Computational Statistics & Data Analysis, 55*(4), 1770–1780.
 - Crump, R. K., Hotz, V. J., Imbens, G. W., & Mitnik, O. A. (2009). Dealing with limited overlap in estimation of average treatment effects. *Biometrika, 96*(1), 187–199. https://doi.org/10.1093/biomet/asn055
 - Guo, S., Liu, J., & Wang, Q. (2022). Effective learning during COVID-19: Multilevel covariates matching and propensity score matching. *Annals of Data Science, 9*(5), 967–982. https://doi.org/10.1007/s40745-022-00392-x
+- Imbens, G. W. (2000). The role of the propensity score in estimating dose-response functions. *Biometrika, 87*(3), 706–710.
+- Li, F., Zaslavsky, A. M., & Landrum, M. B. (2013). Propensity score weighting with multilevel data. *Statistics in Medicine, 32*(19), 3373–3387.
+- Wang, Q. (2015). Propensity score matching on multilevel data. In W. Pan & H. Bai (Eds.), *Propensity score analysis: Fundamentals and developments* (pp. 217–235). Guilford Press.
 - Wang, Q. (2026). *Generalized propensity score and covariate matching for multilevel treatments in hierarchical data: Rebuilding Guo, Liu, and Wang (2022) in R* (Version 1.0) [Computer software]. https://github.com/wangqiu-syr/glw2022-matching-replication
 - Yang, S., & Barkley, B. G. (2019). *multilevelMatching: Propensity score matching and subclassification in observational studies with multi-level treatments* (R package version 1.0.0). https://CRAN.R-project.org/package=multilevelMatching
+- Yang, S. (2018). Propensity score weighting for causal inference with clustered data. *Journal of Causal Inference, 6*.
 - Yang, S., Imbens, G., Cui, Z., Faries, D., & Kadziola, Z. (2016). Propensity score matching and subclassification in observational studies with multi-level treatments. *Biometrics, 72*, 1055–1065. https://doi.org/10.1111/biom.12505
 
 ## How to cite
