@@ -21,7 +21,8 @@ This repo adds a cross-check: the rebuild's covariate matching (CM) and generali
 | Repo-specific text inherited from the import (README, CITATION.cff) | Updated, merged into `main` (PR #3): new title, cross-check section, reproduce steps, files, references, citation |
 | Intervals and coverage: sources, math, why CM coverage is low | Done, merged into `main` (PR #8): `crosscheck/intervals/README.md`, scripts 09–11 |
 | Math appendix to the intervals note; paper's interval facts from the PDF | Done, merged into `main` (PR #9) |
-| Rebuild-2 comparison; bias-adjusted CM test | Done on branch `claude/rebuild2-comparison`: `crosscheck/rebuild2/README.md`, scripts 12–13 |
+| Rebuild-2 comparison; bias-adjusted CM test | Done, merged into `main` (PR #10): `crosscheck/rebuild2/README.md`, scripts 12–13 |
+| Rebuild-2's figures commit, pushed after its PR #1 | Merged into rebuild-2's `main` as its PR #2 (merge commit `0a4a038`); no results changed |
 
 ## Result: replication 1 of Simulation 1
 
@@ -181,11 +182,12 @@ On a laptop: `install.packages("Matching")`, then install `multilevelMatching` f
     - **A.4:** why the adjusted estimates still miss τ_pop by τ_bal − τ_pop (D9).
 
     Section 1 of the note now rests on the paper's PDF: no bootstrap, and Table 5 uses estimate ± 1.96 sd.
-11. Done (2026-11-16, branch `claude/rebuild2-comparison`): rebuild-2 finished all four stages before it was read here. Its decisions log already quoted stage-3 numbers, so no blind prediction was made. `crosscheck/rebuild2/README.md` compares it with this rebuild and the paper.
+11. Done and merged into `main` (PR #10, 2026-11-16): rebuild-2 finished all four stages before it was read here. Its decisions log already quoted stage-3 numbers, so no blind prediction was made. `crosscheck/rebuild2/README.md` compares it with this rebuild and the paper.
     - **Agreement:** the two rebuilds agree pair by pair to within Monte Carlo error.
     - **Decisions:** most were the same, reached independently. They differ on the CM distance and the interval method; rebuild-2 used an analytic variance of the AI 2006 kind.
     - **Bias-adjustment test:** `Matching::Match(BiasAdjust = TRUE)` on this rebuild's samples removes all of CM's matching gap. Its bias (0.04, 0.08) and MSE (0.046 against 0.368) are smaller than the paper's CM column, so that column is not bias-adjusted matching. What it is remains open.
     - **A trap for later:** `Match()` adjusts only with `ties = TRUE`, and silently ignores `BiasAdjust` otherwise.
+12. Done (2026-11-16), in rebuild-2's own repository (`wangqiu-syr/glw2022-rebuild2`): its session pushed one commit after its PR #1 was merged, `8690904`. That commit adds summary comparison figures (`figures/summary_vs_paper.png`, `figures/sim2_bias_by_treatment_vs_paper.png`) and the script that draws them (`scripts/comparison_figures.R`), and embeds them in its README and verdict. It was merged into rebuild-2's `main` as its PR #2, a fast-forward from `7b25857`, with merge commit `0a4a038`. It changes no results, so the summaries copied into `crosscheck/rebuild2/data/` from `7b25857` are unchanged at `0a4a038`.
 
 ## References
 
