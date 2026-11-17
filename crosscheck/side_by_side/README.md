@@ -225,6 +225,27 @@ The word is used in two different senses.
 
 So neither the paper's estimators nor Yang et al.'s are multilevel matching in the hierarchical sense. Methods that use the clustering include propensity score models with school random or fixed effects (Arpino and Mealli, 2011), propensity score weighting with multilevel data (Li, Zaslavsky and Landrum, 2013), and the approaches in the paper's own references [43] (Wang, 2015) and [45] (Yang, 2018). The rebuild's README lists matching that uses the clustering as future work.
 
+### 6.1 Few schools, and the school as a grouping variable
+
+**What the paper says about clusters.** Page numbers are those of the published article.
+
+- **p. 969 (Introduction):** "It is not always possible to obtain matched covariates when there are larger numbers of clusters while the size in each cluster is not large due to the sparsity in the hierarchically structured population." The propensity score is then introduced "to circumvent the problem". So the paper's case for GPS is many *small* schools, where one score is easier to match on than many covariates. It says nothing about *few* schools.
+- **p. 973 (end of Section 4):** "combining all possible treatments is straightforward and practically simple to implement. Thus the problem can be viewed as a multiple treatment case." And: "The drawback is that where there are too many treatments at the cluster level or at the individual level, a larger sample size for each treatment combinations is desirable to obtain better matching results." A few school-level treatment levels, such as rural, suburban and urban, is the paper's own case. Its stated limit is the number of treatment combinations, not the number of schools.
+- **p. 980 (Conclusion):** "Through forming all possible treatment combinations at the individual level, the problem boils down to comparing the causal effect among multiple instructional approaches."
+
+So in the paper the grouping variable is the treatment combination, not the school. A school enters only through the school-level treatment, folded into the combined treatment T, and through the school covariates Z. The paper does not treat each school as a group, and it does not address studies with few schools.
+
+**Why a school cannot be the grouping variable for a school-level treatment:**
+
+- **Positivity fails.** Every student in a school receives that school's treatment. A GPS model that includes school identity (school fixed effects) therefore predicts the school-level treatment exactly: every probability is 0 or 1, and there is no one to match across groups. The paper's own overlap assumption, 0 < Pr(T | Z, X) < 1 (Section 2, p. 970), rules this out.
+- **Within-school matching works only for the student-level treatment.** For example, it can compare hybrid with remote students inside the same school. Contrasts of school-level treatments, such as rural against urban, have to match across schools.
+- **With few schools, GPS cannot rescue the school-level contrasts:**
+  - **Effective sample size:** for a school-level treatment it is the number of schools, not the number of students.
+  - **Hidden confounding:** unmeasured differences between schools are confounded with the school-level treatment, and matching on observed X and Z cannot remove them.
+  - **Standard errors:** variances that treat students as independent are too small when outcomes are correlated within schools. That includes the rebuild's bootstrap, which resamples students, and AI 2006 and AI 2016.
+
+The methods above that use the clustering mostly address a student-level treatment with students nested in schools. Yang (2018), for example, covers a binary student-level treatment. A school-level treatment across few schools remains a design problem more than an estimation one.
+
 References for sections 4 and 6:
 
 - Arpino, B., & Mealli, F. (2011). The specification of the propensity score in multilevel observational studies. *Computational Statistics & Data Analysis, 55*(4), 1770–1780.
