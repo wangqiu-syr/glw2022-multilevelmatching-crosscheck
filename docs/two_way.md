@@ -1,6 +1,6 @@
 # Two-way comparison: rebuilt results and the paper's published results
 
-All bias figures here are against the population ATE (τ\_pop); see [Two targets: τ\_pop and τ\_bal](../README.md#two-targets-τ_pop-and-τ_bal) in the README for why there are two truths. Simulation 2's published biases appear with the signs as printed in the paper's Table 3; the comparison with the paper's signs flipped is shown separately (see "A note on the sign of bias" and Figures). Our values are rounded from `results/sim1_vs_paper.csv`, `results/sim2_vs_paper.csv` and `results/sim2_bias_correlations.csv`; the paper's values are as transcribed in `results/paper_table1.csv` and `results/paper_table3.csv`. Coverage is the percentage of 95% intervals that contain the true effect.
+All bias figures here are against the population ATE (τ\_pop); see [Two targets: τ\_pop and τ\_bal](rebuild.md#two-targets-τ_pop-and-τ_bal) in docs/rebuild.md for why there are two truths. Simulation 2's published biases appear with the signs as printed in the paper's Table 3; the comparison with the paper's signs flipped is shown separately (see "A note on the sign of bias" and Figures). Our values are rounded from `results/sim1_vs_paper.csv`, `results/sim2_vs_paper.csv` and `results/sim2_bias_correlations.csv`; the paper's values are as transcribed in `results/paper_table1.csv` and `results/paper_table3.csv`. Coverage is the percentage of 95% intervals that contain the true effect.
 
 ## Simulation 1 (paper's Table 1)
 
