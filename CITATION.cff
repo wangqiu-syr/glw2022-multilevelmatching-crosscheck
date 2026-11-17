@@ -83,4 +83,5 @@ references:
     title: "Multilevel covariates matching and generalized propensity score matching: An R rebuild of Guo, Liu and Wang's (2022) simulations"
     version: 1.0.0
     year: 2026
+    doi: 10.5281/zenodo.24301219
     repository-code: "https://github.com/wangqiu-syr/glw2022-rebuild2"
