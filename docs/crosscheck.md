@@ -70,7 +70,7 @@ A matched outcome is one imputed potential outcome Ŷ\_i(s); a replication has 4
 - **The GPS model's fitting tolerance matters for single estimates (D5).** The package fits the GPS model at nnet's default tolerance. In Simulation 2 that changes about 6% of the matched outcomes in every replication and moves single estimates by up to 2.7 ([side-by-side note, Figure 4](../crosscheck/side_by_side/README.md#agreement-replication-by-replication)), but not the bias or MSE.
 - **Reproducibility across setups.** The regenerated samples are the main run's. Our DIF and CM estimates, and our GPS estimates in Simulation 1, reproduce the main run's exactly. In Simulation 2 a few GPS near-ties fall differently on this setup (Linux, R 4.3.3) than in the main run (Windows, R 4.5.1), moving GPS summary means by at most 5.6e-5.
 
-<img src="crosscheck/side_by_side/figures/fig4_gps_per_replication.png" width="100%" alt="Every GPS estimate, the package's own GPS fit against the rebuild, Simulations 1 and 2">
+<img src="../crosscheck/side_by_side/figures/fig4_gps_per_replication.png" width="100%" alt="Every GPS estimate, the package's own GPS fit against the rebuild, Simulations 1 and 2">
 
 **Figure J. Every GPS estimate, package against rebuild.** Each point is one pair in one replication (3,000 in Simulation 1, 18,000 in Simulation 2). In Simulation 2 the package's own GPS fit moves estimates off the diagonal in both directions; the averages, and hence bias and MSE, are unchanged.
 
