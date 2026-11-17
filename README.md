@@ -45,6 +45,7 @@ Mean absolute bias and mean MSE against τ\_pop, averaged over the 6 pairs of Si
 | The paper, the rebuild and the package side by side: bias, MSE, the decisions D1–D13, analytic intervals (D8), what "multilevel" means | [crosscheck/side_by_side/README.md](crosscheck/side_by_side/README.md) |
 | Intervals: where each method comes from, their math, why coverage is not accuracy, why CM coverage is low, with a math appendix | [crosscheck/intervals/README.md](crosscheck/intervals/README.md) |
 | The independent rebuild 2, and the test of bias-adjusted CM | [crosscheck/rebuild2/README.md](crosscheck/rebuild2/README.md) |
+| Three readings of the paper's Eq. (4), including matching both groups on the score for t (Simulation 1) | [crosscheck/eq4_readings/README.md](crosscheck/eq4_readings/README.md) |
 | How this repository was set up: status, open questions, how to install R and the package on Linux, working rules, log | [BRIDGE.md](BRIDGE.md) |
 
 ## Reproduce
@@ -68,11 +69,12 @@ From the repository root (R 4.5; packages MASS and nnet):
 | 11. Intervals tables and figure | `Rscript crosscheck/R/11_intervals_summary.R` | seconds |
 | 12. Bias-adjusted CM (`Matching::Match(BiasAdjust = TRUE)`) | `Rscript crosscheck/R/12_cm_biasadjust.R sim=1`, then `sim=2` | On 4 workers: about 15 s; about 6 min |
 | 13. Rebuild 2 comparison tables and figure | `Rscript crosscheck/R/13_rebuild2_comparison.R` | seconds |
+| 14. A third reading of Eq. (4), Simulation 1 | `Rscript crosscheck/R/14_gps_same_score.R` | On 4 workers: about 15 s |
 
 **Checkpoints.** Each replication is saved to `results/reps/simK/rep_###.rds` when it finishes. Re-running `run_all.R` skips replications that are already done, so an interrupted run resumes where it stopped. It refuses to mix checkpoints made with different settings (number of replications, bootstrap resamples, seed or GPS fitting tolerance). Progress goes to standard output; redirect it to `results/run_log.txt` for a background run.
 
 **Packages needed:**
-- **Steps 9–11:** only R with MASS and nnet.
+- **Steps 9–11 and 14:** only R with MASS and nnet.
 - **Step 12:** also `Matching`.
 - **Steps 5–7:** `multilevelMatching` 1.0.0 and `Matching`. On R 4.3 or later the package needs an input workaround, which the scripts apply. Installation is in [BRIDGE.md](BRIDGE.md), and the workaround in [docs/crosscheck.md](docs/crosscheck.md), Appendix B. The cross-check ran on R 4.3.3; its replications regenerate the main run's samples from the same seeds.
 
@@ -83,9 +85,9 @@ From the repository root (R 4.5; packages MASS and nnet):
 - **[R/](R/):** the rebuild's scripts, listed by role in [docs/rebuild.md](docs/rebuild.md#files-of-the-rebuild).
 - **[results/](results/):** the main run's summaries and figures, and the values transcribed from the paper's Tables 1, 3 and 5 (`paper_table*.csv`).
 - **[docs/](docs/):** the rebuild and cross-check documents in the table above.
-- **[crosscheck/R/](crosscheck/R/):** cross-check scripts 01–13, run in the order of the Reproduce table.
+- **[crosscheck/R/](crosscheck/R/):** cross-check scripts 01–14, run in the order of the Reproduce table.
 - **[crosscheck/results/](crosscheck/results/)** and **[crosscheck/logs/](crosscheck/logs/):** their results and logs. The 16 per-replication result files are gzip-compressed CSVs (`.csv.gz`), which R's `read.csv()` reads as they are.
-- **[crosscheck/side_by_side/](crosscheck/side_by_side/), [crosscheck/intervals/](crosscheck/intervals/), [crosscheck/rebuild2/](crosscheck/rebuild2/):** one note each, with its own tables/ and figures/.
+- **[crosscheck/side_by_side/](crosscheck/side_by_side/), [crosscheck/intervals/](crosscheck/intervals/), [crosscheck/rebuild2/](crosscheck/rebuild2/), [crosscheck/eq4_readings/](crosscheck/eq4_readings/):** one note each, with its own tables/ (and figures/ where there are figures).
 - **Project files:** [LICENSE](LICENSE) (MIT), [CITATION.cff](CITATION.cff) (citation metadata) and [.gitignore](.gitignore), which keeps checkpoints, PDFs and local files out of the repo.
 
 Per-replication checkpoints (`results/reps*/`, `crosscheck/reps/`) are local only, not in the repo. The paper's PDF is not included.

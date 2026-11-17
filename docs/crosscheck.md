@@ -244,6 +244,9 @@ crosscheck/R/12_cm_biasadjust.R   CM through Matching::Match, without and with B
 crosscheck/R/13_rebuild2_comparison.R  tables and figure for crosscheck/rebuild2/
 crosscheck/results/sim{1,2}_cm_biasadjust_reps.csv.gz  per-replication results of 12
 crosscheck/rebuild2/              README.md (rebuild 2 vs this rebuild vs the paper; bias-adjustment test), data/ (rebuild 2's summaries, copied), tables/, figures/
+crosscheck/R/14_gps_same_score.R  a third reading of Eq. (4) (score for t on both sides), Simulation 1, point estimates
+crosscheck/results/sim1_gps_same_score_reps.csv.gz  per-replication results of 14
+crosscheck/eq4_readings/          README.md (three readings of Eq. (4), Simulation 1), tables/
 ```
 
 The earlier draft script fails as written: a plain matrix `X` errors on R >= 4.3, `fit$estimate` partially matches `estimate_args`, `summary()` returns `NULL`, it does not flip signs, and it omits `existing`. `03_check_pasted.R` records this.

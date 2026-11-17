@@ -80,6 +80,7 @@ Rscript crosscheck/R/10_cm_bootstrap_centring.R sim=1 R=500 workers=4 > crossche
 Rscript crosscheck/R/11_intervals_summary.R
 for s in 1 2; do Rscript crosscheck/R/12_cm_biasadjust.R sim=$s workers=4 > crosscheck/logs/12_cm_biasadjust_sim${s}_log.txt 2>&1; done
 Rscript crosscheck/R/13_rebuild2_comparison.R
+Rscript crosscheck/R/14_gps_same_score.R > crosscheck/logs/14_gps_same_score_log.txt 2>&1
 ```
 
 On a laptop: `install.packages("Matching")`, then install `multilevelMatching` from CRAN if it is available there, or from source (`remotes::install_github("cran/multilevelMatching")`). Either way, on R >= 4.3 the `oldClass` workaround in `02_pkg_fits.R` is needed ([docs/crosscheck.md](docs/crosscheck.md), Appendix B.2). Full texts of some cited papers (on arxiv.org, link.springer.com and sticerd.lse.ac.uk) were not reachable from that environment, so the intervals note relies on their published abstracts.
@@ -121,6 +122,8 @@ Dates are UTC, as GitHub records the merges.
   - Pre-publication content check, a link fix, consistent labels across the three repositories, and the byline (PRs #15–#18).
   - Plain-language pass, mirrored from rebuild 1: terms glossed once, the random-number streams described in words with a citation, four general Lessons, and a Conclusions sentence that no longer calls these results a baseline for clustered data. Rebuild 2's "true scores" are now "population scores".
   - PR #12 (four-way comparison) closed unmerged. Its one new result, the check that R1's and R2's transcriptions of the paper's Tables 1 and 3 agree in all 318 cells, is now in the rebuild 2 note, section 1, with R2's two transcriptions in `crosscheck/rebuild2/data/`.
+  - Rebuild 1's D13 clause mirrored in `docs/rebuild.md` (PR #21). The paper's Eqs. (3) and (4) shown as printed, with page, in `docs/rebuild.md` and `docs/sensitivity.md`, as in rebuild 1 (PRs #22 and #23).
+  - A third reading of Eq. (4), matching both groups on the score for t, run on Simulation 1 (script 14, `crosscheck/eq4_readings/`). Its mean absolute bias, 0.313, is close to the paper's 0.293, but its pair-by-pair pattern is not (correlation 0.16). Cross-check only; the rebuilds are unchanged.
 
 ## References
 
