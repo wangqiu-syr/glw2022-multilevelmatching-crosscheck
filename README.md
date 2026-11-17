@@ -12,15 +12,15 @@ As in the paper, the main criteria are bias and mean squared error (MSE); interv
 ## At a glance
 
 Mean absolute bias and mean MSE against τ\_pop, averaged over the 6 pairs of Simulation 1 and the 36 pairs of Simulation 2.
-- **Paper:** its Tables 1 and 3. Table 1 reports no MSE.
+- **Paper:** its Tables 1 and 3. Table 1 reports no MSE (–).
 - **Rebuild:** the main run.
 - **Package:** `multilevelMatching` 1.0.0, run as a user would run it, on the rebuild's samples.
 - **Rebuild 2:** the independent rebuild, on its own samples.
 
 | Simulation | Estimator | Abs. bias: paper | rebuild | package | rebuild 2 | MSE: paper | rebuild | package | rebuild 2 |
 |---|---|---|---|---|---|---|---|---|---|
-| 1 | CM | 0.143 | 0.187 | 0.187 | 0.166 |  | 0.363 | 0.363 | 0.364 |
-| 1 | GPS | 0.293 | 0.026 | 0.026 | 0.043 |  | 0.676 | 0.676 | 0.656 |
+| 1 | CM | 0.143 | 0.187 | 0.187 | 0.166 | – | 0.363 | 0.363 | 0.364 |
+| 1 | GPS | 0.293 | 0.026 | 0.026 | 0.043 | – | 0.676 | 0.676 | 0.656 |
 | 2 | CM | 0.139 | 0.295 | 0.295 | 0.299 | 0.368 | 0.288 | 0.288 | 0.294 |
 | 2 | GPS | 0.307 | 0.099 | 0.100 | 0.108 | 1.916 | 0.626 | 0.627 | 0.612 |
 
