@@ -1,5 +1,5 @@
 # 13_rebuild2_comparison.R -- tables and figure for crosscheck/rebuild2/README.md:
-# the paper, this rebuild (R1) and the independent rebuild-2 (R2), and the
+# the paper, this rebuild (R1) and the independent rebuild 2 (R2), and the
 # bias-adjusted CM of 12_cm_biasadjust.R.
 #
 # Inputs: results/ (main run, paper tables), crosscheck/results/ (04, 09, 12),

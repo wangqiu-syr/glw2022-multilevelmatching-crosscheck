@@ -1,10 +1,10 @@
-# Rebuild-2: an independent rebuild, set beside this rebuild and the paper
+# Rebuild 2: an independent rebuild, set beside this rebuild and the paper
 
-Rebuild-2 is a second rebuild of the two simulation studies in Guo, Liu and Wang (2022), made independently of this repository's rebuild. This note compares the two rebuilds with each other and with the paper. It also tests one idea about the paper's covariate matching (CM) results that the comparison suggested: that the paper's CM was bias-adjusted.
+Rebuild 2 is a second rebuild of the two simulation studies in Guo, Liu and Wang (2022), made independently of this repository's rebuild. This note compares the two rebuilds with each other and with the paper. It also tests one idea about the paper's covariate matching (CM) results that the comparison suggested: that the paper's CM was bias-adjusted.
 
 Names used below:
 - **R1:** this repository's rebuild (the main run, imported from glw2022-matching-replication).
-- **R2:** rebuild-2, in the private repository `wangqiu-syr/glw2022-rebuild2`, at commit `7b25857` on `main`.
+- **R2:** rebuild 2, in the private repository `wangqiu-syr/glw2022-rebuild2`, at commit `7b25857` on `main`.
 - **Truths:** R2's τ\_super and τ\_mix are R1's τ\_pop and τ\_bal.
 
 R2's summary results are copied into [data/](data/), with their source.
@@ -43,7 +43,7 @@ R2's summary results are copied into [data/](data/), with their source.
   - **Variance:** the paper's CM has about twice the variance of plain CM (0.34 against 0.16), which bias adjustment would lower, not raise.
   - **Conclusion:** what the paper computed remains open.
 
-## 1. How independent is rebuild-2?
+## 1. How independent is rebuild 2?
 
 R2 was built in a new Claude Code session, on a new repository, from the paper alone. The session was given only the paper's PDF and a short brief:
 - **Rules:** rebuild Simulations 1 and 2 in R; record every unclear point as a decision with its reason; do not use other code, other replications, or packages that implement these matching estimators; work in four stages, each stopping for review.
@@ -58,7 +58,7 @@ Limits to that independence:
 
 ## 2. The decisions, side by side
 
-R1's decisions are in [docs/spec.md](../../docs/spec.md) (D1–D13). R2's are in its `docs/decisions.md` (D1–D26).
+R1's decisions are in [docs/spec.md](../../docs/spec.md) (D1–D13). R2's are in its `docs/decisions.md` (D1–D26). The numbers are specific to each repository, and the same label can name different decisions: R1's D9 is the balanced-design point, R2's D9 the CM distance. So this note always says whose decision a number refers to, as in "R2's D15" or "its D20".
 
 | Open point in the paper | R1 | R2 | Same? |
 |---|---|---|---|

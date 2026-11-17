@@ -31,10 +31,10 @@ The [README](README.md) has the summary and a map of all documents.
 | Why the three GPS versions compute the same estimator | [docs/crosscheck_math.md](docs/crosscheck_math.md) | PR #4 |
 | Paper, rebuild and package side by side; D8 analytic-interval sensitivity | [crosscheck/side_by_side/README.md](crosscheck/side_by_side/README.md) | PRs #5, #6, #7 |
 | Intervals: sources, math, why CM coverage is low; math appendix; the paper's interval facts from its PDF | [crosscheck/intervals/README.md](crosscheck/intervals/README.md) | PRs #8, #9 |
-| Rebuild-2 comparison; bias-adjusted CM test | [crosscheck/rebuild2/README.md](crosscheck/rebuild2/README.md) | PRs #10, #11 |
+| Rebuild 2 comparison; bias-adjusted CM test | [crosscheck/rebuild2/README.md](crosscheck/rebuild2/README.md) | PRs #10, #11 |
 | README slimmed to a summary and map; this file condensed | [README.md](README.md), [docs/rebuild.md](docs/rebuild.md), this file | branch `claude/slim-readme-bridge` |
 
-Rebuild-2 lives in its own private repository, `wangqiu-syr/glw2022-rebuild2`. Its stages 1–4 are in its PR #1. Its later PRs #2–#4 (up to `706d514` on 2026-11-17) add summary figures, a provenance note and a long-format summary file, and change none of its existing results. This repository only reads it. Its four summary CSVs are copied into [crosscheck/rebuild2/data/](crosscheck/rebuild2/data/) from `7b25857`, and they are unchanged at `706d514`.
+Rebuild 2 lives in its own private repository, `wangqiu-syr/glw2022-rebuild2`. Its stages 1–4 are in its PR #1. Its later PRs #2–#4 (up to `706d514` on 2026-11-17) add summary figures, a provenance note and a long-format summary file, and change none of its existing results. This repository only reads it. Its four summary CSVs are copied into [crosscheck/rebuild2/data/](crosscheck/rebuild2/data/) from `7b25857`, and they are unchanged at `706d514`.
 
 ## Open questions
 
@@ -43,7 +43,7 @@ Rebuild-2 lives in its own private repository, `wangqiu-syr/glw2022-rebuild2`. I
   - **Variance:** it is about twice as variable as plain CM.
   - **What doesn't fit:** neither plain CM, nor bias-adjusted CM (`Matching::Match(BiasAdjust = TRUE)`), nor an exchange of the CM and GPS labels fits both its bias and its MSE ([crosscheck/rebuild2/README.md](crosscheck/rebuild2/README.md), section 5).
 - **How the paper built its intervals.** It does not say. Its application's 95% limits are exactly estimate ± 1.96 sd, so they are normal intervals, not percentile ones. Its simulation coverage is closer to analytic Abadie–Imbens (2006) intervals than to the rebuild's bootstrap (side-by-side note, section 5.2).
-- **The DIF column.** The rebuild's DIF bias tracks the paper's (with the sign flipped) but does not match it value for value. Rebuild-2 found the same and could not trace the cause (its D20).
+- **The DIF column.** The rebuild's DIF bias tracks the paper's (with the sign flipped) but does not match it value for value. Rebuild 2 found the same and could not trace the cause (its D20).
 
 ## Facts from the paper (checked against the PDF, 2026-11-15 and 2026-11-16)
 
@@ -90,7 +90,7 @@ On a laptop: `install.packages("Matching")`, then install `multilevelMatching` f
 - Changes are made on separate branches and merged into `main` through pull requests, each approved by the owner.
 - Re-running a script resumes from its checkpoints in `results/reps*/` or `crosscheck/reps/`, which are git-ignored and local only.
 - Keep the paper's PDF out of the repo.
-- Rebuild-2 is read here, never written to from this repository's work. While it ran, nothing was passed back to it.
+- Rebuild 2 is read here, never written to from this repository's work. While it ran, nothing was passed back to it.
 
 ## Log
 
@@ -107,11 +107,11 @@ Dates are UTC, as GitHub records the merges.
   - README reorganized around the side-by-side results (PR #6).
   - D8 in the spec and the verdict (PR #7).
   - Intervals note (PR #8) and its math appendix, with the paper's interval facts from the PDF (PR #9).
-  - Rebuild-2 comparison and the bias-adjusted CM test (PR #10). The blind prediction planned for rebuild-2 was not made: it had finished, and its log already quoted results, before it was read here.
-  - In rebuild-2's repository, its figures commit was merged as its PR #2.
+  - Rebuild 2 comparison and the bias-adjusted CM test (PR #10). The blind prediction planned for rebuild 2 was not made: it had finished, and its log already quoted results, before it was read here.
+  - In rebuild 2's repository, its figures commit was merged as its PR #2.
 - **2026-11-17:**
   - BRIDGE updated for those merges (PR #11).
-  - README slimmed to a summary and map. Its rebuild sections moved unchanged to `docs/rebuild.md`; its side-by-side, intervals and rebuild-2 sections are covered by their notes.
+  - README slimmed to a summary and map. Its rebuild sections moved unchanged to `docs/rebuild.md`; its side-by-side, intervals and rebuild 2 sections are covered by their notes.
   - This file condensed, with its detailed sections moved unchanged to `docs/crosscheck.md` (Appendices A–C).
   - The 16 per-replication CSVs in `crosscheck/results/` gzip-compressed (`.csv.gz`), taking them from 12.7 MB to 4.7 MB and the repository from 15.1 MB to 7.1 MB; the writer scripts (04, 07, 09, 10, 12) now write them that way.
     - **Content:** each file decompresses to exactly the committed CSV.
