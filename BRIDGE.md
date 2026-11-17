@@ -118,6 +118,9 @@ Dates are UTC, as GitHub records the merges.
     - **Readers:** scripts 05, 06, 08, 11 and 13, rerun on the compressed files, reproduce all their outputs unchanged.
     - **Writers:** 09, 10 and 12, rerun, rewrite identical content. 04 and 07 were tested on 2 replications in a copy of the repo.
     - **Logs:** the earlier run logs keep the old file names.
+  - Pre-publication content check, a link fix, consistent labels across the three repositories, and the byline (PRs #15–#18).
+  - Plain-language pass, mirrored from rebuild 1: terms glossed once, the random-number streams described in words with a citation, four general Lessons, and a Conclusions sentence that no longer calls these results a baseline for clustered data. Rebuild 2's "true scores" are now "population scores".
+  - PR #12 (four-way comparison) closed unmerged. Its one new result, the check that R1's and R2's transcriptions of the paper's Tables 1 and 3 agree in all 318 cells, is now in the rebuild 2 note, section 1, with R2's two transcriptions in `crosscheck/rebuild2/data/`.
 
 ## References
 

@@ -13,7 +13,7 @@ Guo, Liu and Wang (2022) proposed covariate matching (CM) and generalized propen
 
 ## Why this replication
 
-The paper offers estimators for treatment effects when students are nested in schools, but it provides no code or data and leaves several simulation details unspecified. This rebuild checks which reported results hold up, documents the choices needed to run it (D1–D13), and serves as a baseline for extending matching to clustered multilevel data.
+The paper offers estimators for treatment effects when students are nested in schools, but it provides no code or data and leaves several simulation details unspecified. This rebuild checks which reported results hold up and documents the choices needed to run it (D1–D13), with code and results that others can rerun and check.
 
 ## Background
 
@@ -82,11 +82,11 @@ So `existing` equals our GPS except at near-ties. `multinom` uses β̃ ≈ β̂,
 ## Design (as in Section 5)
 
 - **Covariates.** X = (X1, …, X4) ~ multivariate normal with the paper's covariance matrix; Z1 ~ Uniform(−3, 3) (D2), Z2 ~ χ²(1), Z3 ~ Bernoulli(0.5).
-- **Treatment.** Multinomial logit with η₁ = 0 and η_t = 0.1 × a sum of linear and squared covariate terms (D1). Simulation 1 has A = 4 groups of 100 units (6 effects); Simulation 2 has A = 9 groups of 200 units (36 effects).
+- **Treatment.** Multinomial logit (logistic regression extended to more than two groups) with η₁ = 0 and η_t = 0.1 × a sum of linear and squared covariate terms (D1). Simulation 1 has A = 4 groups of 100 units (6 effects); Simulation 2 has A = 9 groups of 200 units (36 effects).
 - **Outcomes.** Y(t) is linear in (X, Z) with group-specific coefficients, plus N(0, 1) noise.
-- **Estimators.** DIF, the raw difference in group means; CM, one Mahalanobis nearest neighbour with replacement on all 7 covariates; GPS, one nearest neighbour on the score from a linear multinomial logit (misspecified on purpose).
-- **Inference.** Percentile bootstrap, B = 200, resampling within treatment groups and refitting the GPS model each time (D8).
-- **Scale.** 500 replications per simulation. Bias, MSE and coverage are reported against two truths: the population ATE (τ\_pop) and the balanced-design ATE (τ\_bal) (D4, D9).
+- **Estimators.** DIF, the raw difference in group means; CM, which matches each unit to its nearest neighbour on all 7 covariates by Mahalanobis distance (a distance that scales the covariates by their variances and allows for their correlations), one match per unit and with replacement, so a unit can be used more than once; GPS, which matches on the estimated probability of receiving each treatment, from a multinomial logit with linear terms only (misspecified on purpose, because treatment depends on squared terms too).
+- **Inference.** Percentile bootstrap: each 95% interval runs from the 2.5th to the 97.5th percentile of the estimates in B = 200 resampled data sets, resampling within treatment groups and refitting the GPS model each time (D8).
+- **Scale.** 500 replications per simulation. Bias (mean estimate minus the truth), MSE (mean squared error: the average squared distance between estimate and truth, which combines bias and variance) and coverage (the share of 95% intervals that contain the truth) are reported against two truths: the population ATE (τ\_pop) and the balanced-design ATE (τ\_bal) (D4, D9).
 
 The full set-up is in [`docs/spec.md`](spec.md).
 
@@ -187,9 +187,12 @@ What Figure F shows: DIF swings widely across the 36 effects (−2.74 to 2.00), 
 
 In short, where the truth is known, the rebuild shows a bias–variance trade-off: GPS is the least biased estimator and CM the most efficient, in line with Sections 5 and 7. GPS is less biased here than in the paper's tables; reading Eq. (4) literally would close about half of the Simulation 1 gap, but Yang et al.'s own package computes the estimator as this rebuild does (D7), so that explains the gap only if the paper's code followed Eq. (4) as printed; the rest depends on details not reported in the paper. The application's own truth remains unknown, so these results speak to the simulated settings. Every choice and result is documented, so each can be checked.
 
-## Lesson
+## Lessons
 
-The GPS model's fitting tolerance matters when matching on fitted probabilities. With `nnet::multinom`'s defaults (reltol = 1e-8, maxit = 100), the fitted probabilities were not precise enough for the very small matching distances, and the GPS estimate depended on the optimizer's starting point. Fitting at reltol = 1e-14 with maxit = 10000 (D5) removed this, and a test now checks it. The cross-check shows the same with `multilevelMatching` as shipped: it fits the GPS model at the defaults, and in Simulation 2 about 6% of its matched outcomes differ from ours in every replication ([docs/crosscheck.md](crosscheck.md)).
+- **Write down every choice the paper leaves open, before running anything.** Thirteen were needed here (D1–D13 in [docs/spec.md](spec.md)), and several change the numbers.
+- **Know which true effect you are estimating.** Drawing a fixed number of units per group changes whom the sample represents ([τ\_pop vs τ\_bal](#two-targets-τ_pop-and-τ_bal)).
+- **Fit the propensity model precisely before matching on it.** With the software's default settings, which units were matched depended on chance details of the fit; a tighter fit removed this (D5), and a test now checks it. The cross-check shows the same with `multilevelMatching` as shipped: it fits the GPS model at the default settings, and in Simulation 2 about 6% of its matched outcomes differ from ours in every replication ([docs/crosscheck.md](crosscheck.md)).
+- **Tables should state their conventions:** the sign of the bias, what the MSE measures, and how the intervals were built.
 
 ## Files of the rebuild
 
@@ -205,7 +208,7 @@ R scripts in the R/ folder, run from the repository root; the order is under [Re
 <summary>R scripts by role (14 files)</summary>
 
 - **Data generation:** [R/dgp.R](../R/dgp.R) (covariates, treatment probabilities, outcomes, true effects); [R/check_truth.R](../R/check_truth.R) (computes and saves the true effects).
-- **Estimators:** [R/estimators.R](../R/estimators.R) (DIF, CM, GPS and the bootstrap); [R/gps_literal.R](../R/gps_literal.R) and [R/gps_literal2.R](../R/gps_literal2.R) (the D13 variants GPS_lit and GPS_lit2).
+- **Estimators:** [R/estimators.R](../R/estimators.R) (DIF, CM, GPS and the bootstrap); [R/gps_literal.R](../R/gps_literal.R) and [R/gps_literal2.R](../R/gps_literal2.R) (the two literal readings of Eq. (4) used in the D13 check, labelled GPS_lit and GPS_lit2 in [docs/sensitivity.md](sensitivity.md)).
 - **Runners:** [R/replicate.R](../R/replicate.R) (one replication, with its own random-number stream); [R/run_sim.R](../R/run_sim.R) (parallel runs with checkpoints); [R/run_all.R](../R/run_all.R) (both simulations, then the summaries); [R/run_gps_literal.R](../R/run_gps_literal.R) and [R/run_gps_literal2.R](../R/run_gps_literal2.R) (paired D13 runs and their self-tests).
 - **Summaries and plots:** [R/summarize.R](../R/summarize.R) (summary and comparison CSVs); [R/plots.R](../R/plots.R) (figures and the Simulation 2 comparison); [R/table3_checks.R](../R/table3_checks.R) (exploratory checks of the published Table 3, from existing CSVs).
 - **Tests:** [R/test_estimators.R](../R/test_estimators.R) (unit and integration tests).
@@ -222,8 +225,8 @@ R scripts in the R/ folder, run from the repository root; the order is under [Re
 - **Figures:** [results/fig1_bias_sim2_pop.png](../results/fig1_bias_sim2_pop.png) and [results/fig1_bias_sim2_bal.png](../results/fig1_bias_sim2_bal.png) (signed bias of the 36 Simulation 2 effects, against τ\_pop and τ\_bal); [results/fig1_bias_sim2_pop_vs_paper.png](../results/fig1_bias_sim2_pop_vs_paper.png) and [results/fig1_bias_sim2_pop_vs_paper_flipped.png](../results/fig1_bias_sim2_pop_vs_paper_flipped.png) (the same with the paper's values overlaid, as published and multiplied by −1); [results/fig_sim1_abs_bias_vs_paper.png](../results/fig_sim1_abs_bias_vs_paper.png) (absolute bias of the 6 Simulation 1 effects, ours vs the paper's Table 1); [results/fig1_paper_table3_redrawn.png](../results/fig1_paper_table3_redrawn.png) (the paper's Fig. 1 redrawn from its Table 3, not replicated); [results/fig2_table5_redrawn.png](../results/fig2_table5_redrawn.png) (the paper's Table 5 redrawn, not replicated).
 - **Simulation 1 CSVs:** [results/true_effects_sim1.csv](../results/true_effects_sim1.csv) (τ\_pop and τ\_bal per pair); [results/sim1_summary.csv](../results/sim1_summary.csv) (bias, SD, MSE, coverage and CI width per estimator, pair and target); [results/sim1_diagnostics.csv](../results/sim1_diagnostics.csv) (per replication: run time, GPS convergence, matching distances); [results/sim1_vs_paper.csv](../results/sim1_vs_paper.csv) (against the paper's Table 1).
 - **Simulation 2 CSVs:** [results/true_effects_sim2.csv](../results/true_effects_sim2.csv); [results/sim2_summary.csv](../results/sim2_summary.csv); [results/sim2_diagnostics.csv](../results/sim2_diagnostics.csv); [results/sim2_vs_paper.csv](../results/sim2_vs_paper.csv) (against the paper's Table 3); [results/sim2_bias_correlations.csv](../results/sim2_bias_correlations.csv) (correlation with the paper's bias, as published and flipped); [results/table3_checks.csv](../results/table3_checks.csv) (the numbers in docs/table3_checks.md).
-- **Sensitivity CSVs (D13):** [results/gps_literal_sim1.csv](../results/gps_literal_sim1.csv) (GPS against GPS_lit); [results/gps_literal2_sim1.csv](../results/gps_literal2_sim1.csv) (GPS, GPS_lit and GPS_lit2).
-- **Run records:** [results/run_log.txt](../results/run_log.txt) and [results/run_session_info.txt](../results/run_session_info.txt) (log and `sessionInfo()` of the full run).
+- **Sensitivity CSVs (D13):** [results/gps_literal_sim1.csv](../results/gps_literal_sim1.csv) (the main GPS against the first literal reading); [results/gps_literal2_sim1.csv](../results/gps_literal2_sim1.csv) (the main GPS and both literal readings).
+- **Run records:** [results/run_log.txt](../results/run_log.txt) and [results/run_session_info.txt](../results/run_session_info.txt) (the full run's log, and the R version and packages it used).
 
 </details>
 

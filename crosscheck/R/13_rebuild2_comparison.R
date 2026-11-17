@@ -5,7 +5,8 @@
 # Inputs: results/ (main run, paper tables), crosscheck/results/ (04, 09, 12),
 # crosscheck/side_by_side/tables/d8_coverage_by_pair.csv (08),
 # crosscheck/intervals/tables/sim<k>_cm_bias_coverage.csv (11) and
-# crosscheck/rebuild2/data/ (R2's summaries, copied; see its README).
+# crosscheck/rebuild2/data/ (R2's summaries and its transcription of the
+# paper's Tables 1 and 3, copied; see its README).
 #
 #   Rscript crosscheck/R/13_rebuild2_comparison.R
 # Writes crosscheck/rebuild2/tables/*.{csv,md} and crosscheck/rebuild2/figures/*.png.
@@ -97,12 +98,12 @@ t3 <- do.call(rbind, lapply(S, function(s) do.call(rbind, lapply(c("CM", "GPS"),
   r2 <- 100 * s$r2c(e); r2t <- if (e == "GPS") 100 * s$r2c("GPS_true") else NA
   data.frame(Simulation = s$sim, Estimator = e, Paper = mean(s$paper[[paste0(e, "_cov")]]),
              `R1: bootstrap` = mean(boot), `R1: AI 2006` = mean(ai06), `R1: AI 2016` = mean(ai16),
-             `R2: analytic (its D26)` = mean(r2), `R2: GPS with true scores` = mean(r2t),
+             `R2: analytic (its D26)` = mean(r2), `R2: GPS with population scores` = mean(r2t),
              `R1 AI 2006 vs R2, per pair: correlation` = cor(ai06, r2), `R1 AI 2006 vs R2: mean abs. difference` = mean(abs(ai06 - r2)),
              `R2: SE / SD` = mean(s$r2c(e, "se_ratio")), check.names = FALSE)
 }))))
 save_table(t3, "coverage_summary", digits = c(Paper = 1, `R1: bootstrap` = 1, `R1: AI 2006` = 1, `R1: AI 2016` = 1,
-           `R2: analytic (its D26)` = 1, `R2: GPS with true scores` = 1, `R1 AI 2006 vs R2, per pair: correlation` = 3,
+           `R2: analytic (its D26)` = 1, `R2: GPS with population scores` = 1, `R1 AI 2006 vs R2, per pair: correlation` = 3,
            `R1 AI 2006 vs R2: mean abs. difference` = 1, `R2: SE / SD` = 2))
 low <- do.call(rbind, lapply(S, function(s) {
   ai06 <- s$d8c("CM", "AI 2006"); r2 <- 100 * s$r2c("CM"); o1 <- order(ai06)[1:4]; o2 <- order(r2)[1:4]
@@ -145,6 +146,25 @@ save_table(t6, "cm_biasadjust_vs_paper", digits = 3)
 sim1_pairs <- data.frame(Pair = S[[1]]$pk, `Paper` = S[[1]]$paper$CM_abs, `R1 CM` = abs(S[[1]]$r1("CM", "bias")),
                          `R2 CM` = abs(S[[1]]$r2("CM", "bias")), `R1 CM, bias-adjusted` = abs(S[[1]]$ba$bias), check.names = FALSE)
 save_table(sim1_pairs, "sim1_cm_abs_bias_by_pair", digits = 3)
+
+# ---- 6. The paper's tables, transcribed twice ---------------------------------
+# R1's transcription (results/paper_table{1,3}.csv) against R2's, made
+# independently (data/rebuild2_paper_table1_sim1.csv, ..._table3_sim2.csv).
+p1 <- read.csv(file.path("results", "paper_table1.csv")); q1 <- read.csv(file.path(DAT, "rebuild2_paper_table1_sim1.csv"))
+p3 <- read.csv(file.path("results", "paper_table3.csv")); q3 <- read.csv(file.path(DAT, "rebuild2_paper_table3_sim2.csv"))
+m1 <- match(p1$pair, paste(q1$t, q1$tprime, sep = ",")); m3 <- match(p3$pair, paste(q3$t, q3$tprime, sep = ","))
+stopifnot(!anyNA(m1), !anyNA(m3), nrow(p1) == nrow(q1), nrow(p3) == nrow(q3))
+d1 <- cbind(p1$DIF_abs_bias - q1$dif_absbias[m1], p1$CM_abs_bias - q1$cm_absbias[m1], p1$CM_coverage - q1$cm_coverage[m1],
+            p1$GPS_abs_bias - q1$gps_absbias[m1], p1$GPS_coverage - q1$gps_coverage[m1])
+d3 <- cbind(p3$DIF_bias - q3$dif_bias[m3], p3$DIF_mse - q3$dif_mse[m3], p3$CM_bias - q3$cm_bias[m3], p3$CM_mse - q3$cm_mse[m3],
+            p3$CM_coverage - q3$cm_coverage[m3], p3$GPS_bias - q3$gps_bias[m3], p3$GPS_mse - q3$gps_mse[m3],
+            p3$GPS_coverage - q3$gps_coverage[m3])
+stopifnot(!anyNA(d1), !anyNA(d3))
+tc <- data.frame(Table = c("Table 1 (Simulation 1)", "Table 3 (Simulation 2)"), Pairs = c(nrow(d1), nrow(d3)),
+                 `Cells compared` = c(length(d1), length(d3)), `Cells that differ` = c(sum(d1 != 0), sum(d3 != 0)),
+                 `Largest difference` = c(max(abs(d1)), max(abs(d3))), check.names = FALSE)
+save_table(tc, "transcription_check", digits = 4)
+print(tc)
 
 # ---- figure ------------------------------------------------------------------
 png(file.path(FIG, "fig1_r1_r2_paper_bias.png"), width = 1600, height = 780, res = 150)
