@@ -64,7 +64,7 @@ Limits to that independence:
 | Table 1 (Simulation 1): absolute bias of DIF, CM and GPS; CM and GPS coverage | 6 | 30 | 0 |
 | Table 3 (Simulation 2): bias and "MSE" of DIF, CM and GPS; CM and GPS coverage | 36 | 288 | 0 |
 
-So the differences from the paper reported below are not transcription errors. R2 also checked its transcription against the tables' structure: each pairwise bias is a difference of two per-treatment terms, and all of the paper's bias columns fit that pattern to rounding.
+So the differences from the paper reported below are not transcription errors. R2 also checked its transcription against the tables' structure. Each estimate is the difference of two estimated means, one per treatment, so biases must add up along a chain: bias(1,3) = bias(1,2) + bias(2,3). The paper's bias columns do, to rounding.
 
 ## 2. The decisions, side by side
 

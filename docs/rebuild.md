@@ -191,7 +191,7 @@ In short, where the truth is known, the rebuild shows a bias–variance trade-of
 
 - **Write down every choice the paper leaves open, before running anything.** Thirteen were needed here (D1–D13 in [docs/spec.md](spec.md)), and several change the numbers.
 - **Know which true effect you are estimating.** Drawing a fixed number of units per group changes whom the sample represents ([τ\_pop vs τ\_bal](#two-targets-τ_pop-and-τ_bal)).
-- **Fit the propensity model precisely before matching on it.** With the software's default settings, which units were matched depended on chance details of the fit; a tighter fit removed this (D5), and a test now checks it. The cross-check shows the same with `multilevelMatching` as shipped: it fits the GPS model at the default settings, and in Simulation 2 about 6% of its matched outcomes differ from ours in every replication ([docs/crosscheck.md](crosscheck.md)).
+- **Fit the propensity model precisely before matching on it.** With the software's default settings, which units were matched depended on where the fitting algorithm started. Fitting more precisely (D5) removed this: fitted from two different starting points, the model now gives the same scores and the same estimates (test 4b in [R/test_estimators.R](../R/test_estimators.R)). The cross-check shows the same with `multilevelMatching` as shipped: it fits the GPS model at the default settings, and in Simulation 2 about 6% of its matched outcomes differ from ours in every replication ([docs/crosscheck.md](crosscheck.md)).
 - **Tables should state their conventions:** the sign of the bias, what the MSE measures, and how the intervals were built.
 
 ## Files of the rebuild
@@ -208,7 +208,7 @@ R scripts in the R/ folder, run from the repository root; the order is under [Re
 <summary>R scripts by role (14 files)</summary>
 
 - **Data generation:** [R/dgp.R](../R/dgp.R) (covariates, treatment probabilities, outcomes, true effects); [R/check_truth.R](../R/check_truth.R) (computes and saves the true effects).
-- **Estimators:** [R/estimators.R](../R/estimators.R) (DIF, CM, GPS and the bootstrap); [R/gps_literal.R](../R/gps_literal.R) and [R/gps_literal2.R](../R/gps_literal2.R) (the two literal readings of Eq. (4) used in the D13 check, labelled GPS_lit and GPS_lit2 in [docs/sensitivity.md](sensitivity.md)).
+- **Estimators:** [R/estimators.R](../R/estimators.R) (DIF, CM, GPS and the bootstrap); [R/gps_literal.R](../R/gps_literal.R) and [R/gps_literal2.R](../R/gps_literal2.R) (the two literal readings of Eq. (4) used in the D13 check; see [docs/sensitivity.md](sensitivity.md)).
 - **Runners:** [R/replicate.R](../R/replicate.R) (one replication, with its own random-number stream); [R/run_sim.R](../R/run_sim.R) (parallel runs with checkpoints); [R/run_all.R](../R/run_all.R) (both simulations, then the summaries); [R/run_gps_literal.R](../R/run_gps_literal.R) and [R/run_gps_literal2.R](../R/run_gps_literal2.R) (paired D13 runs and their self-tests).
 - **Summaries and plots:** [R/summarize.R](../R/summarize.R) (summary and comparison CSVs); [R/plots.R](../R/plots.R) (figures and the Simulation 2 comparison); [R/table3_checks.R](../R/table3_checks.R) (exploratory checks of the published Table 3, from existing CSVs).
 - **Tests:** [R/test_estimators.R](../R/test_estimators.R) (unit and integration tests).
