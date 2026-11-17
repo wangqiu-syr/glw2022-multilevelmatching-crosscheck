@@ -2,6 +2,8 @@
 
 Qiu Wang, Syracuse University · v1.0.0 · November 2026
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24301312.svg)](https://doi.org/10.5281/zenodo.24301312)
+
 This repository continues [glw2022-matching-replication](https://github.com/wangqiu-syr/glw2022-matching-replication), an R rebuild of the two simulation studies in Guo, Liu and Wang (2022), and keeps that rebuild unchanged. It checks the rebuild three ways:
 - **Against Yang et al.'s package.** `multilevelMatching` implements the matching estimators of Yang et al. (2016), to which the paper's methods reduce without the school-level covariates.
 - **Against an independent second rebuild,** [glw2022-rebuild2](https://github.com/wangqiu-syr/glw2022-rebuild2), written from the paper alone.
@@ -131,9 +133,9 @@ Each document has its own references. Cited here:
 
 ## How to cite
 
-Wang, Q. (2026). *Cross-checking a rebuild of Guo, Liu, and Wang (2022) with Yang et al.'s (2016) multilevelMatching package* (Version 1.0.0) [Computer software]. https://github.com/wangqiu-syr/glw2022-multilevelmatching-crosscheck
+Wang, Q. (2026). *Cross-checking a rebuild of Guo, Liu, and Wang (2022) with Yang et al.'s (2016) multilevelMatching package* (Version 1.0.0) [Computer software]. Zenodo. https://doi.org/10.5281/zenodo.24301312
 
-DOI: to be added after the Zenodo release. Citation metadata are in [`CITATION.cff`](CITATION.cff); please also cite the original paper, Yang et al. (2016) and the two rebuilds it checks.
+Code: https://github.com/wangqiu-syr/glw2022-multilevelmatching-crosscheck. Citation metadata are in [`CITATION.cff`](CITATION.cff); please also cite the original paper, Yang et al. (2016) and the two rebuilds it checks.
 
 ## License
 
