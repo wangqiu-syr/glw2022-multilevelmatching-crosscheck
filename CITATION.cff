@@ -16,6 +16,7 @@ keywords:
   - causal inference
   - propensity score
   - generalized propensity score
+  - covariate matching
   - matching
   - multilevel treatments
   - replication
