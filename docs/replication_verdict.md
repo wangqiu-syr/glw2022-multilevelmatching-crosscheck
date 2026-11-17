@@ -92,7 +92,7 @@ These results support the pattern, not the paper's exact numbers, and several cl
 
 ## Acknowledgments
 
-This replication was written from the simulation procedures described in the published paper (Guo, Liu & Wang, 2022). The authors' original simulation code was not available to us, and Dr. Liu did not take part in this replication. The code was written with assistance from Claude Code.
+This replication was written from the simulation procedures described in the published paper (Guo, Liu & Wang, 2022). The authors' original simulation code was not available to us. The code was written with assistance from Claude Code.
 
 ## Conclusions
 

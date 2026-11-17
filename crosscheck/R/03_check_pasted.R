@@ -1,4 +1,4 @@
-# 03_check_pasted.R -- tests a cross-check script suggested by another assistant
+# 03_check_pasted.R -- tests an earlier draft of a cross-check script
 # (see docs/crosscheck.md, Appendix A.1): plain-matrix X fails on R >= 4.3, fit$estimate partially
 # matches estimate_args, and 0-based treatment coding gives the same estimates.
 #   R_LIBS=<lib> Rscript crosscheck/R/03_check_pasted.R crosscheck/results   (from the repo root)

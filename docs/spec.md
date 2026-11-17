@@ -187,7 +187,7 @@ This is an observation about the published numbers. It does not establish which 
 - Per-replication seeds (pre-generated L'Ecuyer-CMRG streams), parallelized with `parallel`. Test with 20 replications before 500.
 - Package versions: the scripts use only base R, `parallel` and `nnet`, plus `MASS` for data generation. The R version and session details of the full run are in `results/run_session_info.txt`, and the `nnet` and `MASS` versions are logged in `results/run_log.txt`. No `renv` lockfile exists. Adding one with `renv` is an option for later.
 - Sanity checks: p_t sums to 1; every group reaches its target size; closed-form τ_pop matches Monte Carlo; the Monte Carlo τ_bal matches a direct average over balanced samples; GPS overlap looks sensible.
-- Stop after each stage for review. The user commits from GitHub Desktop, so Claude never runs `git commit` or `git push`, and `.Rhistory` is never staged.
+- Stop after each stage for review. `.Rhistory` is never committed.
 
 ## Out of scope
 

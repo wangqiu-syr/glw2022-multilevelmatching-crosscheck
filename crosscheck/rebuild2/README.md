@@ -33,7 +33,7 @@ R2's summary results are copied into [data/](data/), with their source.
   - **What does agree:** CM has the lower MSE in the paper and in both rebuilds.
 - **R2 adds three findings.**
   - **Misspecification:** the paper's explanation for GPS's higher MSE, a misspecified propensity model, is not supported. A correctly specified model does not lower it, and the true scores raise it 2.4–2.7-fold.
-  - **The paper's DIF "MSE" column** equals the sum of the two within-group outcome variances. R1 had found only that it is about 100 times its own MSE.
+  - **The paper's DIF "MSE" column** is close to the sum of the two within-group outcome variances, rather than to the MSE of a difference in means. R1 had found only that it is about 100 times its own MSE.
   - **Its D3 check:** the paper's CM biases follow τ\_mix − τ\_super.
 - **The paper's CM column is not bias-adjusted matching.**
   - **The pattern:** across the 36 Simulation 2 pairs, the paper's CM biases fit 1.38 × R1's sample-mix term plus 0.22 × R1's matching-gap term (R² = 0.93; [intervals note](../intervals/README.md), section 4.1). It is as if most of the matching gap had been removed.
@@ -77,7 +77,7 @@ R1's decisions are in [docs/spec.md](../../docs/spec.md) (D1–D13). R2's are in
 | Y(1) printed without ε (Simulation 2) | spec: add ε | D6: add ε | Same |
 | ε across potential outcomes | one per unit | D8: one per unit | Same |
 | Ties in matching | broken at random | D10, D24: averaged | Different, no effect: there are no ties |
-| The paper's DIF "MSE" | about 100 times R1's ([docs/table3_checks.md](../../docs/table3_checks.md)) | D15: equals 0.81–1.00 × the sum of the two within-group outcome variances; not an MSE | Same finding; R2 identifies what the column holds |
+| The paper's DIF "MSE" | about 100 times R1's ([docs/table3_checks.md](../../docs/table3_checks.md)) | D15: close to 0.81–1.00 × the sum of the two within-group outcome variances, rather than an MSE | Same finding; R2 identifies what the column holds |
 | Sensitivity checks of the GPS | D13: Eq. (4) read literally (GPS\_lit, GPS\_lit2) | D25: correctly specified logit (GPS\_cs) and true scores (GPS\_true) | Different checks |
 | Random numbers | one L'Ecuyer-CMRG stream per replication | D17, D23: the same scheme, its own draw protocol | Same approach, different seeds, so independent samples |
 
@@ -189,8 +189,8 @@ What the test shows:
 - **For the paper:** the points where both rebuilds differ from the paper are firmer than either alone:
   - GPS is less biased than CM;
   - the paper's GPS bias is 3 (Simulation 2) to 7–11 (Simulation 1) times the rebuilds', and its Simulation 2 GPS MSE 3 times;
-  - its DIF MSE column is not an MSE;
-  - its bias signs are reversed.
+  - its DIF MSE column appears to hold a different quantity from an MSE (close to the within-group outcome variances);
+  - its bias signs appear reversed relative to the paper's own definition.
 
   The CM column remains unexplained. It is not bias-adjusted matching.
 - **For intervals:** two independent analytic variances of the AI 2006 kind give the same coverage, too wide for GPS and too narrow for biased CM pairs. This supports the [intervals note](../intervals/README.md) reading: low CM coverage comes from the matching gap, which the variance does not include, and the high GPS coverage from not correcting for the estimated GPS.

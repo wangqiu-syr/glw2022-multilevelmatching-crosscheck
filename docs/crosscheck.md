@@ -211,7 +211,7 @@ Moved here from BRIDGE.md on 2026-11-17; the per-replication CSVs were gzip-comp
 crosscheck/.gitignore              ignores the regenerable *.rds written by 01/02
 crosscheck/R/01_export_rep001.R    regenerates rep 1, checks it against the stored diagnostics, exports CSVs
 crosscheck/R/02_pkg_fits.R         three multiMatch() fits, comparison table, unit-level diagnostics
-crosscheck/R/03_check_pasted.R     tests a cross-check script suggested by another assistant
+crosscheck/R/03_check_pasted.R     tests an earlier draft of a cross-check script
 crosscheck/results/sim1_rep001.csv            T, Y, x1-x4, z1-z3 (17 significant digits)
 crosscheck/results/sim1_rep001_ours.csv       our CM, GPS (and DIF) estimates for the 6 pairs
 crosscheck/results/sim1_rep001_gps.csv        our fitted GPS matrix, 400 x 4
@@ -246,7 +246,7 @@ crosscheck/results/sim{1,2}_cm_biasadjust_reps.csv.gz  per-replication results o
 crosscheck/rebuild2/              README.md (rebuild-2 vs this rebuild vs the paper; bias-adjustment test), data/ (rebuild-2's summaries, copied), tables/, figures/
 ```
 
-The script suggested by another assistant fails as written: a plain matrix `X` errors on R >= 4.3, `fit$estimate` partially matches `estimate_args`, `summary()` returns `NULL`, it does not flip signs, and it omits `existing`. `03_check_pasted.R` records this.
+The earlier draft script fails as written: a plain matrix `X` errors on R >= 4.3, `fit$estimate` partially matches `estimate_args`, `summary()` returns `NULL`, it does not flip signs, and it omits `existing`. `03_check_pasted.R` records this.
 
 ## References
 
