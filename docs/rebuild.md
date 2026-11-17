@@ -57,11 +57,15 @@ This rebuild follows the paper's design. Matching that uses the clustering, such
 \hat Y_i(s) = \begin{cases} Y_i & \text{if } T_i = s,\\ Y_{j(i,s)} & \text{otherwise,} \end{cases} \qquad j(i,s) = \arg\min_{j:\,T_j = s} \bigl| r_s(x_j, z_j) - r_s(x_i, z_i) \bigr|,
 ```
 
-$$\hat\tau(t, t') = \frac{1}{n} \sum_{i=1}^{n} \bigl[ \hat Y_i(t) - \hat Y_i(t') \bigr].$$
+```math
+\hat\tau(t, t') = \frac{1}{n} \sum_{i=1}^{n} \bigl[ \hat Y_i(t) - \hat Y_i(t') \bigr].
+```
 
 The score is a fitted multinomial logit, with w = (1, x1, …, x4, z1, z2, z3) and level 1 as the baseline (β\_1 = 0):
 
-$$r_s(x, z) = \frac{\exp(w^\top \beta_s)}{\sum_{k=1}^{A} \exp(w^\top \beta_k)}.$$
+```math
+r_s(x, z) = \frac{\exp(w^\top \beta_s)}{\sum_{k=1}^{A} \exp(w^\top \beta_k)}.
+```
 
 The three GPS versions compared in the cross-check differ only in the coefficients and in how nearest neighbours are chosen:
 
@@ -96,7 +100,9 @@ The decisions behind these differences are mapped in [Background](#background) a
 
 1. **Treatment probabilities (D1).** Each unit's group is drawn from a multinomial logit. For group t, the linear predictor η_t(x, z) is 0.1 times a sum of the unit's covariates and squared covariates (the terms differ by group; see [`docs/spec.md`](spec.md)), and η₁ = 0 for the reference group. The standard model, used here, is
 
-   $$p_t(x,z) = \frac{\exp(\eta_t)}{\sum_{s=1}^{A}\exp(\eta_s)}, \qquad t = 1, \dots, A,$$
+   ```math
+   p_t(x,z) = \frac{\exp(\eta_t)}{\sum_{s=1}^{A}\exp(\eta_s)}, \qquad t = 1, \dots, A,
+   ```
 
    so the A probabilities sum to 1. The paper prints the denominator as 1 + Σ exp(η_s), summed over all A groups. Because η₁ = 0 already adds exp(0) = 1 to the sum, the extra 1 counts the reference group twice, and the probabilities add up to Σ exp(η_s) / (1 + Σ exp(η_s)), which is less than 1.
 2. **Z1 (D2).** "N[−3, 3]" is read as Uniform(−3, 3).
@@ -104,11 +110,15 @@ The decisions behind these differences are mapped in [Background](#background) a
 4. **Covariance matrix for matching (D6).** The paper builds it from X only but matches on X and Z; we use all 7 covariates.
 5. **Eq. (4) (D7, D13).** The paper defines the GPS match in Eq. (3) and the effect estimate in Eq. (4) (Guo, Liu and Wang, 2022, Section 4, p. 972):
 
-   $$GPS(t,p) = \arg\min_{j:\,T_j=t}\ \big\|\Pr(t\mid x_j,z_j) - p\big\| \qquad (3)$$
+   ```math
+   GPS(t,p) = \mathop{\arg\min}_{j:\ T_j = t} \left\lVert \Pr(t \mid x_j, z_j) - p \right\rVert \qquad (3)
+   ```
 
-   $$\hat\tau_{GPS}(t,t') = \frac{1}{n}\sum_{i=1}^{n}\Big\{Y^{obs}_{GPS}\big(t,\ \Pr(t\mid x_i,z_i)\big) - Y^{obs}_{GPS}\big(t',\ \Pr(t\mid x_i,z_i)\big)\Big\} \qquad (4)$$
+   ```math
+   \hat\tau_{GPS}(t,t') = \frac{1}{n} \sum_{i=1}^{n} \left\lbrace Y^{obs}_{GPS}\bigl(t, \Pr(t \mid x_i, z_i)\bigr) - Y^{obs}_{GPS}\bigl(t', \Pr(t \mid x_i, z_i)\bigr) \right\rbrace \qquad (4)
+   ```
 
-   Here $Y^{obs}_{GPS}(t, p)$ is the observed outcome of the unit that Eq. (3) picks. In words: for each unit, find its closest match in group t and its closest match in group t′, and average the difference in their outcomes over all n units. As printed, the second term also uses the score for t, Pr(t | x_i, z_i), so a unit's match in group t′ would be found by comparing each candidate's probability of t′ with the unit's probability of t, two different quantities. The main GPS uses the score for t′ there, Pr(t′ | x_i, z_i) (D7); the literal reading is reported as a sensitivity check in [`docs/sensitivity.md`](sensitivity.md). In Simulation 1, reading Eq. (4) literally, as printed, raises the mean absolute GPS bias from 0.026 to 0.159, about half the way to the published 0.293. That is not how Yang et al.'s (2016) own R package, `multilevelMatching`, computes the estimator: given our fitted scores, it reproduces the main GPS exactly on a test replication (D7 in [`docs/spec.md`](spec.md#decisions-d1d13)). The literal reading therefore explains the gap only if the paper's code followed Eq. (4) as printed. The original simulation code was not available for this rebuild, the paper names no software ("Code Availability N/A"), and the published text alone does not settle which reading was used.
+   Here $`Y^{obs}_{GPS}(t, p)`$ is the observed outcome of the unit that Eq. (3) picks. In words: for each unit, find its closest match in group t and its closest match in group t′, and average the difference in their outcomes over all n units. As printed, the second term also uses the score for t, Pr(t | x_i, z_i), so a unit's match in group t′ would be found by comparing each candidate's probability of t′ with the unit's probability of t, two different quantities. The main GPS uses the score for t′ there, Pr(t′ | x_i, z_i) (D7); the literal reading is reported as a sensitivity check in [`docs/sensitivity.md`](sensitivity.md). In Simulation 1, reading Eq. (4) literally, as printed, raises the mean absolute GPS bias from 0.026 to 0.159, about half the way to the published 0.293. That is not how Yang et al.'s (2016) own R package, `multilevelMatching`, computes the estimator: given our fitted scores, it reproduces the main GPS exactly on a test replication (D7 in [`docs/spec.md`](spec.md#decisions-d1d13)). The literal reading therefore explains the gap only if the paper's code followed Eq. (4) as printed. The original simulation code was not available for this rebuild, the paper names no software ("Code Availability N/A"), and the published text alone does not settle which reading was used.
 
 <table>
   <tr>
@@ -135,11 +145,15 @@ Every bias figure here compares an estimate with a true effect, and this design 
 
 - **Population ATE, τ_pop.** The average effect of treatment t versus t′ over the whole population, as in the paper's Eq. (1). This is the usual average treatment effect (ATE) in propensity score analysis.
 
-$$\tau_{pop}(t,t') = E\left[\,Y(t) - Y(t')\,\right]$$
+```math
+\tau_{pop}(t,t') = E\left[Y(t) - Y(t')\right]
+```
 
 - **Balanced-design ATE, τ_bal.** The simulations keep a fixed number of units in every treatment group (100 or 200), however rare the group is in the population. The analysed sample is then an equal-weight mix of the groups, and estimators that average over the sample's units target the effect over that mix:
 
-$$\tau_{bal}(t,t') = \frac{1}{A}\sum_{s=1}^{A} E\left[\,Y(t) - Y(t') \mid T = s\,\right]$$
+```math
+\tau_{bal}(t,t') = \frac{1}{A}\sum_{s=1}^{A} E\left[Y(t) - Y(t') \mid T = s\right]
+```
 
 (A is the number of treatment groups, as defined in Background.)
 

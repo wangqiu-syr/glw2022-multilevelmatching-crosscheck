@@ -6,9 +6,17 @@ Simulation 1 only (4 treatment combinations, 6 pairwise effects, 500 replication
 
 The paper's Eq. (4) (Guo, Liu and Wang, 2022, Section 4, p. 972) prints the same score, Pr(t | x, z), in both terms of the GPS effect estimate:
 
-$$\hat\tau_{GPS}(t,t') = \frac{1}{n}\sum_{i=1}^{n}\Big\{Y^{obs}_{GPS}\big(t,\ \Pr(t\mid x_i,z_i)\big) - Y^{obs}_{GPS}\big(t',\ \Pr(t\mid x_i,z_i)\big)\Big\} \qquad (4)$$
+```math
+\hat\tau_{GPS}(t,t') = \frac{1}{n} \sum_{i=1}^{n} \left\lbrace Y^{obs}_{GPS}\bigl(t, \Pr(t \mid x_i, z_i)\bigr) - Y^{obs}_{GPS}\bigl(t', \Pr(t \mid x_i, z_i)\bigr) \right\rbrace \qquad (4)
+```
 
-Here $Y^{obs}_{GPS}(t, p)$ is the observed outcome of the unit in group t whose score for t is closest to p (Eq. 3: $GPS(t,p) = \arg\min_{j:\,T_j=t} \|\Pr(t\mid x_j,z_j) - p\|$). In words: each unit's outcome under t and under t′ is imputed from its closest match in each group, and the differences are averaged over all n units. The main GPS estimator reads the second Pr(t | x_i, z_i) as a typo for Pr(t′ | x_i, z_i) and matches the t′ term on the score for t′ (D7). This check tests the literal reading instead:
+Here $`Y^{obs}_{GPS}(t, p)`$ is the observed outcome of the unit in group t whose score for t is closest to p, as defined by the paper's Eq. (3):
+
+```math
+GPS(t,p) = \mathop{\arg\min}_{j:\ T_j = t} \left\lVert \Pr(t \mid x_j, z_j) - p \right\rVert \qquad (3)
+```
+
+In words: each unit's outcome under t and under t′ is imputed from its closest match in each group, and the differences are averaged over all n units. The main GPS estimator reads the second Pr(t | x_i, z_i) as a typo for Pr(t′ | x_i, z_i) and matches the t′ term on the score for t′ (D7). This check tests the literal reading instead:
 
 - **GPS_lit.** For a unit in neither group t nor t′, the t′ term is matched within group t′ on |p̂_t′(j) − p̂_t(i)|. Units in group t or t′ keep their observed outcome for their own level; their other term is imputed as in the main GPS.
 - **GPS_lit2.** The fully literal reading: units in group t also get their t′ term by matching within group t′ on |p̂_t′(j) − p̂_t(i)|. Every unit keeps its observed outcome for its own group's term.
