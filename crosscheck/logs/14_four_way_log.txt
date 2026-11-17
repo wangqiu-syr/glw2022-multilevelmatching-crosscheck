@@ -1,0 +1,18 @@
+null device 
+          1 
+null device 
+          1 
+null device 
+          1 
+Wrote tables:
+ [1] "agreement_by_source_pair.csv" "agreement_by_source_pair.md" 
+ [3] "agreement_correlations.csv"   "agreement_correlations.md"   
+ [5] "bias_mse_four_way.csv"        "bias_mse_four_way.md"        
+ [7] "coverage_four_way.csv"        "coverage_four_way.md"        
+ [9] "orderings_four_way.csv"       "orderings_four_way.md"       
+[11] "sim1_abs_bias_four_way.csv"   "sim1_abs_bias_four_way.md"   
+[13] "sim1_four_way_by_pair.csv"    "sim2_four_way_by_pair.csv"   
+[15] "transcription_check.csv"      "transcription_check.md"      
+Wrote figures:
+[1] "fig1_sim2_bias_four_way.png"     "fig2_sim1_abs_bias_four_way.png"
+[3] "fig3_mse_four_way.png"          

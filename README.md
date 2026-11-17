@@ -298,7 +298,7 @@ The word is used in two senses. In Yang et al. (2016), "multi-level treatments" 
 
 ## An independent rebuild (rebuild-2)
 
-A second rebuild was written in a separate session and repository, from the paper alone. It never saw this rebuild or its results. [crosscheck/rebuild2/README.md](crosscheck/rebuild2/README.md) compares the two with each other and with the paper.
+A second rebuild was written in a separate session and repository, from the paper alone. It never saw this rebuild or its results. [crosscheck/rebuild2/README.md](crosscheck/rebuild2/README.md) compares the two with each other and with the paper, and [crosscheck/four_way/README.md](crosscheck/four_way/README.md) adds Yang et al.'s package as a fourth source: three implementations (this rebuild, rebuild-2 and the package) give the same bias and MSE, and the paper differs from all three in the same way.
 - **The two rebuilds agree pair by pair.** In Simulation 2 their biases correlate at 0.996 for CM and 0.93 for GPS, and differ by about their Monte Carlo error. Their MSEs agree to within 3%, and the same CM pairs cover least.
 - **They made the same choices on most of the open points,** independently. They differ on the CM distance and the interval method, which change little.
 - **Both differ from the paper in the same way.** GPS is less biased than CM, and the paper's GPS bias and MSE are larger.
@@ -325,6 +325,7 @@ From the repository root (R 4.5; packages MASS and nnet):
 | 11. Intervals tables and figure | `Rscript crosscheck/R/11_intervals_summary.R` | seconds |
 | 12. Bias-adjusted CM (`Matching::Match(BiasAdjust = TRUE)`) | `Rscript crosscheck/R/12_cm_biasadjust.R sim=1`, then `sim=2` | On 4 workers: about 15 s; about 6 min |
 | 13. Rebuild-2 comparison tables and figure | `Rscript crosscheck/R/13_rebuild2_comparison.R` | seconds |
+| 14. Four-way comparison tables and figures | `Rscript crosscheck/R/14_four_way.R` | seconds |
 
 Each replication is saved to `results/reps/simK/rep_###.rds` when it finishes. Re-running `run_all.R` skips replications that are already done, so an interrupted run resumes where it stopped. It refuses to mix checkpoints made with different settings (R, B, seed, optimizer tolerance). Progress goes to standard output; redirect it to `results/run_log.txt` for a background run.
 
@@ -395,6 +396,10 @@ Per-replication checkpoints (crosscheck/reps/) are local only, not in the repo.
 ### Rebuild-2 comparison
 
 [crosscheck/rebuild2/README.md](crosscheck/rebuild2/README.md) compares this rebuild, the independent rebuild-2 and the paper, and tests bias-adjusted CM. Its tables are in [crosscheck/rebuild2/tables/](crosscheck/rebuild2/tables/), its figure in [crosscheck/rebuild2/figures/](crosscheck/rebuild2/figures/), and rebuild-2's copied summaries in [crosscheck/rebuild2/data/](crosscheck/rebuild2/data/). The scripts are [crosscheck/R/12_cm_biasadjust.R](crosscheck/R/12_cm_biasadjust.R) and [crosscheck/R/13_rebuild2_comparison.R](crosscheck/R/13_rebuild2_comparison.R); per-replication results are in `crosscheck/results/sim{1,2}_cm_biasadjust_reps.csv`.
+
+### Four-way comparison
+
+[crosscheck/four_way/README.md](crosscheck/four_way/README.md) sets the paper, this rebuild, rebuild-2 and Yang et al.'s package side by side: bias and MSE first, then pair-by-pair agreement, the estimation choices of each, and coverage. Its tables are in [crosscheck/four_way/tables/](crosscheck/four_way/tables/), its figures in [crosscheck/four_way/figures/](crosscheck/four_way/figures/), and rebuild-2's transcription of the paper's tables, used to check this repository's, in [crosscheck/four_way/data/](crosscheck/four_way/data/). Script: [crosscheck/R/14_four_way.R](crosscheck/R/14_four_way.R).
 
 ### Published values
 
