@@ -1,10 +1,10 @@
 # Bridge: from glw2022-matching-replication to glw2022-multilevelmatching-crosscheck
 
-This file lets the next session, or reader, pick up without the chat history. It records:
+This file lets a reader pick up where the work stands. It records:
 - what this repository is;
 - where each piece of work stands;
 - what is still open;
-- how to set up R in a cloud session;
+- how to set up R on Linux without CRAN;
 - the working rules;
 - a short log.
 
@@ -34,7 +34,7 @@ The [README](README.md) has the summary and a map of all documents.
 | Rebuild-2 comparison; bias-adjusted CM test | [crosscheck/rebuild2/README.md](crosscheck/rebuild2/README.md) | PRs #10, #11 |
 | README slimmed to a summary and map; this file condensed | [README.md](README.md), [docs/rebuild.md](docs/rebuild.md), this file | branch `claude/slim-readme-bridge` |
 
-Rebuild-2 lives in its own private repository, `wangqiu-syr/glw2022-rebuild2`: its stages 1–4 are in its PR #1, and its figures commit in its PR #2 (merge commit `0a4a038`). This repository only reads it. Its four summary CSVs are copied into [crosscheck/rebuild2/data/](crosscheck/rebuild2/data/) from `7b25857`, and they are unchanged at `0a4a038`.
+Rebuild-2 lives in its own private repository, `wangqiu-syr/glw2022-rebuild2`. Its stages 1–4 are in its PR #1. Its later PRs #2–#4 (up to `706d514` on 2026-11-17) add summary figures, a provenance note and a long-format summary file, and change none of its existing results. This repository only reads it. Its four summary CSVs are copied into [crosscheck/rebuild2/data/](crosscheck/rebuild2/data/) from `7b25857`, and they are unchanged at `706d514`.
 
 ## Open questions
 
@@ -54,11 +54,11 @@ Rebuild-2 lives in its own private repository, `wangqiu-syr/glw2022-rebuild2`: i
 - Yang et al. (2016) is reference [44]; the methods "are reduced to that in [44]" without Z.
 - The PDF is under copyright. Keep it out of the repo (`.gitignore` excludes `*.pdf`).
 
-## Setting up R and the package in a cloud session
+## Setting up R and the package on Linux
 
 The cross-check ran on Linux with R 4.3.3, Matching 4.10-14, nnet 7.3-19, MASS 7.3-60.0.1 and reference BLAS/LAPACK 3.12.0. The main run used R 4.5.1 on Windows with nnet 7.3.20 and MASS 7.3.65; the regenerated samples still match ([docs/crosscheck.md](docs/crosscheck.md)).
 
-In a Claude Code cloud session R is not pre-installed and CRAN was blocked by the network policy, so R came from the Ubuntu archive and the package from GitHub's read-only CRAN mirror. From the repo root:
+In the Linux environment used for the cross-check, R was not pre-installed and CRAN was not reachable, so R came from the Ubuntu archive and the package from GitHub's read-only CRAN mirror. From the repo root:
 
 ```sh
 apt-get install -y --no-install-recommends r-base-core r-cran-matching r-cran-mass r-cran-nnet r-cran-boot
@@ -82,12 +82,12 @@ for s in 1 2; do Rscript crosscheck/R/12_cm_biasadjust.R sim=$s workers=4 > cros
 Rscript crosscheck/R/13_rebuild2_comparison.R
 ```
 
-On a laptop: `install.packages("Matching")`, then install `multilevelMatching` from CRAN if it is available there, or from source (`remotes::install_github("cran/multilevelMatching")`). Either way, on R >= 4.3 the `oldClass` workaround in `02_pkg_fits.R` is needed ([docs/crosscheck.md](docs/crosscheck.md), Appendix B.2). Other hosts the sessions needed and could not reach: arxiv.org, link.springer.com, sticerd.lse.ac.uk (full texts of papers).
+On a laptop: `install.packages("Matching")`, then install `multilevelMatching` from CRAN if it is available there, or from source (`remotes::install_github("cran/multilevelMatching")`). Either way, on R >= 4.3 the `oldClass` workaround in `02_pkg_fits.R` is needed ([docs/crosscheck.md](docs/crosscheck.md), Appendix B.2). Full texts of some cited papers (on arxiv.org, link.springer.com and sticerd.lse.ac.uk) were not reachable from that environment, so the intervals note relies on their published abstracts.
 
 ## Working rules carried over
 
 - Leave the original repo, glw2022-matching-replication, unchanged.
-- Claude does not commit or push unless asked; the spec says the owner commits from GitHub Desktop. In practice, since 2026-11-15, the owner has asked Claude to commit on `claude/...` branches, open pull requests, and merge them when told to.
+- Changes are made on separate branches and merged into `main` through pull requests, each approved by the owner.
 - Re-running a script resumes from its checkpoints in `results/reps*/` or `crosscheck/reps/`, which are git-ignored and local only.
 - Keep the paper's PDF out of the repo.
 - Rebuild-2 is read here, never written to from this repository's work. While it ran, nothing was passed back to it.

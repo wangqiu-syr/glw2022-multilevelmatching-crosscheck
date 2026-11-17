@@ -1,6 +1,6 @@
 # Rebuild-2 summary results (copied)
 
-These four files are copied unchanged from the independent rebuild, the private repository `wangqiu-syr/glw2022-rebuild2`, at commit `7b25857` on `main` (Merge pull request #1, 2026-11-16). They are the same at `8690904` on its branch `claude/new-session-2wp49a`, which adds only figures.
+These four files are copied unchanged from the independent rebuild, the private repository `wangqiu-syr/glw2022-rebuild2`, at commit `7b25857` on `main` (Merge pull request #1, 2026-11-16). They are unchanged at `706d514`, its `main` on 2026-11-17: its later PRs #2–#4 add figures, a provenance note and a new long-format summary file only.
 
 | File here | Source in rebuild-2 |
 |---|---|

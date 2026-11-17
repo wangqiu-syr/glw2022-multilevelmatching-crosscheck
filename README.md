@@ -45,7 +45,7 @@ Mean absolute bias and mean MSE against τ\_pop, averaged over the 6 pairs of Si
 | The paper, the rebuild and the package side by side: bias, MSE, the decisions D1–D13, analytic intervals (D8), what "multilevel" means | [crosscheck/side_by_side/README.md](crosscheck/side_by_side/README.md) |
 | Intervals: where each method comes from, their math, why coverage is not accuracy, why CM coverage is low, with a math appendix | [crosscheck/intervals/README.md](crosscheck/intervals/README.md) |
 | The independent rebuild-2, and the test of bias-adjusted CM | [crosscheck/rebuild2/README.md](crosscheck/rebuild2/README.md) |
-| How this repository was set up: status, open questions, how to install R and the package in a cloud session, working rules, log | [BRIDGE.md](BRIDGE.md) |
+| How this repository was set up: status, open questions, how to install R and the package on Linux, working rules, log | [BRIDGE.md](BRIDGE.md) |
 
 ## Reproduce
 
