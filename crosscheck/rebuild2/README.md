@@ -4,7 +4,7 @@ Rebuild 2 is a second rebuild of the two simulation studies in Guo, Liu and Wang
 
 Names used below:
 - **R1:** this repository's rebuild (the main run, imported from glw2022-matching-replication).
-- **R2:** rebuild 2, in the private repository `wangqiu-syr/glw2022-rebuild2`, at commit `7b25857` on `main`.
+- **R2:** rebuild 2, in the repository [`wangqiu-syr/glw2022-rebuild2`](https://github.com/wangqiu-syr/glw2022-rebuild2), at commit `7b25857` on `main`.
 - **Truths:** R2's τ\_super and τ\_mix are R1's τ\_pop and τ\_bal.
 
 R2's summary results are copied into [data/](data/), with their source.

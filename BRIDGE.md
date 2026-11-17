@@ -34,7 +34,7 @@ The [README](README.md) has the summary and a map of all documents.
 | Rebuild 2 comparison; bias-adjusted CM test | [crosscheck/rebuild2/README.md](crosscheck/rebuild2/README.md) | PRs #10, #11 |
 | README slimmed to a summary and map; this file condensed | [README.md](README.md), [docs/rebuild.md](docs/rebuild.md), this file | branch `claude/slim-readme-bridge` |
 
-Rebuild 2 lives in its own private repository, `wangqiu-syr/glw2022-rebuild2`. Its stages 1–4 are in its PR #1. Its later PRs #2–#4 (up to `706d514` on 2026-11-17) add summary figures, a provenance note and a long-format summary file, and change none of its existing results. This repository only reads it. Its four summary CSVs are copied into [crosscheck/rebuild2/data/](crosscheck/rebuild2/data/) from `7b25857`, and they are unchanged at `706d514`.
+Rebuild 2 lives in its own repository, [`wangqiu-syr/glw2022-rebuild2`](https://github.com/wangqiu-syr/glw2022-rebuild2). Its stages 1–4 are in its PR #1. Its later PRs #2–#4 (up to `706d514` on 2026-11-17) add summary figures, a provenance note and a long-format summary file, and change none of its existing results. This repository only reads it. Its four summary CSVs are copied into [crosscheck/rebuild2/data/](crosscheck/rebuild2/data/) from `7b25857`, and they are unchanged at `706d514`.
 
 ## Open questions
 
