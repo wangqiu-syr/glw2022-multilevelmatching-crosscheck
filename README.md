@@ -4,7 +4,7 @@ Qiu Wang, Syracuse University · v1.0.0 · November 2026
 
 This repository continues [glw2022-matching-replication](https://github.com/wangqiu-syr/glw2022-matching-replication), an R rebuild of the two simulation studies in Guo, Liu and Wang (2022), and keeps that rebuild unchanged. It checks the rebuild three ways:
 - **Against Yang et al.'s package.** `multilevelMatching` implements the matching estimators of Yang et al. (2016), to which the paper's methods reduce without the school-level covariates.
-- **Against an independent second rebuild,** written from the paper alone.
+- **Against an independent second rebuild,** [glw2022-rebuild2](https://github.com/wangqiu-syr/glw2022-rebuild2), written from the paper alone.
 - **Against analytic intervals,** to see what the rebuild's percentile bootstrap intervals do and do not show.
 
 As in the paper, the main criteria are bias and mean squared error (MSE); interval coverage comes last.
@@ -125,6 +125,7 @@ Each document has its own references. Cited here:
 - Guo, S., Liu, J., & Wang, Q. (2022). Effective learning during COVID-19: Multilevel covariates matching and propensity score matching. *Annals of Data Science, 9*(5), 967–982. https://doi.org/10.1007/s40745-022-00392-x
 - L'Ecuyer, P., Simard, R., Chen, E. J., & Kelton, W. D. (2002). An object-oriented random-number package with many long streams and substreams. *Operations Research, 50*(6), 1073–1075. https://doi.org/10.1287/opre.50.6.1073.358
 - Wang, Q. (2026). *Generalized propensity score and covariate matching for multilevel treatments in hierarchical data: Rebuilding Guo, Liu, and Wang (2022) in R* (Version 1.0.0) [Computer software]. https://github.com/wangqiu-syr/glw2022-matching-replication
+- Wang, Q. (2026). *Multilevel covariates matching and generalized propensity score matching: An R rebuild of Guo, Liu and Wang's (2022) simulations* (Version 1.0.0) [Computer software]. https://github.com/wangqiu-syr/glw2022-rebuild2
 - Yang, S., & Barkley, B. G. (2019). *multilevelMatching: Propensity score matching and subclassification in observational studies with multi-level treatments* (R package version 1.0.0). https://CRAN.R-project.org/package=multilevelMatching
 - Yang, S., Imbens, G., Cui, Z., Faries, D., & Kadziola, Z. (2016). Propensity score matching and subclassification in observational studies with multi-level treatments. *Biometrics, 72*, 1055–1065. https://doi.org/10.1111/biom.12505
 
@@ -132,7 +133,7 @@ Each document has its own references. Cited here:
 
 Wang, Q. (2026). *Cross-checking a rebuild of Guo, Liu, and Wang (2022) with Yang et al.'s (2016) multilevelMatching package* (Version 1.0.0) [Computer software]. https://github.com/wangqiu-syr/glw2022-multilevelmatching-crosscheck
 
-DOI: to be added after the Zenodo release. Citation metadata are in [`CITATION.cff`](CITATION.cff); please also cite the original paper, Yang et al. (2016) and the rebuild it builds on.
+DOI: to be added after the Zenodo release. Citation metadata are in [`CITATION.cff`](CITATION.cff); please also cite the original paper, Yang et al. (2016) and the two rebuilds it checks.
 
 ## License
 
