@@ -19,8 +19,8 @@ Means over pairs (6 in Simulation 1, 36 in Simulation 2):
 
 | Simulation | Estimator | Abs. bias: paper | Abs. bias: rebuild | Abs. bias: package | MSE: paper | MSE: rebuild | MSE: package |
 |---|---|---|---|---|---|---|---|
-| 1 | CM | 0.143 | 0.187 | 0.187 |  | 0.363 | 0.363 |
-| 1 | GPS | 0.293 | 0.026 | 0.026 |  | 0.676 | 0.676 |
+| 1 | CM | 0.143 | 0.187 | 0.187 | – | 0.363 | 0.363 |
+| 1 | GPS | 0.293 | 0.026 | 0.026 | – | 0.676 | 0.676 |
 | 2 | CM | 0.139 | 0.295 | 0.295 | 0.368 | 0.288 | 0.288 |
 | 2 | GPS | 0.307 | 0.099 | 0.100 | 1.916 | 0.626 | 0.627 |
 
@@ -33,7 +33,7 @@ Pair counts:
 | Simulation | Comparison | Paper | Rebuild | Package | Pairs |
 |---|---|---|---|---|---|
 | 1 | GPS less biased than CM (pairs) | 0 | 6 | 6 | 6 |
-| 1 | CM lower MSE than GPS (pairs) |  | 5 | 5 | 6 |
+| 1 | CM lower MSE than GPS (pairs) | – | 5 | 5 | 6 |
 | 2 | GPS less biased than CM (pairs) | 4 | 31 | 31 | 36 |
 | 2 | CM lower MSE than GPS (pairs) | 36 | 33 | 33 | 36 |
 
@@ -147,7 +147,7 @@ Each decision matters in one or more of three ways: for reproducing the paper's 
 | D10 | Groups 6 and 7 assigned identically | Barely | No | No |
 | D11 | No trimming (overlap) | Somewhat, in Simulation 2 | Yes: limited overlap biases matching | Yes: small schools and small groups often have poor overlap (the paper's application has a group of 8 students) |
 | D12 | Software record | Reproducibility only | Yes | No |
-| D13 | Literal Eq. (4) check | A sensitivity check of D7 | | |
+| D13 | Literal Eq. (4) check | A sensitivity check of D7 | – | – |
 
 The decisions that could change the paper's conclusion about the bias of CM against GPS are D1–D5, D7 and D9; D8, D11 and D12 affect intervals, overlap and reproducibility rather than that conclusion.
 
@@ -164,9 +164,9 @@ The cause is CM's bias. For each pair, a normal approximation predicts coverage 
 | Simulation | Estimator | Observed mean coverage | Predicted from bias, SD and width | Predicted if unbiased | Correlation, observed vs predicted (pairs) | Lowest pair | Its coverage | Its abs. bias / SD |
 |---|---|---|---|---|---|---|---|---|
 | 1 | CM | 91.43 | 92.18 | 94.43 | 0.99 | (1,3) | 83.40 | 0.79 |
-| 1 | GPS | 100.00 | 98.93 | 98.94 |  | (1,2) | 100.00 | 0.04 |
+| 1 | GPS | 100.00 | 98.93 | 98.94 | – | (1,2) | 100.00 | 0.04 |
 | 2 | CM | 78.41 | 82.36 | 93.12 | 0.99 | (1,3) | 39.60 | 1.82 |
-| 2 | GPS | 100.00 | 98.79 | 98.88 |  | (1,2) | 100.00 | 0.16 |
+| 2 | GPS | 100.00 | 98.79 | 98.88 | – | (1,2) | 100.00 | 0.16 |
 
 The prediction tracks the observed CM coverage pair by pair (correlation 0.99). In the worst pair, (1,3) in Simulation 2, the CM bias is 1.8 times the spread of the estimates, so an interval centred on the estimate rarely reaches the truth: 39.6% observed, 50% predicted. With the same intervals and no bias, CM coverage would be about 93–94% in both simulations. GPS has little bias and over-covers (section 5.2). [../intervals/README.md](../intervals/README.md) traces CM's bias, exactly, to the covariate gaps between units and their matches. It also explains why (1,3) is the worst pair.
 
@@ -181,17 +181,17 @@ Coverage of τ\_pop ("Mean abs. diff. from paper" is the average over pairs of |
 
 | Simulation | Estimator | Method | Mean coverage | Min | Max | Mean width | Mean abs. diff. from paper | Unavailable intervals |
 |---|---|---|---|---|---|---|---|---|
-| 1 | CM | paper | 95.0 | 92.0 | 98.0 |  |  |  |
+| 1 | CM | paper | 95.0 | 92.0 | 98.0 | – | – | – |
 | 1 | CM | bootstrap (main run) | 91.4 | 83.4 | 95.4 | 2.15 | 3.6 | 0 |
 | 1 | CM | AI 2006 | 94.8 | 89.0 | 97.2 | 2.38 | 1.4 | 0 |
-| 1 | GPS | paper | 99.7 | 99.0 | 100.0 |  |  |  |
+| 1 | GPS | paper | 99.7 | 99.0 | 100.0 | – | – | – |
 | 1 | GPS | bootstrap (main run) | 100.0 | 100.0 | 100.0 | 4.18 | 0.3 | 0 |
 | 1 | GPS | AI 2006 | 99.6 | 99.2 | 100.0 | 4.89 | 0.5 | 0 |
 | 1 | GPS | AI 2016 | 95.9 | 92.7 | 97.8 | 3.44 | 3.8 | 6 |
-| 2 | CM | paper | 97.1 | 92.0 | 100.0 |  |  |  |
+| 2 | CM | paper | 97.1 | 92.0 | 100.0 | – | – | – |
 | 2 | CM | bootstrap (main run) | 78.4 | 39.6 | 93.4 | 1.45 | 18.6 | 0 |
 | 2 | CM | AI 2006 | 90.1 | 62.6 | 97.8 | 1.78 | 7.4 | 0 |
-| 2 | GPS | paper | 98.9 | 96.0 | 100.0 |  |  |  |
+| 2 | GPS | paper | 98.9 | 96.0 | 100.0 | – | – | – |
 | 2 | GPS | bootstrap (main run) | 100.0 | 100.0 | 100.0 | 3.93 | 1.1 | 0 |
 | 2 | GPS | AI 2006 | 99.6 | 98.6 | 100.0 | 4.49 | 0.9 | 0 |
 | 2 | GPS | AI 2016 | 94.6 | 87.1 | 98.0 | 3.05 | 4.3 | 3 |
@@ -200,9 +200,9 @@ Interval width against the actual spread of the estimates (implied standard erro
 
 | Simulation | Estimator | Monte Carlo SD of the estimates | Bootstrap | AI 2006 | AI 2016 | Mean abs. bias / SD |
 |---|---|---|---|---|---|---|
-| 1 | CM | 0.559 | 0.548 | 0.606 |  | 0.361 |
+| 1 | CM | 0.559 | 0.548 | 0.606 | – | 0.361 |
 | 1 | GPS | 0.809 | 1.067 | 1.247 | 0.878 | 0.035 |
-| 2 | CM | 0.397 | 0.370 | 0.455 |  | 0.744 |
+| 2 | CM | 0.397 | 0.370 | 0.455 | – | 0.744 |
 | 2 | GPS | 0.770 | 1.002 | 1.145 | 0.777 | 0.130 |
 
 <img src="figures/fig5_coverage_by_method.png" width="100%" alt="Coverage of 95% intervals by pair for CM and GPS in both simulations: the paper, and the rebuild's estimates with bootstrap, AI 2006 and AI 2016 intervals">

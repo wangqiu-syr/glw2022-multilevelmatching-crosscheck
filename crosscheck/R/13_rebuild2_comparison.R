@@ -23,7 +23,7 @@ md_table <- function(df, digits = 3) {        # as in 08_side_by_side.R
   f <- function(v, j) {
     if (!is.numeric(v)) return(as.character(v))
     w <- v[!is.na(v)]; d <- if (length(w) && all(w == round(w))) 0 else dg(j)
-    ifelse(is.na(v), "", formatC(v, format = "f", digits = d))
+    ifelse(is.na(v), "–", formatC(v, format = "f", digits = d))
   }
   cells <- vapply(names(df), function(j) f(df[[j]], j), character(nrow(df)))
   if (is.null(dim(cells))) cells <- matrix(cells, nrow = 1)
