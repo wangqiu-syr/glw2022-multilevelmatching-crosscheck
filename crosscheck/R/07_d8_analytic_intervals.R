@@ -10,17 +10,19 @@
 # model instead (reltol = 1e-14; its probabilities and coefficient covariance),
 # so the variance belongs to the rebuild's estimator. The CM analytic variance
 # needs no new run: the package's "covariates" fit reproduces our CM exactly, and
-# its AI 2006 variance is in crosscheck/results/sim<k>_crosscheck_reps.csv.
+# its AI 2006 variance is in crosscheck/results/sim<k>_crosscheck_reps.csv.gz.
 #
 # Check built in: run once per simulation with the package's own fit in place of
 # ours, the same steps must reproduce multiMatch(match_on = "multinom") exactly.
 #
 #   R_LIBS=~/R/mlm-lib Rscript crosscheck/R/07_d8_analytic_intervals.R sim=1 [R=500] [workers=4]
-# Run from the repo root. Writes crosscheck/results/sim<k>_d8_gps_variances.csv;
+# Run from the repo root. Writes crosscheck/results/sim<k>_d8_gps_variances.csv.gz;
 # per-replication checkpoints go to crosscheck/reps/d8_sim<k>/ (git-ignored).
 
 source("R/dgp.R"); source("R/estimators.R"); source("R/replicate.R")
 suppressPackageStartupMessages(library(multilevelMatching))
+# Per-replication results are written gzip-compressed; read.csv() reads them as they are.
+write_csv_gz <- function(x, f) { con <- gzfile(f, "w"); on.exit(close(con)); write.csv(x, con, row.names = FALSE) }
 
 opt <- list(sim = "1", R = "500", workers = "4", rep_root = file.path("crosscheck", "reps"))
 for (a in commandArgs(trailingOnly = TRUE)) {
@@ -114,7 +116,7 @@ if (all(file.exists(files))) {
   out <- do.call(rbind, lapply(files, readRDS))
   out <- out[c("rep", "t", "tp", "GPS", "est_pkg_rule", "var_AI2006", "var_AI2016", "same_P_as_main_fit", "converged")]
   num <- vapply(out, is.double, logical(1)); out[num] <- lapply(out[num], signif, digits = 12)
-  write.csv(out, file.path("crosscheck", "results", sprintf("sim%d_d8_gps_variances.csv", SIM)), row.names = FALSE)
-  log_msg("Wrote sim%d_d8_gps_variances.csv (%d rows); fits identical to the main GPS fit in %d of %d replications",
+  write_csv_gz(out, file.path("crosscheck", "results", sprintf("sim%d_d8_gps_variances.csv.gz", SIM)))
+  log_msg("Wrote sim%d_d8_gps_variances.csv.gz (%d rows); fits identical to the main GPS fit in %d of %d replications",
           SIM, nrow(out), sum(tapply(out$same_P_as_main_fit, out$rep, all)), R_REPS)
 }

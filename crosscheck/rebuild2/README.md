@@ -209,7 +209,7 @@ Script 13 reads R1's results, the outputs of scripts 04, 08, 09, 11 and 12, and 
 ## Files
 
 - **Scripts:** [crosscheck/R/12_cm_biasadjust.R](../R/12_cm_biasadjust.R), [crosscheck/R/13_rebuild2_comparison.R](../R/13_rebuild2_comparison.R).
-- **Results:** `crosscheck/results/sim{1,2}_cm_biasadjust_reps.csv`: R1's CM, the same through `Match()`, and the bias-adjusted CM, by replication and pair. Logs are in `crosscheck/logs/12_*`.
+- **Results:** `crosscheck/results/sim{1,2}_cm_biasadjust_reps.csv.gz`: R1's CM, the same through `Match()`, and the bias-adjusted CM, by replication and pair. Logs are in `crosscheck/logs/12_*`.
 - **R2's summaries:** [data/](data/).
 - **Tables:** [tables/](tables/), CSV and Markdown. **Figure:** [figures/fig1_r1_r2_paper_bias.png](figures/fig1_r1_r2_paper_bias.png).
 

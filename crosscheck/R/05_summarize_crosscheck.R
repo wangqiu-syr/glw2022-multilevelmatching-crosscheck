@@ -18,8 +18,8 @@ for (a in commandArgs(trailingOnly = TRUE)) if (startsWith(a, "sims="))
 agree <- list(); verif <- list(); overview <- list()
 nz <- function(x) !is.na(x) & nzchar(x)       # read.csv turns "" into NA
 for (sim in SIMS) {
-  est  <- read.csv(file.path(OUT, sprintf("sim%d_crosscheck_reps.csv", sim)))
-  info <- read.csv(file.path(OUT, sprintf("sim%d_crosscheck_info.csv", sim)))
+  est  <- read.csv(file.path(OUT, sprintf("sim%d_crosscheck_reps.csv.gz", sim)))
+  info <- read.csv(file.path(OUT, sprintf("sim%d_crosscheck_info.csv.gz", sim)))
   te   <- read.csv(file.path("results", sprintf("true_effects_sim%d.csv", sim)))
   main <- read.csv(file.path("results", sprintf("sim%d_summary.csv", sim)))
   R <- nrow(info)

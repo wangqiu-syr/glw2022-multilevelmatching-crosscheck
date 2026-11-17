@@ -19,6 +19,8 @@
 # Package workarounds (R >= 4.3 class check; exact row sums) are described in docs/crosscheck.md, Appendix B.2.
 
 source("R/dgp.R"); source("R/estimators.R"); source("R/replicate.R")
+# Per-replication results are written gzip-compressed; read.csv() reads them as they are.
+write_csv_gz <- function(x, f) { con <- gzfile(f, "w"); on.exit(close(con)); write.csv(x, con, row.names = FALSE) }
 
 opt <- list(sim = "1", R = "500", workers = "4", reps = "", rep_root = file.path("crosscheck", "reps"),
             out = file.path("crosscheck", "results"))
@@ -198,9 +200,9 @@ if (all(file.exists(files)) && identical(sort(REPS), seq_len(R_REPS))) {
   info <- do.call(rbind, lapply(res, `[[`, "info"))
   num <- vapply(est, is.double, logical(1))
   est[num] <- lapply(est[num], signif, digits = 12)
-  write.csv(est,  file.path(opt$out, sprintf("sim%d_crosscheck_reps.csv", SIM)), row.names = FALSE)
-  write.csv(info, file.path(opt$out, sprintf("sim%d_crosscheck_info.csv", SIM)), row.names = FALSE)
-  log_msg("Wrote %s and %s", sprintf("sim%d_crosscheck_reps.csv", SIM), sprintf("sim%d_crosscheck_info.csv", SIM))
+  write_csv_gz(est, file.path(opt$out, sprintf("sim%d_crosscheck_reps.csv.gz", SIM)))
+  write_csv_gz(info, file.path(opt$out, sprintf("sim%d_crosscheck_info.csv.gz", SIM)))
+  log_msg("Wrote %s and %s", sprintf("sim%d_crosscheck_reps.csv.gz", SIM), sprintf("sim%d_crosscheck_info.csv.gz", SIM))
 } else {
   log_msg("Not combining: %d of %d replications have checkpoints", sum(file.exists(files)), R_REPS)
 }

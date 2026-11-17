@@ -19,10 +19,12 @@
 #   Rscript crosscheck/R/10_cm_bootstrap_centring.R sim=1 R=500 [B=200] [workers=4]
 # (as run: the first 120 replications of Simulation 2, about 36 min on 4 workers;
 # all 500 of Simulation 1, about 7 min)
-# Run from the repo root. Writes crosscheck/results/sim<k>_cm_boot_reps.csv;
+# Run from the repo root. Writes crosscheck/results/sim<k>_cm_boot_reps.csv.gz;
 # per-replication checkpoints go to crosscheck/reps/cmboot_sim<k>/ (git-ignored).
 
 source("R/dgp.R"); source("R/estimators.R"); source("R/replicate.R")
+# Per-replication results are written gzip-compressed; read.csv() reads them as they are.
+write_csv_gz <- function(x, f) { con <- gzfile(f, "w"); on.exit(close(con)); write.csv(x, con, row.names = FALSE) }
 
 opt <- list(sim = "2", R = "200", B = "200", workers = "4", rep_root = file.path("crosscheck", "reps"))
 for (a in commandArgs(trailingOnly = TRUE)) {
@@ -75,13 +77,13 @@ files <- vapply(seq_len(R_REPS), rep_file, character(1))
 if (all(file.exists(files))) {
   out <- do.call(rbind, lapply(files, readRDS))
   # The point estimates must equal the main run's CM estimates; check via the
-  # mean over these replications against crosscheck/results/sim<k>_crosscheck_reps.csv.
-  cx <- read.csv(file.path("crosscheck", "results", sprintf("sim%d_crosscheck_reps.csv", SIM)))
+  # mean over these replications against crosscheck/results/sim<k>_crosscheck_reps.csv.gz.
+  cx <- read.csv(file.path("crosscheck", "results", sprintf("sim%d_crosscheck_reps.csv.gz", SIM)))
   k <- match(paste(out$rep, out$t, out$tp), paste(cx$rep, cx$t, cx$tp))
   log_msg("CM estimates vs the main run's (per replication and pair): max |difference| = %.2e",
           max(abs(out$est - cx$CM[k])))
   num <- vapply(out, is.double, logical(1)); out[num] <- lapply(out[num], signif, digits = 12)
-  f <- file.path("crosscheck", "results", sprintf("sim%d_cm_boot_reps.csv", SIM))
-  write.csv(out, f, row.names = FALSE)
+  f <- file.path("crosscheck", "results", sprintf("sim%d_cm_boot_reps.csv.gz", SIM))
+  write_csv_gz(out, f)
   log_msg("Wrote %s (%d rows)", f, nrow(out))
 }

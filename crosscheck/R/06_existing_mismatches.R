@@ -1,6 +1,6 @@
 # 06_existing_mismatches.R -- explain every imputed outcome where
 # multiMatch(match_on = "existing") differs from our GPS matching.
-# For each replication flagged in crosscheck/results/sim<k>_crosscheck_info.csv
+# For each replication flagged in crosscheck/results/sim<k>_crosscheck_info.csv.gz
 # (cells_diff_ex > 0), regenerate the sample, refit "existing" exactly as
 # 04_crosscheck_all.R does, and for each differing cell record our match, the
 # package's match, both distances |p_hat_s(i) - p_hat_s(j)|, and the gap in
@@ -16,7 +16,7 @@ suppressPackageStartupMessages(library(multilevelMatching))
 
 rows <- list()
 for (sim in 1:2) {
-  info <- read.csv(file.path("crosscheck", "results", sprintf("sim%d_crosscheck_info.csv", sim)))
+  info <- read.csv(file.path("crosscheck", "results", sprintf("sim%d_crosscheck_info.csv.gz", sim)))
   reps <- info$rep[info$cells_diff_ex > 0]
   if (!length(reps)) next
   setup <- sim_setup(sim); A <- setup$A

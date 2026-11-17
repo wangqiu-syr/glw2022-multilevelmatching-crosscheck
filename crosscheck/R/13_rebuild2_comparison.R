@@ -46,7 +46,7 @@ load_sim <- function(sim) {
   cv <- read.csv(file.path(DAT, sprintf("rebuild2_sim%d_coverage.csv", sim)))
   r2c <- function(e, col = "cov_super") { x <- cv[cv$estimator == e, ]; x[[col]][match(pk, key(x$t, x$tprime))] }
   d8c <- function(e, m) { x <- d8[d8$sim == sim & d8$estimator == e & d8$method == m & d8$target == "pop", ]; x$coverage[match(pk, key(x$t, x$tp))] }
-  b <- read.csv(file.path("crosscheck", "results", sprintf("sim%d_cm_biasadjust_reps.csv", sim)))
+  b <- read.csv(file.path("crosscheck", "results", sprintf("sim%d_cm_biasadjust_reps.csv.gz", sim)))
   kb <- key(b$t, b$tp); tau <- te$tau_pop[match(kb, pk)]; bal <- te$tau_bal[match(kb, pk)]
   agb <- function(x, f = mean) unname(tapply(x, kb, f)[pk])
   ba <- list(bias = agb(b$CM_BiasAdjust - tau), bias_bal = agb(b$CM_BiasAdjust - bal),
