@@ -1,5 +1,5 @@
 # 03_check_pasted.R -- tests a cross-check script suggested by another assistant
-# (see BRIDGE.md): plain-matrix X fails on R >= 4.3, fit$estimate partially
+# (see docs/crosscheck.md, Appendix A.1): plain-matrix X fails on R >= 4.3, fit$estimate partially
 # matches estimate_args, and 0-based treatment coding gives the same estimates.
 #   R_LIBS=<lib> Rscript crosscheck/R/03_check_pasted.R crosscheck/results   (from the repo root)
 suppressPackageStartupMessages(library(multilevelMatching))

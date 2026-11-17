@@ -16,7 +16,7 @@
 #
 # Run from the repo root, with multilevelMatching on the library path:
 #   R_LIBS=~/R/mlm-lib Rscript crosscheck/R/04_crosscheck_all.R sim=1 [R=500] [workers=4] [reps=1:20]
-# Package workarounds (R >= 4.3 class check; exact row sums) are described in BRIDGE.md.
+# Package workarounds (R >= 4.3 class check; exact row sums) are described in docs/crosscheck.md, Appendix B.2.
 
 source("R/dgp.R"); source("R/estimators.R"); source("R/replicate.R")
 
