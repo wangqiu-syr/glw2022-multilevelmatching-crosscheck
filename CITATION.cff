@@ -74,6 +74,7 @@ references:
     title: "Generalized propensity score and covariate matching for multilevel treatments in hierarchical data: Rebuilding Guo, Liu, and Wang (2022) in R"
     version: 1.0.0
     year: 2026
+    doi: 10.5281/zenodo.24301013
     repository-code: "https://github.com/wangqiu-syr/glw2022-matching-replication"
   - type: software
     authors:
