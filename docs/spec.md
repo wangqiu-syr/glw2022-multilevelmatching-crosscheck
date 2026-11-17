@@ -184,7 +184,7 @@ This is an observation about the published numbers. It does not establish which 
 
 - Folder plan: `R/dgp.R`, `R/estimators.R`, `R/run_sim1.R`, `R/run_sim2.R`, `R/summarize.R`.
 - Stage 1 is `R/dgp.R` plus `R/check_truth.R`, which runs the sanity checks on the data-generating process and both true-effect targets.
-- Per-replication seeds (pre-generated L'Ecuyer-CMRG streams), parallelized with `parallel`. Test with 20 replications before 500.
+- Per-replication seeds (pre-generated L'Ecuyer-CMRG streams; L'Ecuyer, Simard, Chen and Kelton, 2002, *Operations Research* 50(6), 1073–1075), parallelized with `parallel`. Test with 20 replications before 500.
 - Package versions: the scripts use only base R, `parallel` and `nnet`, plus `MASS` for data generation. The R version and session details of the full run are in `results/run_session_info.txt`, and the `nnet` and `MASS` versions are logged in `results/run_log.txt`. No `renv` lockfile exists. Adding one with `renv` is an option for later.
 - Sanity checks: p_t sums to 1; every group reaches its target size; closed-form τ_pop matches Monte Carlo; the Monte Carlo τ_bal matches a direct average over balanced samples; GPS overlap looks sensible.
 - Stop after each stage for review. `.Rhistory` is never committed.

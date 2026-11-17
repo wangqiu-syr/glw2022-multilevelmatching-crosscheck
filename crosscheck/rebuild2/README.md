@@ -11,6 +11,7 @@ R2's summary results are copied into [data/](data/), with their source.
 
 ## In short
 
+- **The paper's tables were transcribed twice, and the transcriptions agree.** R1 and R2 each transcribed the paper's Tables 1 and 3 on their own; all 318 cells are identical (section 1).
 - **The two rebuilds agree, pair by pair.** In Simulation 2:
   - **Bias:** R1 and R2 correlate at 0.998 for DIF, 0.996 for CM and 0.93 for GPS over the 36 pairs. The mean absolute difference is 0.026 for CM and 0.039 for GPS, about one Monte Carlo SE of the difference.
   - **MSE:** the two agree to within 3% on average.
@@ -32,7 +33,7 @@ R2's summary results are copied into [data/](data/), with their source.
   - **GPS bias:** the paper's is about three times the rebuilds' in Simulation 2, and 7–11 times in Simulation 1.
   - **What does agree:** CM has the lower MSE in the paper and in both rebuilds.
 - **R2 adds three findings.**
-  - **Misspecification:** the paper's explanation for GPS's higher MSE, a misspecified propensity model, is not supported. A correctly specified model does not lower it, and the true scores raise it 2.4–2.7-fold.
+  - **Misspecification:** the paper's explanation for GPS's higher MSE, a misspecified propensity model, is not supported. A correctly specified model does not lower it, and matching on the population scores raises it 2.4–2.7-fold. (The population scores are the propensity scores of the data-generating model: correct for the population, but not for a sample drawn with fixed group sizes.)
   - **The paper's DIF "MSE" column** is close to the sum of the two within-group outcome variances, rather than to the MSE of a difference in means. R1 had found only that it is about 100 times its own MSE.
   - **Its D3 check:** the paper's CM biases follow τ\_mix − τ\_super.
 - **The paper's CM column is not bias-adjusted matching.**
@@ -56,6 +57,15 @@ Limits to that independence:
 - **The brief's author:** the brief came from a session that knew R1. It was written to avoid hints, but it is not blind.
 - **No advance prediction:** the plan was for this repository to predict R2's results from its code before R2 ran them. R2 had finished by the time it was read here, and its decisions log already quoted stage-3 numbers, so no blind prediction was made. This note is a comparison after the fact.
 
+**The paper's tables, transcribed twice.** Both comparisons with the paper rest on its Tables 1 and 3, and each rebuild transcribed them on its own: R1 into `results/paper_table1.csv` and `results/paper_table3.csv`, R2 into its `data/paper/` (copied into [data/](data/)). Cell by cell, the two transcriptions are identical ([tables/transcription_check.md](tables/transcription_check.md)):
+
+| Table | Pairs | Cells compared | Cells that differ |
+|---|---|---|---|
+| Table 1 (Simulation 1): absolute bias of DIF, CM and GPS; CM and GPS coverage | 6 | 30 | 0 |
+| Table 3 (Simulation 2): bias and "MSE" of DIF, CM and GPS; CM and GPS coverage | 36 | 288 | 0 |
+
+So the differences from the paper reported below are not transcription errors. R2 also checked its transcription against the tables' structure: each pairwise bias is a difference of two per-treatment terms, and all of the paper's bias columns fit that pattern to rounding.
+
 ## 2. The decisions, side by side
 
 R1's decisions are in [docs/spec.md](../../docs/spec.md) (D1–D13). R2's are in its `docs/decisions.md` (D1–D26). The numbers are specific to each repository, and the same label can name different decisions: R1's D9 is the balanced-design point, R2's D9 the CM distance. So this note always says whose decision a number refers to, as in "R2's D15" or "its D20".
@@ -78,7 +88,7 @@ R1's decisions are in [docs/spec.md](../../docs/spec.md) (D1–D13). R2's are in
 | ε across potential outcomes | one per unit | D8: one per unit | Same |
 | Ties in matching | broken at random | D10, D24: averaged | Different, no effect: there are no ties |
 | The paper's DIF "MSE" | about 100 times R1's ([docs/table3_checks.md](../../docs/table3_checks.md)) | D15: close to 0.81–1.00 × the sum of the two within-group outcome variances, rather than an MSE | Same finding; R2 identifies what the column holds |
-| Sensitivity checks of the GPS | D13: Eq. (4) read literally (GPS\_lit, GPS\_lit2) | D25: correctly specified logit (GPS\_cs) and true scores (GPS\_true) | Different checks |
+| Sensitivity checks of the GPS | D13: Eq. (4) read literally (GPS\_lit, GPS\_lit2) | D25: correctly specified logit (GPS\_cs) and population scores (GPS\_true) | Different checks |
 | Random numbers | one L'Ecuyer-CMRG stream per replication | D17, D23: the same scheme, its own draw protocol | Same approach, different seeds, so independent samples |
 
 ## 3. Bias and MSE
@@ -91,12 +101,12 @@ Means over pairs, against τ\_pop (τ\_super). "Paper" is its Tables 1 and 3, wh
 | 1 | CM | 0.143 | 0.187 | 0.166 |  | 0.363 | 0.364 |
 | 1 | GPS | 0.293 | 0.026 | 0.043 |  | 0.676 | 0.656 |
 | 1 | GPS, correctly specified logit (R2) |  |  | 0.037 |  |  | 0.710 |
-| 1 | GPS, true scores (R2) |  |  | 0.110 |  |  | 1.581 |
+| 1 | GPS, population scores (R2) |  |  | 0.110 |  |  | 1.581 |
 | 2 | DIF | 1.079 | 0.941 | 0.960 |  | 2.335 | 2.298 |
 | 2 | CM | 0.139 | 0.295 | 0.299 | 0.368 | 0.288 | 0.294 |
 | 2 | GPS | 0.307 | 0.099 | 0.108 | 1.916 | 0.626 | 0.612 |
 | 2 | GPS, correctly specified logit (R2) |  |  | 0.097 |  |  | 0.839 |
-| 2 | GPS, true scores (R2) |  |  | 0.179 |  |  | 1.657 |
+| 2 | GPS, population scores (R2) |  |  | 0.179 |  |  | 1.657 |
 
 Pair by pair, R1 against R2 ([tables/r1_vs_r2_by_pair.md](tables/r1_vs_r2_by_pair.md)). "MC SE of difference" combines both rebuilds' Monte Carlo standard errors of the bias:
 
@@ -120,7 +130,7 @@ Pair by pair, R1 against R2 ([tables/r1_vs_r2_by_pair.md](tables/r1_vs_r2_by_pai
 
 Means over pairs, against τ\_pop ([tables/coverage_summary.md](tables/coverage_summary.md)). R1's AI 2006 and AI 2016 intervals are its D8 sensitivity analysis ([intervals note](../intervals/README.md)). R2's interval is its own analytic one (D26).
 
-| Simulation | Estimator | Paper | R1: bootstrap | R1: AI 2006 | R1: AI 2016 | R2: analytic | R2: GPS with true scores | R2: SE / SD |
+| Simulation | Estimator | Paper | R1: bootstrap | R1: AI 2006 | R1: AI 2016 | R2: analytic | R2: GPS with population scores | R2: SE / SD |
 |---|---|---|---|---|---|---|---|---|
 | 1 | CM | 95.0 | 91.4 | 94.8 |  | 94.5 |  | 1.05 |
 | 1 | GPS | 99.7 | 100.0 | 99.6 | 95.9 | 99.8 | 94.4 | 1.58 |
@@ -132,7 +142,7 @@ Means over pairs, against τ\_pop ([tables/coverage_summary.md](tables/coverage_
   - **Width:** R2 finds its interval 5–14% too wide for CM and 51–58% too wide for GPS. R1 finds AI 2006 about 8–15% and 49–54% too wide.
   - **CM pairs:** the per-pair correlation of CM coverage is 0.97 in Simulation 2. (For GPS, where every pair covers 99–100%, a correlation means nothing.)
   - **Why:** both formulas treat the score as known and leave the matching gap out of the variance.
-- **Two ways to correct the GPS width.** R1's AI 2016 interval corrects it for the estimated GPS. R2 instead shows that matching on the *true* scores gives correct-width intervals (94.2–94.4%), at a cost of 2.4–2.7 times the MSE. Both point the same way: estimating the GPS makes the estimator less variable than the uncorrected variance says.
+- **Two ways to correct the GPS width.** R1's AI 2016 interval corrects it for the estimated GPS. R2 instead shows that matching on the population scores gives correct-width intervals (94.2–94.4%), at a cost of 2.4–2.7 times the MSE. Both point the same way: estimating the GPS makes the estimator less variable than the uncorrected variance says.
 - **The same CM pairs cover least** ([tables/cm_lowest_coverage_pairs.md](tables/cm_lowest_coverage_pairs.md)). In Simulation 2 the lowest are (1,9), then (1,3) and (2,9), then (8,9): R1 (AI 2006) 62.6%, 63.6%, 68.6%, 78.8%; R2 63.4%, 68.8%, 68.0%, 74.6%. The [intervals note](../intervals/README.md) (section 4.3) explains why (1,3) is among them.
 
 ## 5. The paper's CM column, and a test of bias adjustment
@@ -204,13 +214,13 @@ From the repository root (R with MASS, nnet and Matching):
 | Bias-adjusted CM | `Rscript crosscheck/R/12_cm_biasadjust.R sim=1`, then `sim=2` | about 15 s; about 6 min |
 | Tables and figure | `Rscript crosscheck/R/13_rebuild2_comparison.R` | seconds |
 
-Script 13 reads R1's results, the outputs of scripts 04, 08, 09, 11 and 12, and R2's copied summaries in [data/](data/).
+Script 13 reads R1's results, the outputs of scripts 04, 08, 09, 11 and 12, and R2's copied summaries and table transcriptions in [data/](data/).
 
 ## Files
 
 - **Scripts:** [crosscheck/R/12_cm_biasadjust.R](../R/12_cm_biasadjust.R), [crosscheck/R/13_rebuild2_comparison.R](../R/13_rebuild2_comparison.R).
 - **Results:** `crosscheck/results/sim{1,2}_cm_biasadjust_reps.csv.gz`: R1's CM, the same through `Match()`, and the bias-adjusted CM, by replication and pair. Logs are in `crosscheck/logs/12_*`.
-- **R2's summaries:** [data/](data/).
+- **R2's summaries and its transcription of the paper's Tables 1 and 3:** [data/](data/).
 - **Tables:** [tables/](tables/), CSV and Markdown. **Figure:** [figures/fig1_r1_r2_paper_bias.png](figures/fig1_r1_r2_paper_bias.png).
 
 ## References

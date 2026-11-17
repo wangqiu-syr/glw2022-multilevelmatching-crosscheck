@@ -25,7 +25,7 @@ Mean absolute bias and mean MSE against τ\_pop, averaged over the 6 pairs of Si
 | 2 | GPS | 0.307 | 0.099 | 0.100 | 0.108 | 1.916 | 0.626 | 0.627 | 0.612 |
 
 - **The package reproduces the rebuild.** With the same samples, Yang et al.'s own software gives the rebuild's bias and MSE: exactly for CM, and to within 0.001 for GPS.
-- **An independent rebuild agrees, pair by pair.** Written from the paper alone, rebuild 2 matches the rebuild's Simulation 2 biases with correlations of 0.996 (CM) and 0.93 (GPS), differing by about the Monte Carlo error. It made the same choices on most of the points the paper leaves open.
+- **An independent rebuild agrees, pair by pair.** Written from the paper alone, rebuild 2 matches the rebuild's Simulation 2 biases with correlations of 0.996 (CM) and 0.93 (GPS), differing by about the Monte Carlo error. It made the same choices on most of the points the paper leaves open, and its own transcription of the paper's Tables 1 and 3 matches the rebuild's in all 318 cells.
 - **GPS is less biased, CM has the lower MSE.** This bias–variance trade-off holds in the rebuild, the package and rebuild 2. The paper agrees on MSE but not on bias: its GPS bias is 3 to 11 times the rebuild's, while its CM bias is smaller.
 - **So the gap with the paper is not in how the estimators are computed.** It lies in what the paper does not report: how its data were generated, which true effect its bias refers to, the GPS model, or its own code. The paper's CM column remains unexplained. It is not bias-adjusted matching.
 - **Coverage depends on the interval method.**
@@ -76,7 +76,7 @@ From the repository root (R 4.5; packages MASS and nnet):
 - **Step 12:** also `Matching`.
 - **Steps 5–7:** `multilevelMatching` 1.0.0 and `Matching`. On R 4.3 or later the package needs an input workaround, which the scripts apply. Installation is in [BRIDGE.md](BRIDGE.md), and the workaround in [docs/crosscheck.md](docs/crosscheck.md), Appendix B. The cross-check ran on R 4.3.3; its replications regenerate the main run's samples from the same seeds.
 
-**Random numbers and versions.** Each replication uses its own pre-generated L'Ecuyer-CMRG random-number stream, so results do not depend on the number of workers or the order in which replications run. The scripts use only base R, `parallel` and `nnet`, plus `MASS` for data generation. The R version and session details of the full run are in `results/run_session_info.txt`; the `nnet` and `MASS` versions used (7.3.20 and 7.3.65) are on the second line of `results/run_log.txt`. No `renv` lockfile is included.
+**Random numbers and versions.** Each replication draws its random numbers from its own separate, reproducible stream (R's L'Ecuyer-CMRG generator; L'Ecuyer et al., 2002), so results are the same however many processor cores share the work and in whatever order the replications run. The scripts use only base R, `parallel` and `nnet`, plus `MASS` for data generation. The R version and session details of the full run are in `results/run_session_info.txt`; the `nnet` and `MASS` versions used (7.3.20 and 7.3.65) are on the second line of `results/run_log.txt`. Package versions are recorded but not pinned (there is no `renv` lockfile).
 
 ## Folders
 
@@ -100,7 +100,9 @@ These conclusions do not rest on one implementation or one reading of the paper:
 - Yang et al.'s own package, run on the rebuild's samples, gives the rebuild's bias and MSE.
 - An independent rebuild, written from the paper alone, gives the same results pair by pair.
 
-So the remaining differences from the paper lie in what the paper does not report, chiefly how its data were generated and which true effect its bias refers to. The paper's reported coverage is closer to analytic Abadie–Imbens intervals than to the rebuild's bootstrap intervals. CM's low coverage comes from the covariate gaps between units and their matches, which no interval accounts for. These results are a baseline for extending the comparison to clustered, multilevel data.
+So the remaining differences from the paper lie in what the paper does not report, chiefly how its data were generated and which true effect its bias refers to. The paper's reported coverage is closer to analytic Abadie–Imbens intervals than to the rebuild's bootstrap intervals. CM's low coverage comes from the covariate gaps between units and their matches, which no interval accounts for.
+
+Like the paper's, these simulations have no school clusters: the two treatments are combined into one, and matching ignores which school a student attends. How well the methods work on genuinely clustered data is a separate question that these results do not answer.
 
 ## Acknowledgment
 
@@ -119,6 +121,7 @@ Each document has its own references. Cited here:
 - Abadie, A., & Imbens, G. W. (2006). Large sample properties of matching estimators for average treatment effects. *Econometrica, 74*(1), 235–267.
 - Abadie, A., & Imbens, G. W. (2016). Matching on the estimated propensity score. *Econometrica, 84*(2), 781–807.
 - Guo, S., Liu, J., & Wang, Q. (2022). Effective learning during COVID-19: Multilevel covariates matching and propensity score matching. *Annals of Data Science, 9*(5), 967–982. https://doi.org/10.1007/s40745-022-00392-x
+- L'Ecuyer, P., Simard, R., Chen, E. J., & Kelton, W. D. (2002). An object-oriented random-number package with many long streams and substreams. *Operations Research, 50*(6), 1073–1075. https://doi.org/10.1287/opre.50.6.1073.358
 - Wang, Q. (2026). *Generalized propensity score and covariate matching for multilevel treatments in hierarchical data: Rebuilding Guo, Liu, and Wang (2022) in R* (Version 1.0.0) [Computer software]. https://github.com/wangqiu-syr/glw2022-matching-replication
 - Yang, S., & Barkley, B. G. (2019). *multilevelMatching: Propensity score matching and subclassification in observational studies with multi-level treatments* (R package version 1.0.0). https://CRAN.R-project.org/package=multilevelMatching
 - Yang, S., Imbens, G., Cui, Z., Faries, D., & Kadziola, Z. (2016). Propensity score matching and subclassification in observational studies with multi-level treatments. *Biometrics, 72*, 1055–1065. https://doi.org/10.1111/biom.12505

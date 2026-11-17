@@ -6,7 +6,7 @@ Our R replication reproduces the paper's main pattern: both matching methods rem
 
 ## Why replicate this paper
 
-Guo, Liu & Wang (2022) propose covariate matching and generalized propensity score (GPS) matching for hierarchical data with multi-level treatments, a setting common in education research. The paper provides no code or data, and several simulation details are not specified. We rebuilt the simulations from the published description to check which reported results hold up, and which depend on choices the paper leaves open (D1–D13). The result is also a tested baseline for extending matching methods to clustered, multilevel data.
+Guo, Liu & Wang (2022) propose covariate matching and generalized propensity score (GPS) matching for hierarchical data with multi-level treatments, a setting common in education research. The paper provides no code or data, and several simulation details are not specified. We rebuilt the simulations from the published description to check which reported results hold up, and which depend on choices the paper leaves open (D1–D13). Code and results are provided so that each choice can be checked.
 
 ## Main findings
 
@@ -21,7 +21,7 @@ We re-ran both simulations from Guo, Liu & Wang (2022, *Annals of Data Science* 
 
 - **Simulation 1:** 4 treatment combinations, 100 units each, 6 pairwise effects.
 - **Simulation 2:** 9 treatment combinations, 200 units each, 36 pairwise effects.
-- **Estimators:** the raw difference in group means (DIF); covariate matching (CM: one Mahalanobis nearest neighbour, with replacement); generalized propensity score matching (GPS: linear multinomial logit, nearest neighbour on the fitted score). The GPS model is fitted with a tight tolerance (reltol = 1e-14), because the default left the fitted probabilities too uncertain for the very small matching distances.
+- **Estimators:** the raw difference in group means (DIF); covariate matching (CM: one nearest neighbour by Mahalanobis distance, which scales the covariates by their variances and allows for their correlations, with replacement); generalized propensity score matching (GPS: linear multinomial logit, nearest neighbour on the fitted score). The GPS model is fitted much more precisely than the software's default (D5), because the default left the fitted probabilities too imprecise for the very small matching distances.
 - **Intervals:** percentile bootstrap, B = 200, resampling within treatment groups.
 - **Run:** about 5 hours on 10 workers. Code, results and the full specification (docs/spec.md) are in the repository wangqiu-syr/glw2022-matching-replication.
 
@@ -40,7 +40,7 @@ Mean absolute bias (95% CI coverage), averaged over pairs. Truth is the populati
 - **The two truths differ.** Fixed group sizes change the covariate mix. In Simulation 2 all 36 population effects are 0, while the balanced-design effects range from −0.18 to 0.17; in Simulation 1 the gap is up to about 0.09.
 - **CM is more efficient.** GPS has about double CM's MSE (against τ\_pop; Simulation 1: 0.68 vs 0.36; Simulation 2: 0.63 vs 0.29), because its estimates vary more (SD 0.81 vs 0.56, and 0.77 vs 0.40).
 - **Interval widths.** DIF and CM intervals are about the right width (0.93–0.98 of the width implied by their spread on average, and 0.82–1.03 for CM pair by pair, across both simulations), so their undercoverage comes from bias. GPS intervals are about 30% too wide on average (1.20–1.41 pair by pair, across both simulations), which gives its 100% coverage.
-- **Which biases are real.** CM and DIF are biased beyond Monte Carlo noise in nearly every pair (|z| > 3 in 34 of 36 pairs each in Simulation 2). GPS is beyond noise in 19 of 36 pairs in Simulation 2 and in 0 of 6 in Simulation 1, against τ\_pop.
+- **Which biases are real.** CM and DIF are biased beyond Monte Carlo noise (the chance variation from running a finite number of replications) in nearly every pair (|z| > 3 in 34 of 36 pairs each in Simulation 2). GPS is beyond noise in 19 of 36 pairs in Simulation 2 and in 0 of 6 in Simulation 1, against τ\_pop.
 
 ## Against the paper
 
@@ -96,4 +96,4 @@ This replication was written from the simulation procedures described in the pub
 
 ## Conclusions
 
-In these simulations, covariate matching and GPS matching both remove most of the bias in the raw group difference, as the paper reports. GPS had the smallest bias and CM the smallest mean squared error, so the better choice depends on whether bias or variance matters more. The published numbers cannot be reproduced exactly from the paper alone, because thirteen points are left open; reading Eq. (4) literally would close about half of the GPS discrepancy in Simulation 1, but that is not how Yang et al.'s own package computes the estimator, so it explains the gap only if the paper's code followed Eq. (4) as printed. These results are a baseline for extending the comparison to clustered, multilevel data.
+In these simulations, covariate matching and GPS matching both remove most of the bias in the raw group difference, as the paper reports. GPS had the smallest bias and CM the smallest mean squared error, so the better choice depends on whether bias or variance matters more. The published numbers cannot be reproduced exactly from the paper alone, because thirteen points are left open; reading Eq. (4) literally would close about half of the GPS discrepancy in Simulation 1, but that is not how Yang et al.'s own package computes the estimator, so it explains the gap only if the paper's code followed Eq. (4) as printed. Like the paper's, these simulations have no school clusters: the two treatments are combined into one, and matching ignores which school a student attends. How well the methods work on genuinely clustered data is a separate question that these results do not answer.
