@@ -9,7 +9,7 @@ authors:
     affiliation: "Syracuse University"
 version: 1.0.0
 date-released: 2026-11-17
-# doi: TODO (the Zenodo DOI minted for the release)
+doi: 10.5281/zenodo.24301312
 repository-code: "https://github.com/wangqiu-syr/glw2022-multilevelmatching-crosscheck"
 license: MIT
 keywords:
