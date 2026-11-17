@@ -205,7 +205,7 @@ From `?multiMatch` and the package source (`R/prepareData.R`, `R/matchAllTreatme
 
 ## Appendix C. Files of the cross-check
 
-Moved here from BRIDGE.md on 2026-11-17. Scripts 09–13 and the notes they support are also described in [crosscheck/intervals/README.md](../crosscheck/intervals/README.md) and [crosscheck/rebuild2/README.md](../crosscheck/rebuild2/README.md).
+Moved here from BRIDGE.md on 2026-11-17; the per-replication CSVs were gzip-compressed the same day (`.csv.gz`; `read.csv()` reads them as they are). Scripts 09–13 and the notes they support are also described in [crosscheck/intervals/README.md](../crosscheck/intervals/README.md) and [crosscheck/rebuild2/README.md](../crosscheck/rebuild2/README.md).
 
 ```
 crosscheck/.gitignore              ignores the regenerable *.rds written by 01/02
@@ -222,8 +222,8 @@ crosscheck/drafts/d7_d13_wording.md  draft wording for D7, D13 and related sente
 crosscheck/R/04_crosscheck_all.R   all replications of Simulation 1 or 2: regenerate, verify, our estimates, three package fits
 crosscheck/R/05_summarize_crosscheck.R  verification, agreement, bias, MSE and coverage summaries
 crosscheck/R/06_existing_mismatches.R  unit-level explanation of every `existing` difference
-crosscheck/results/sim{1,2}_crosscheck_reps.csv     every estimate, ours and the package's, with package variances
-crosscheck/results/sim{1,2}_crosscheck_info.csv     per-replication checks (diagnostics, ties, differing cells, ...)
+crosscheck/results/sim{1,2}_crosscheck_reps.csv.gz     every estimate, ours and the package's, with package variances
+crosscheck/results/sim{1,2}_crosscheck_info.csv.gz     per-replication checks (diagnostics, ties, differing cells, ...)
 crosscheck/results/sim{1,2}_crosscheck_summary.csv  bias, MSE and coverage by estimator, pair and target
 crosscheck/results/sim{1,2}_crosscheck_multinom_minus_ours.csv  paired differences by pair
 crosscheck/results/crosscheck_{agreement,verification,overview}.csv  the tables in docs/crosscheck.md
@@ -233,16 +233,16 @@ docs/crosscheck.md                 the full report
 docs/crosscheck_math.md            why the three GPS versions compute the same estimator (math, from the code of both)
 crosscheck/R/07_d8_analytic_intervals.R  D8: AI 2006 and AI 2016 variances for the rebuild's own GPS fit
 crosscheck/R/08_side_by_side.R    side-by-side tables and figures, D8 summaries
-crosscheck/results/sim{1,2}_d8_gps_variances.csv  per-replication analytic GPS variances
+crosscheck/results/sim{1,2}_d8_gps_variances.csv.gz  per-replication analytic GPS variances
 crosscheck/side_by_side/          README.md (discussion: package rerun, CM vs GPS, D7, the other D's, D8), tables/, figures/
 crosscheck/R/09_cm_bias_decomposition.R  exact split of each CM estimate (sample mix, matching gap, noise); regression-adjusted check; AI 2006 variance parts
 crosscheck/R/10_cm_bootstrap_centring.R  CM-only rerun of the percentile bootstrap, to see where its intervals are centred
 crosscheck/R/11_intervals_summary.R     tables and figure for crosscheck/intervals/
-crosscheck/results/sim{1,2}_cm_{gap,terms,bc,boot}_reps.csv  per-replication results of 09 and 10
+crosscheck/results/sim{1,2}_cm_{gap,terms,bc,boot}_reps.csv.gz  per-replication results of 09 and 10
 crosscheck/intervals/             README.md (interval methods: sources, math, coverage; why CM coverage is low), tables/, figures/
 crosscheck/R/12_cm_biasadjust.R   CM through Matching::Match, without and with BiasAdjust = TRUE, on the rebuild's samples
 crosscheck/R/13_rebuild2_comparison.R  tables and figure for crosscheck/rebuild2/
-crosscheck/results/sim{1,2}_cm_biasadjust_reps.csv  per-replication results of 12
+crosscheck/results/sim{1,2}_cm_biasadjust_reps.csv.gz  per-replication results of 12
 crosscheck/rebuild2/              README.md (rebuild-2 vs this rebuild vs the paper; bias-adjustment test), data/ (rebuild-2's summaries, copied), tables/, figures/
 ```
 

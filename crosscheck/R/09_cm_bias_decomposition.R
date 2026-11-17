@@ -21,7 +21,7 @@
 # by level (t or t') and by covariate.
 #
 #   Rscript crosscheck/R/09_cm_bias_decomposition.R [sim=2] [R=500] [workers=4]
-# Run from the repo root. Writes crosscheck/results/sim<k>_cm_gap_reps.csv (per
+# Run from the repo root. Writes crosscheck/results/sim<k>_cm_gap_reps.csv.gz (per
 # replication: D_s, m, N_s, tau_hat) and checks that tau_hat equals the main
 # run's CM estimates (mean over replications) and the decomposition identity.
 #
@@ -31,9 +31,11 @@
 # with mu_hat_s an OLS fit of Y on the 7 covariates within group s, which removes
 # the matching gap (the outcome model here is linear, so the adjustment is
 # correctly specified: a favourable case). Same matches as CM. Written to
-# crosscheck/results/sim<k>_cm_bc_reps.csv.
+# crosscheck/results/sim<k>_cm_bc_reps.csv.gz.
 
 source("R/dgp.R"); source("R/estimators.R"); source("R/replicate.R")
+# Per-replication results are written gzip-compressed; read.csv() reads them as they are.
+write_csv_gz <- function(x, f) { con <- gzfile(f, "w"); on.exit(close(con)); write.csv(x, con, row.names = FALSE) }
 
 opt <- list(sim = "2", R = "500", workers = "4")
 for (a in commandArgs(trailingOnly = TRUE)) {
@@ -133,27 +135,27 @@ out <- do.call(rbind, lapply(res, function(x) {
 }))
 names(out)[3:9] <- paste0("gap_", COV_NAMES)
 num <- vapply(out, is.double, logical(1)); out[num] <- lapply(out[num], signif, digits = 12)
-f <- file.path("crosscheck", "results", sprintf("sim%d_cm_gap_reps.csv", SIM))
-write.csv(out, f, row.names = FALSE)
+f <- file.path("crosscheck", "results", sprintf("sim%d_cm_gap_reps.csv.gz", SIM))
+write_csv_gz(out, f)
 log_msg("Wrote %s (%d rows)", f, nrow(out))
 
 bc <- do.call(rbind, lapply(res, function(x)
   data.frame(rep = x$rep, t = pr[, 1], tp = pr[, 2], CM = unname(x$tau_hat), CM_regadj = unname(x$tau_bc))))
 num <- vapply(bc, is.double, logical(1)); bc[num] <- lapply(bc[num], signif, digits = 12)
-f <- file.path("crosscheck", "results", sprintf("sim%d_cm_bc_reps.csv", SIM))
-write.csv(bc, f, row.names = FALSE)
+f <- file.path("crosscheck", "results", sprintf("sim%d_cm_bc_reps.csv.gz", SIM))
+write_csv_gz(bc, f)
 log_msg("Wrote %s (%d rows)", f, nrow(bc))
 
 # Per replication and pair: the three terms of tau_hat and the AI 2006 variance
 # parts; check the variance against the package's (crosscheck/results, 04).
 tm <- do.call(rbind, lapply(res, `[[`, "terms"))
 tm$var_AI2006 <- tm$V_tau + tm$V_E
-cx <- read.csv(file.path("crosscheck", "results", sprintf("sim%d_crosscheck_reps.csv", SIM)))
+cx <- read.csv(file.path("crosscheck", "results", sprintf("sim%d_crosscheck_reps.csv.gz", SIM)))
 k <- match(paste(tm$rep, tm$t, tm$tp), paste(cx$rep, cx$t, cx$tp))
 rel <- abs(tm$var_AI2006 / cx$var_pkg_CM[k] - 1)
 log_msg("AI 2006 variance rebuilt here vs the package's (04): max relative difference %.2e; %d of %d (replication, pair) cells differ by more than 1e-8",
         max(rel), sum(rel > 1e-8), length(rel))
 num <- vapply(tm, is.double, logical(1)); tm[num] <- lapply(tm[num], signif, digits = 12)
-f <- file.path("crosscheck", "results", sprintf("sim%d_cm_terms_reps.csv", SIM))
-write.csv(tm, f, row.names = FALSE)
+f <- file.path("crosscheck", "results", sprintf("sim%d_cm_terms_reps.csv.gz", SIM))
+write_csv_gz(tm, f)
 log_msg("Wrote %s (%d rows)", f, nrow(tm))

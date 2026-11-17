@@ -250,6 +250,6 @@ Figures, in [figures/](figures/):
 - `fig4_gps_per_replication.png`: every GPS estimate, package's own fit against the rebuild.
 - `fig5_coverage_by_method.png`: coverage by pair and interval method.
 
-Inputs: `results/` (the paper's tables and the main run), `crosscheck/results/` (the cross-check, and `sim{1,2}_d8_gps_variances.csv` from 07). Logs: `crosscheck/logs/07_d8_sim{1,2}_log.txt`, `crosscheck/logs/08_side_by_side_log.txt`.
+Inputs: `results/` (the paper's tables and the main run), `crosscheck/results/` (the cross-check, and `sim{1,2}_d8_gps_variances.csv.gz` from 07). Logs: `crosscheck/logs/07_d8_sim{1,2}_log.txt`, `crosscheck/logs/08_side_by_side_log.txt`.
 
 References: Abadie and Imbens (2006, 2008, 2016) and Yang et al. (2016), as listed in [docs/crosscheck.md](../../docs/crosscheck.md).

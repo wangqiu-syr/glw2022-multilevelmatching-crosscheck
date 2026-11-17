@@ -7,7 +7,7 @@
 # Reads  results/paper_table{1,3}.csv, results/sim{1,2}_summary.csv,
 #        results/true_effects_sim{1,2}.csv,
 #        crosscheck/results/sim{1,2}_crosscheck_{reps,summary}.csv,
-#        crosscheck/results/sim{1,2}_d8_gps_variances.csv (from 07_d8_analytic_intervals.R).
+#        crosscheck/results/sim{1,2}_d8_gps_variances.csv.gz (from 07_d8_analytic_intervals.R).
 # Writes crosscheck/side_by_side/tables/*.csv and *.md, crosscheck/side_by_side/figures/*.png.
 #
 # "Rebuild" values are the main run's (results/sim<k>_summary.csv). "Package"
@@ -49,8 +49,8 @@ for (sim in 1:2) {
   te   <- read.csv(file.path("results", sprintf("true_effects_sim%d.csv", sim)))
   main <- read.csv(file.path("results", sprintf("sim%d_summary.csv", sim)))
   xs   <- read.csv(file.path("crosscheck", "results", sprintf("sim%d_crosscheck_summary.csv", sim)))
-  reps <- read.csv(file.path("crosscheck", "results", sprintf("sim%d_crosscheck_reps.csv", sim)))
-  d8   <- read.csv(file.path("crosscheck", "results", sprintf("sim%d_d8_gps_variances.csv", sim)))
+  reps <- read.csv(file.path("crosscheck", "results", sprintf("sim%d_crosscheck_reps.csv.gz", sim)))
+  d8   <- read.csv(file.path("crosscheck", "results", sprintf("sim%d_d8_gps_variances.csv.gz", sim)))
   pairs <- te[c("t", "tp")]; pairs$pair <- key(pairs$t, pairs$tp)
 
   if (sim == 1) {
@@ -298,7 +298,7 @@ par(op); dev.off()
 png(file.path(FIG, "fig4_gps_per_replication.png"), width = 1600, height = 800, res = 150)
 op <- par(mfrow = c(1, 2), mar = c(4.5, 4.5, 2.5, 1), oma = c(0, 0, 2.2, 0))
 for (sim in 1:2) {
-  reps <- read.csv(file.path("crosscheck", "results", sprintf("sim%d_crosscheck_reps.csv", sim)))
+  reps <- read.csv(file.path("crosscheck", "results", sprintf("sim%d_crosscheck_reps.csv.gz", sim)))
   lim <- range(reps$GPS, reps$pkg_GPS_multinom)
   plot(reps$GPS, reps$pkg_GPS_multinom, pch = 16, cex = 0.35, col = adjustcolor(COL[["GPS"]], 0.25), xlim = lim, ylim = lim,
        xlab = "Rebuild GPS estimate", ylab = "Package GPS estimate (own fit, nnet defaults)", las = 1,

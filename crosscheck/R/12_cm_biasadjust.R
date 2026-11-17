@@ -18,10 +18,12 @@
 #
 #   Rscript crosscheck/R/12_cm_biasadjust.R sim=2 [R=500] [workers=4]
 # Run from the repo root. Needs Matching. Writes
-# crosscheck/results/sim<k>_cm_biasadjust_reps.csv.
+# crosscheck/results/sim<k>_cm_biasadjust_reps.csv.gz.
 
 source("R/dgp.R"); source("R/estimators.R"); source("R/replicate.R")
 suppressPackageStartupMessages(library(Matching))
+# Per-replication results are written gzip-compressed; read.csv() reads them as they are.
+write_csv_gz <- function(x, f) { con <- gzfile(f, "w"); on.exit(close(con)); write.csv(x, con, row.names = FALSE) }
 
 opt <- list(sim = "2", R = "500", workers = "4")
 for (a in commandArgs(trailingOnly = TRUE)) {
@@ -80,6 +82,6 @@ log_msg("Check: the same with ties = TRUE (the adjusted call's own unadjusted es
         max(dif2), sum(dif2 > 1e-10), nrow(res))
 log_msg("Bias adjustment: mean |adjusted - unadjusted| over all cells = %.4f", mean(abs(res$CM_BiasAdjust - res$CM_Match_ties)))
 num <- vapply(res, is.double, logical(1)); res[num] <- lapply(res[num], signif, digits = 12)
-f <- file.path("crosscheck", "results", sprintf("sim%d_cm_biasadjust_reps.csv", SIM))
-write.csv(res, f, row.names = FALSE)
+f <- file.path("crosscheck", "results", sprintf("sim%d_cm_biasadjust_reps.csv.gz", SIM))
+write_csv_gz(res, f)
 log_msg("Wrote %s (%d rows)", f, nrow(res))

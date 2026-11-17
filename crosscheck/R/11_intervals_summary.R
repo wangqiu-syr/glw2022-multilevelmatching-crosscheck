@@ -3,11 +3,11 @@
 # interval is centred.
 #
 # Inputs (all in the repo): results/sim<k>_summary.csv and true_effects_sim<k>.csv
-# (main run); crosscheck/results/sim<k>_cm_gap_reps.csv and sim<k>_cm_bc_reps.csv
-# (09); crosscheck/results/sim<k>_crosscheck_reps.csv (04: the package's AI 2006
+# (main run); crosscheck/results/sim<k>_cm_gap_reps.csv.gz and sim<k>_cm_bc_reps.csv.gz
+# (09); crosscheck/results/sim<k>_crosscheck_reps.csv.gz (04: the package's AI 2006
 # variance for CM, whose estimates equal ours); crosscheck/side_by_side/tables/
 # d8_coverage_by_pair.csv (08); and, when present, crosscheck/results/
-# sim<k>_cm_boot_reps.csv (10).
+# sim<k>_cm_boot_reps.csv.gz (10).
 #
 #   Rscript crosscheck/R/11_intervals_summary.R
 # Writes crosscheck/intervals/tables/*.{csv,md} and crosscheck/intervals/figures/*.png.
@@ -53,7 +53,7 @@ for (sim in 1:2) {
   dd <- function(e, m, col = "coverage") { x <- d8[d8$sim == sim & d8$estimator == e & d8$method == m & d8$target == "pop", ]; x[[col]][match(pk, key(x$t, x$tp))] }
 
   # 09: mean matching gaps, noise and sample covariate mean over replications
-  g <- read.csv(file.path("crosscheck", "results", sprintf("sim%d_cm_gap_reps.csv", sim)), check.names = FALSE)
+  g <- read.csv(file.path("crosscheck", "results", sprintf("sim%d_cm_gap_reps.csv.gz", sim)), check.names = FALSE)
   gc <- paste0("gap_", COV_NAMES); mc <- paste0("m_", COV_NAMES)
   Dbar <- t(vapply(1:A, function(s) colMeans(g[g$s == s, gc]), numeric(7))); dimnames(Dbar) <- list(paste0("t", 1:A), COV_NAMES)
   Nbar <- vapply(1:A, function(s) mean(g$N[g$s == s]), numeric(1))
@@ -70,7 +70,7 @@ for (sim in 1:2) {
   # Regression-adjusted CM (diagnostic). Its own interval would need its own
   # variance; here only an oracle-width check: |est - tau_pop| <= 1.96 * SD of
   # its estimates over replications.
-  bc <- read.csv(file.path("crosscheck", "results", sprintf("sim%d_cm_bc_reps.csv", sim)))
+  bc <- read.csv(file.path("crosscheck", "results", sprintf("sim%d_cm_bc_reps.csv.gz", sim)))
   bc$tau <- te$tau_pop[match(key(bc$t, bc$tp), pk)]
   agg <- function(x, f) { a <- tapply(x, key(bc$t, bc$tp), f); unname(a[pk]) }
   bc_bias <- agg(bc$CM_regadj - bc$tau, mean); bc_sd <- agg(bc$CM_regadj, sd)
@@ -79,7 +79,7 @@ for (sim in 1:2) {
   h_ai <- dd("CM", "AI 2006", "mean_width") / 2
 
   # 09: the three terms of each estimate, and the AI 2006 variance parts
-  tm <- read.csv(file.path("crosscheck", "results", sprintf("sim%d_cm_terms_reps.csv", sim)))
+  tm <- read.csv(file.path("crosscheck", "results", sprintf("sim%d_cm_terms_reps.csv.gz", sim)))
   ta <- function(x, f = mean) { a <- tapply(x, key(tm$t, tm$tp), f); unname(a[pk]) }
   vt <- data.frame(
     Pair = pk,
@@ -163,7 +163,7 @@ for (sim in 1:2) {
   var_rows[[sim]] <- vt_mean
 
   # 10: centring of the percentile interval (CM-only rerun of the bootstrap)
-  fb <- file.path("crosscheck", "results", sprintf("sim%d_cm_boot_reps.csv", sim))
+  fb <- file.path("crosscheck", "results", sprintf("sim%d_cm_boot_reps.csv.gz", sim))
   if (file.exists(fb)) {
     bt <- read.csv(fb); bt$tau <- te$tau_pop[match(key(bt$t, bt$tp), pk)]
     bt$shift <- bt$boot_mean - bt$est

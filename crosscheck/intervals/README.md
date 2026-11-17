@@ -468,7 +468,7 @@ Logs are in [crosscheck/logs/](../logs/).
 ## Files
 
 - **Scripts:** [crosscheck/R/09_cm_bias_decomposition.R](../R/09_cm_bias_decomposition.R), [crosscheck/R/10_cm_bootstrap_centring.R](../R/10_cm_bootstrap_centring.R), [crosscheck/R/11_intervals_summary.R](../R/11_intervals_summary.R).
-- **Per-replication results:** `crosscheck/results/sim{1,2}_cm_gap_reps.csv` (mean matching gaps D\_s, noise N\_s, covariate means and σ̂² parts, by replication and level); `sim{1,2}_cm_terms_reps.csv` (each CM estimate's three terms and its AI 2006 variance parts, by replication and pair); `sim{1,2}_cm_bc_reps.csv` (CM and the regression-adjusted CM); `sim{1,2}_cm_boot_reps.csv` (the CM bootstrap rerun).
+- **Per-replication results:** `crosscheck/results/sim{1,2}_cm_gap_reps.csv.gz` (mean matching gaps D\_s, noise N\_s, covariate means and σ̂² parts, by replication and level); `sim{1,2}_cm_terms_reps.csv.gz` (each CM estimate's three terms and its AI 2006 variance parts, by replication and pair); `sim{1,2}_cm_bc_reps.csv.gz` (CM and the regression-adjusted CM); `sim{1,2}_cm_boot_reps.csv.gz` (the CM bootstrap rerun).
 - **Tables:** [tables/](tables/), CSV and Markdown. **Figure:** [figures/fig1_coverage_vs_bias_ratio.png](figures/fig1_coverage_vs_bias_ratio.png).
 
 ## References

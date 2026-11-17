@@ -84,7 +84,7 @@ From the repository root (R 4.5; packages MASS and nnet):
 - **[results/](results/):** the main run's summaries and figures, and the values transcribed from the paper's Tables 1, 3 and 5 (`paper_table*.csv`).
 - **[docs/](docs/):** the rebuild and cross-check documents in the table above.
 - **[crosscheck/R/](crosscheck/R/):** cross-check scripts 01–13, run in the order of the Reproduce table.
-- **[crosscheck/results/](crosscheck/results/)** and **[crosscheck/logs/](crosscheck/logs/):** their per-replication results and logs.
+- **[crosscheck/results/](crosscheck/results/)** and **[crosscheck/logs/](crosscheck/logs/):** their results and logs. The 16 per-replication result files are gzip-compressed CSVs (`.csv.gz`), which R's `read.csv()` reads as they are.
 - **[crosscheck/side_by_side/](crosscheck/side_by_side/), [crosscheck/intervals/](crosscheck/intervals/), [crosscheck/rebuild2/](crosscheck/rebuild2/):** one note each, with its own tables/ and figures/.
 - **Project files:** [LICENSE](LICENSE) (MIT), [CITATION.cff](CITATION.cff) (citation metadata) and [.gitignore](.gitignore), which keeps checkpoints, PDFs and local files out of the repo.
 

@@ -44,7 +44,6 @@ Rebuild-2 lives in its own private repository, `wangqiu-syr/glw2022-rebuild2`: i
   - **What doesn't fit:** neither plain CM, nor bias-adjusted CM (`Matching::Match(BiasAdjust = TRUE)`), nor an exchange of the CM and GPS labels fits both its bias and its MSE ([crosscheck/rebuild2/README.md](crosscheck/rebuild2/README.md), section 5).
 - **How the paper built its intervals.** It does not say. Its application's 95% limits are exactly estimate ± 1.96 sd, so they are normal intervals, not percentile ones. Its simulation coverage is closer to analytic Abadie–Imbens (2006) intervals than to the rebuild's bootstrap (side-by-side note, section 5.2).
 - **The DIF column.** The rebuild's DIF bias tracks the paper's (with the sign flipped) but does not match it value for value. Rebuild-2 found the same and could not trace the cause (its D20).
-- **Optional:** the per-replication CSVs (13.5 of the repository's 15 MB) could be gzipped.
 
 ## Facts from the paper (checked against the PDF, 2026-11-15 and 2026-11-16)
 
@@ -114,6 +113,11 @@ Dates are UTC, as GitHub records the merges.
   - BRIDGE updated for those merges (PR #11).
   - README slimmed to a summary and map. Its rebuild sections moved unchanged to `docs/rebuild.md`; its side-by-side, intervals and rebuild-2 sections are covered by their notes.
   - This file condensed, with its detailed sections moved unchanged to `docs/crosscheck.md` (Appendices A–C).
+  - The 16 per-replication CSVs in `crosscheck/results/` gzip-compressed (`.csv.gz`), taking them from 12.7 MB to 4.7 MB and the repository from 15.1 MB to 7.1 MB; the writer scripts (04, 07, 09, 10, 12) now write them that way.
+    - **Content:** each file decompresses to exactly the committed CSV.
+    - **Readers:** scripts 05, 06, 08, 11 and 13, rerun on the compressed files, reproduce all their outputs unchanged.
+    - **Writers:** 09, 10 and 12, rerun, rewrite identical content. 04 and 07 were tested on 2 replications in a copy of the repo.
+    - **Logs:** the earlier run logs keep the old file names.
 
 ## References
 

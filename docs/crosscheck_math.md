@@ -163,6 +163,6 @@ GPS matching distances in Simulation 2 average 6.5e-4, the same order as δ, so 
 
 - Rebuild: `R/estimators.R` (`impute_from_scores`, `nn_pick`, `impute_by_matching`, `tau_from_imputed`, `fit_gps`, `mahalanobis_d2`).
 - Package: `multilevelMatching` 1.0.0 (`R/matchAllTreatments.R`, `R/matchImputePO.R`, `R/estimateTau.R`) and `Matching` 4.10-14 (`Match`, `RmatchLoop`, the compiled `MatchLoopC`).
-- Numbers: `crosscheck/results/crosscheck_agreement.csv`, `sim{1,2}_crosscheck_info.csv`, `sim{1,2}_crosscheck_multinom_minus_ours.csv` and `existing_mismatches.csv`; see [docs/crosscheck.md](crosscheck.md).
+- Numbers: `crosscheck/results/crosscheck_agreement.csv`, `sim{1,2}_crosscheck_info.csv.gz`, `sim{1,2}_crosscheck_multinom_minus_ours.csv` and `existing_mismatches.csv`; see [docs/crosscheck.md](crosscheck.md).
 - Yang, S., Imbens, G., Cui, Z., Faries, D., & Kadziola, Z. (2016). Propensity score matching and subclassification in observational studies with multi-level treatments. *Biometrics, 72*, 1055–1065. https://doi.org/10.1111/biom.12505
 - Yang, S., & Barkley, B. G. (2019). *multilevelMatching* (R package version 1.0.0). https://CRAN.R-project.org/package=multilevelMatching
