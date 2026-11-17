@@ -53,6 +53,21 @@ Absolute bias by pair, against τ\_pop:
 - **It is the least accurate reading.** Its mean MSE is 1.17, against 0.68 for the main GPS, and all six of its biases are beyond Monte Carlo noise.
 - **Why it is biased.** With more than two groups, units with the same score for t can have very different scores for t′. So matching group t′ on the score for t does not balance the covariates that drive assignment to t′. The paper's own Section 2 (p. 970) says the outcome under t is identified within subpopulations "defined by the value of a single score, Pr(t | x, z)"; for the outcome under t′, that is Pr(t′ | x, z). With two groups, Pr(t′ | x, z) = 1 − Pr(t | x, z), so one score serves both groups; with four or nine it does not.
 
+## Which reading is correct
+
+The main GPS (D7). It matches the t′ term on the score for t′:
+
+```math
+\hat\tau_{GPS}(t,t') = \frac{1}{n} \sum_{i=1}^{n} \left\lbrace Y^{obs}_{GPS}\bigl(t, \Pr(t \mid x_i, z_i)\bigr) - Y^{obs}_{GPS}\bigl(t', \Pr(t' \mid x_i, z_i)\bigr) \right\rbrace
+```
+
+- **Theory.** The effect is a difference of two means, τ(t, t′) = E[Y(t)] − E[Y(t′)], and each mean is estimated on its own. E[Y(s)] is identified by comparing units with the same probability of receiving s, Pr(s | x, z) (Imbens, 2000; Yang et al., 2016). The paper says the same for treatment t in Section 2 (p. 970). So the t term uses Pr(t | x, z), and the t′ term uses Pr(t′ | x, z).
+- **Results.** In Simulation 1 it has the smallest bias (0.026, no pair beyond 3 Monte Carlo SE) and the smallest MSE (0.676). GPS\_lit is also close to unbiased here (0.044, no pair beyond 3 MC SE), but its MSE is 39% higher, and nothing in theory makes it unbiased in other designs. GPS\_lit2 and GPS\_same are biased beyond noise in 3 and 6 of 6 pairs, with MSE 70% and 73% higher.
+- **Symmetry.** Swapping the two groups should only flip the sign: τ̂(t, t′) = −τ̂(t′, t). The main reading does this by construction, because each imputed outcome Ŷ\_i(s) depends on s alone. The other three readings do not guarantee it: their result depends on which group is called t.
+- **Software.** Yang et al.'s package, `multilevelMatching`, computes the main reading: given the rebuild's scores, it reproduces the main GPS exactly on a test replication ([docs/spec.md](../../docs/spec.md), D7).
+
+With two groups, the same-score reading and the main reading pick the same matches, because Pr(t′ | x, z) = 1 − Pr(t | x, z). That is why binary propensity-score matching needs only one score.
+
 ## What this does not show
 
 - **Which reading the paper used.** A mean level over six pairs is weak evidence, and the pair-by-pair pattern points away from this reading. The paper names no software ("Code Availability N/A"), and Yang et al.'s package computes the main GPS.
@@ -75,4 +90,5 @@ Each replication regenerates the main run's sample from its stored seed, then co
 ## References
 
 - Guo, S., Liu, J., & Wang, Q. (2022). Effective learning during COVID-19: Multilevel covariates matching and propensity score matching. *Annals of Data Science, 9*(5), 967–982. https://doi.org/10.1007/s40745-022-00392-x
+- Imbens, G. W. (2000). The role of the propensity score in estimating dose-response functions. *Biometrika, 87*(3), 706–710. https://doi.org/10.1093/biomet/87.3.706
 - Yang, S., Imbens, G., Cui, Z., Faries, D., & Kadziola, Z. (2016). Propensity score matching and subclassification in observational studies with multi-level treatments. *Biometrics, 72*, 1055–1065. https://doi.org/10.1111/biom.12505
