@@ -12,15 +12,15 @@ As in the paper, the main criteria are bias and mean squared error (MSE); interv
 ## At a glance
 
 Mean absolute bias and mean MSE against τ\_pop, averaged over the 6 pairs of Simulation 1 and the 36 pairs of Simulation 2.
-- **Paper:** its Tables 1 and 3. Table 1 reports no MSE.
+- **Paper:** its Tables 1 and 3. Table 1 reports no MSE (–).
 - **Rebuild:** the main run.
 - **Package:** `multilevelMatching` 1.0.0, run as a user would run it, on the rebuild's samples.
 - **Rebuild 2:** the independent rebuild, on its own samples.
 
 | Simulation | Estimator | Abs. bias: paper | rebuild | package | rebuild 2 | MSE: paper | rebuild | package | rebuild 2 |
 |---|---|---|---|---|---|---|---|---|---|
-| 1 | CM | 0.143 | 0.187 | 0.187 | 0.166 |  | 0.363 | 0.363 | 0.364 |
-| 1 | GPS | 0.293 | 0.026 | 0.026 | 0.043 |  | 0.676 | 0.676 | 0.656 |
+| 1 | CM | 0.143 | 0.187 | 0.187 | 0.166 | – | 0.363 | 0.363 | 0.364 |
+| 1 | GPS | 0.293 | 0.026 | 0.026 | 0.043 | – | 0.676 | 0.676 | 0.656 |
 | 2 | CM | 0.139 | 0.295 | 0.295 | 0.299 | 0.368 | 0.288 | 0.288 | 0.294 |
 | 2 | GPS | 0.307 | 0.099 | 0.100 | 0.108 | 1.916 | 0.626 | 0.627 | 0.612 |
 
@@ -58,7 +58,7 @@ From the repository root (R 4.5; packages MASS and nnet):
 | 1. Simulations 1 and 2, then summaries | `Rscript R/run_all.R` (options: `R=500 B=200 workers=10`) | On 10 workers: Simulation 1 about 15 min, Simulation 2 about 4 h 48 min, full run about 5 h (log: 14m28s, 4h48m19s, 5h03m08s) |
 | 2. Rebuild summaries only | `Rscript R/summarize.R` | seconds |
 | 3. Figures and comparisons | `Rscript R/plots.R` | seconds |
-| 4. D13 sensitivity (Simulation 1) | `Rscript R/run_gps_literal.R`, then `Rscript R/run_gps_literal2.R` (`check` runs the self-tests) | |
+| 4. D13 sensitivity (Simulation 1) | `Rscript R/run_gps_literal.R`, then `Rscript R/run_gps_literal2.R` (`check` runs the self-tests) | – |
 | 5. Cross-check with multilevelMatching | `R_LIBS=<lib> Rscript crosscheck/R/04_crosscheck_all.R sim=1`, then `sim=2` (options: `workers=4`) | On 4 workers: Simulation 1 about 1 min, Simulation 2 about 18 min (log: 55 s, 18 min 16 s) |
 | 6. Cross-check summaries | `Rscript crosscheck/R/05_summarize_crosscheck.R`, then `R_LIBS=<lib> Rscript crosscheck/R/06_existing_mismatches.R` | seconds; about 2 min |
 | 7. Analytic variances for the rebuild's GPS (D8) | `R_LIBS=<lib> Rscript crosscheck/R/07_d8_analytic_intervals.R sim=1`, then `sim=2` (options: `workers=4`) | On 4 workers: Simulation 1 under 1 min, Simulation 2 about 12 min |
@@ -69,14 +69,14 @@ From the repository root (R 4.5; packages MASS and nnet):
 | 12. Bias-adjusted CM (`Matching::Match(BiasAdjust = TRUE)`) | `Rscript crosscheck/R/12_cm_biasadjust.R sim=1`, then `sim=2` | On 4 workers: about 15 s; about 6 min |
 | 13. Rebuild 2 comparison tables and figure | `Rscript crosscheck/R/13_rebuild2_comparison.R` | seconds |
 
-**Checkpoints.** Each replication is saved to `results/reps/simK/rep_###.rds` when it finishes. Re-running `run_all.R` skips replications that are already done, so an interrupted run resumes where it stopped. It refuses to mix checkpoints made with different settings (R, B, seed, optimizer tolerance). Progress goes to standard output; redirect it to `results/run_log.txt` for a background run.
+**Checkpoints.** Each replication is saved to `results/reps/simK/rep_###.rds` when it finishes. Re-running `run_all.R` skips replications that are already done, so an interrupted run resumes where it stopped. It refuses to mix checkpoints made with different settings (number of replications, bootstrap resamples, seed or GPS fitting tolerance). Progress goes to standard output; redirect it to `results/run_log.txt` for a background run.
 
 **Packages needed:**
 - **Steps 9–11:** only R with MASS and nnet.
 - **Step 12:** also `Matching`.
 - **Steps 5–7:** `multilevelMatching` 1.0.0 and `Matching`. On R 4.3 or later the package needs an input workaround, which the scripts apply. Installation is in [BRIDGE.md](BRIDGE.md), and the workaround in [docs/crosscheck.md](docs/crosscheck.md), Appendix B. The cross-check ran on R 4.3.3; its replications regenerate the main run's samples from the same seeds.
 
-**Random numbers and versions.** Each replication draws its random numbers from its own separate, reproducible stream (R's L'Ecuyer-CMRG generator; L'Ecuyer et al., 2002), so results are the same however many processor cores share the work and in whatever order the replications run. The scripts use only base R, `parallel` and `nnet`, plus `MASS` for data generation. The R version and session details of the full run are in `results/run_session_info.txt`; the `nnet` and `MASS` versions used (7.3.20 and 7.3.65) are on the second line of `results/run_log.txt`. Package versions are recorded but not pinned (there is no `renv` lockfile).
+**Random numbers and versions.** Each replication draws its random numbers from its own separate, reproducible stream (R's L'Ecuyer-CMRG generator; L'Ecuyer et al., 2002), so results are the same however many processor cores share the work and in whatever order the replications run. The scripts use only base R, `parallel` and `nnet`, plus `MASS` for data generation. The R version and session details of the full run are in `results/run_session_info.txt`; the `nnet` and `MASS` versions used (7.3.20 and 7.3.65) are on the second line of `results/run_log.txt`. The package versions are recorded but not fixed, so other versions may give slightly different numbers.
 
 ## Folders
 

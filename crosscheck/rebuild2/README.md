@@ -64,7 +64,7 @@ Limits to that independence:
 | Table 1 (Simulation 1): absolute bias of DIF, CM and GPS; CM and GPS coverage | 6 | 30 | 0 |
 | Table 3 (Simulation 2): bias and "MSE" of DIF, CM and GPS; CM and GPS coverage | 36 | 288 | 0 |
 
-So the differences from the paper reported below are not transcription errors. R2 also checked its transcription against the tables' structure: each pairwise bias is a difference of two per-treatment terms, and all of the paper's bias columns fit that pattern to rounding.
+So the differences from the paper reported below are not transcription errors. R2 also checked its transcription against the tables' structure. Each estimate is the difference of two estimated means, one per treatment, so biases must add up along a chain: bias(1,3) = bias(1,2) + bias(2,3). The paper's bias columns do, to rounding.
 
 ## 2. The decisions, side by side
 
@@ -97,16 +97,16 @@ Means over pairs, against τ\_pop (τ\_super). "Paper" is its Tables 1 and 3, wh
 
 | Simulation | Estimator | Abs. bias: paper | R1 | R2 | MSE: paper | R1 | R2 |
 |---|---|---|---|---|---|---|---|
-| 1 | DIF | 0.444 | 0.588 | 0.582 |  | 1.821 | 1.780 |
-| 1 | CM | 0.143 | 0.187 | 0.166 |  | 0.363 | 0.364 |
-| 1 | GPS | 0.293 | 0.026 | 0.043 |  | 0.676 | 0.656 |
-| 1 | GPS, correctly specified logit (R2) |  |  | 0.037 |  |  | 0.710 |
-| 1 | GPS, population scores (R2) |  |  | 0.110 |  |  | 1.581 |
-| 2 | DIF | 1.079 | 0.941 | 0.960 |  | 2.335 | 2.298 |
+| 1 | DIF | 0.444 | 0.588 | 0.582 | – | 1.821 | 1.780 |
+| 1 | CM | 0.143 | 0.187 | 0.166 | – | 0.363 | 0.364 |
+| 1 | GPS | 0.293 | 0.026 | 0.043 | – | 0.676 | 0.656 |
+| 1 | GPS, correctly specified logit (R2) | – | – | 0.037 | – | – | 0.710 |
+| 1 | GPS, population scores (R2) | – | – | 0.110 | – | – | 1.581 |
+| 2 | DIF | 1.079 | 0.941 | 0.960 | – | 2.335 | 2.298 |
 | 2 | CM | 0.139 | 0.295 | 0.299 | 0.368 | 0.288 | 0.294 |
 | 2 | GPS | 0.307 | 0.099 | 0.108 | 1.916 | 0.626 | 0.612 |
-| 2 | GPS, correctly specified logit (R2) |  |  | 0.097 |  |  | 0.839 |
-| 2 | GPS, population scores (R2) |  |  | 0.179 |  |  | 1.657 |
+| 2 | GPS, correctly specified logit (R2) | – | – | 0.097 | – | – | 0.839 |
+| 2 | GPS, population scores (R2) | – | – | 0.179 | – | – | 1.657 |
 
 Pair by pair, R1 against R2 ([tables/r1_vs_r2_by_pair.md](tables/r1_vs_r2_by_pair.md)). "MC SE of difference" combines both rebuilds' Monte Carlo standard errors of the bias:
 
@@ -132,9 +132,9 @@ Means over pairs, against τ\_pop ([tables/coverage_summary.md](tables/coverage_
 
 | Simulation | Estimator | Paper | R1: bootstrap | R1: AI 2006 | R1: AI 2016 | R2: analytic | R2: GPS with population scores | R2: SE / SD |
 |---|---|---|---|---|---|---|---|---|
-| 1 | CM | 95.0 | 91.4 | 94.8 |  | 94.5 |  | 1.05 |
+| 1 | CM | 95.0 | 91.4 | 94.8 | – | 94.5 | – | 1.05 |
 | 1 | GPS | 99.7 | 100.0 | 99.6 | 95.9 | 99.8 | 94.4 | 1.58 |
-| 2 | CM | 97.1 | 78.4 | 90.1 |  | 90.3 |  | 1.14 |
+| 2 | CM | 97.1 | 78.4 | 90.1 | – | 90.3 | – | 1.14 |
 | 2 | GPS | 98.9 | 100.0 | 99.6 | 94.6 | 99.7 | 94.2 | 1.51 |
 
 - **R2's analytic interval behaves like R1's AI 2006 interval.**
@@ -182,7 +182,7 @@ Results, against τ\_pop ([tables/cm_biasadjust_vs_paper.md](tables/cm_biasadjus
 
 | Simulation | Abs. bias: paper | CM | Bias-adjusted | Bias-adjusted, vs τ\_bal | MSE: paper | CM | Bias-adjusted | Variance: paper (MSE − bias²) | CM | Bias-adjusted |
 |---|---|---|---|---|---|---|---|---|---|---|
-| 1 | 0.143 | 0.187 | 0.040 | 0.008 |  | 0.363 | 0.103 |  | 0.321 | 0.101 |
+| 1 | 0.143 | 0.187 | 0.040 | 0.008 | – | 0.363 | 0.103 | – | 0.321 | 0.101 |
 | 2 | 0.139 | 0.295 | 0.080 | 0.008 | 0.368 | 0.288 | 0.046 | 0.340 | 0.162 | 0.037 |
 
 What the test shows:
