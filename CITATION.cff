@@ -8,7 +8,7 @@ authors:
     given-names: Qiu
     affiliation: "Syracuse University"
 version: 1.0.0
-# date-released: TODO (YYYY-MM-DD of the release)
+date-released: 2026-11-17
 # doi: TODO (the Zenodo DOI minted for the release)
 repository-code: "https://github.com/wangqiu-syr/glw2022-multilevelmatching-crosscheck"
 license: MIT
